@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { Search, SlidersHorizontal, Star, Clock, DollarSign } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
@@ -116,7 +116,6 @@ const SearchResults = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
 
-  // Filter results based on search query
   useEffect(() => {
     if (searchQuery) {
       const lowercaseQuery = searchQuery.toLowerCase();
@@ -142,17 +141,14 @@ const SearchResults = () => {
     }
   }, [searchQuery]);
 
-  // Handle search submission
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     navigate(`/search?q=${encodeURIComponent(query)}`);
   };
 
-  // Handle sort change
   const handleSortChange = (value: string) => {
     setSortOption(value);
     
-    // Sort restaurants
     let sortedRestaurants = [...filteredRestaurants];
     let sortedDishes = [...filteredDishes];
     
@@ -174,7 +170,6 @@ const SearchResults = () => {
         sortedDishes.sort((a, b) => a.price - b.price);
         break;
       default:
-        // Relevance - keep the order from filtering
         break;
     }
     
@@ -182,7 +177,6 @@ const SearchResults = () => {
     setFilteredDishes(sortedDishes);
   };
 
-  // Total number of pages for pagination
   const totalPages = Math.ceil(
     (filteredRestaurants.length + filteredDishes.length) / itemsPerPage
   );
@@ -192,7 +186,6 @@ const SearchResults = () => {
       <Navigation />
       
       <main className="flex-grow container mx-auto px-4 py-6">
-        {/* Search Summary Section */}
         <div className="mb-8">
           <h1 className="text-2xl font-bold mb-4">
             Search results for '{searchQuery}'
@@ -213,7 +206,6 @@ const SearchResults = () => {
           </form>
         </div>
         
-        {/* Sort Options Bar */}
         <div className="flex justify-between items-center mb-6 bg-gray-50 p-4 rounded-lg">
           <div className="text-sm text-gray-500">
             {filteredRestaurants.length} restaurants, {filteredDishes.length} dishes found
@@ -238,43 +230,42 @@ const SearchResults = () => {
           </div>
         </div>
         
-        {/* Results Display */}
         {filteredRestaurants.length > 0 && (
           <div className="mb-10">
             <h2 className="text-xl font-semibold mb-4">Restaurants</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredRestaurants.slice(0, itemsPerPage).map((restaurant) => (
-                <Card key={restaurant.id} className="overflow-hidden hover-scale card-shadow">
-                  <div className="relative h-48 overflow-hidden">
-                    <img 
-                      src={restaurant.image} 
-                      alt={restaurant.name} 
-                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                    />
-                    <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded text-sm font-medium text-foodsnap-orange">
-                      {restaurant.priceRange}
-                    </div>
-                  </div>
-                  <CardContent className="p-4">
-                    <div className="flex justify-between mb-2">
-                      <h3 className="font-bold">{restaurant.name}</h3>
-                      <div className="flex items-center">
-                        <Star size={16} className="text-yellow-400 mr-1" fill="currentColor" />
-                        <span>{restaurant.rating}</span>
+                <Link to={`/restaurant/${restaurant.id}`} key={restaurant.id}>
+                  <Card className="overflow-hidden hover-scale card-shadow h-full hover:shadow-md transition-all">
+                    <div className="relative h-48 overflow-hidden">
+                      <img 
+                        src={restaurant.image} 
+                        alt={restaurant.name} 
+                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                      />
+                      <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded text-sm font-medium text-foodsnap-orange">
+                        {restaurant.priceRange}
                       </div>
                     </div>
-                    <p className="text-gray-600 text-sm mb-2">{restaurant.cuisine}</p>
-                    <div className="flex justify-between text-sm">
-                      <div className="flex items-center text-gray-500">
-                        <Clock size={14} className="mr-1" />
-                        <span>{restaurant.deliveryTime}</span>
+                    <CardContent className="p-4">
+                      <div className="flex justify-between mb-2">
+                        <h3 className="font-bold">{restaurant.name}</h3>
+                        <div className="flex items-center">
+                          <Star size={16} className="text-yellow-400 mr-1" fill="currentColor" />
+                          <span>{restaurant.rating}</span>
+                        </div>
                       </div>
-                      <Button size="sm" variant="outline" className="text-foodsnap-teal">
-                        View Menu
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                      <p className="text-gray-600 text-sm mb-2">{restaurant.cuisine}</p>
+                      <div className="flex justify-between text-sm">
+                        <div className="flex items-center text-gray-500">
+                          <Clock size={14} className="mr-1" />
+                          <span>{restaurant.deliveryTime}</span>
+                        </div>
+                        <span className="text-foodsnap-teal font-medium">View Menu</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
               ))}
             </div>
           </div>
@@ -312,7 +303,6 @@ const SearchResults = () => {
           </div>
         )}
         
-        {/* No Results Message */}
         {filteredRestaurants.length === 0 && filteredDishes.length === 0 && (
           <div className="text-center py-16">
             <h2 className="text-xl font-semibold mb-2">No results found</h2>
@@ -325,7 +315,6 @@ const SearchResults = () => {
           </div>
         )}
         
-        {/* Pagination */}
         {totalPages > 1 && (
           <Pagination className="my-8">
             <PaginationContent>
