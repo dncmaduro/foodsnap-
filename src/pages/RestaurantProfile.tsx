@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Navigation from "@/components/Navigation";
@@ -561,6 +560,64 @@ const mockReviewsData = {
     },
   ],
 };
+
+const mockMenu = [
+  {
+    category: "Appetizers",
+    items: [
+      {
+        id: "a1",
+        name: "Spring Rolls",
+        description: "Fresh vegetables and herbs wrapped in rice paper",
+        price: 6.99,
+        image: "https://images.unsplash.com/photo-1562967914-608f82629710?q=80&w=200&h=150",
+      },
+      {
+        id: "a2",
+        name: "Fried Wontons",
+        description: "Crispy wontons filled with seasoned pork",
+        price: 7.99,
+        image: "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?q=80&w=200&h=150",
+      },
+    ],
+  },
+  {
+    category: "Main Dishes",
+    items: [
+      {
+        id: "m1",
+        name: "Pho Beef Noodle Soup",
+        description: "Rich beef broth with rice noodles, beef slices, and herbs",
+        price: 13.99,
+        image: "https://images.unsplash.com/photo-1569562211393-4c5819e7fac2?q=80&w=200&h=150",
+      },
+      {
+        id: "m2",
+        name: "Banh Mi Sandwich",
+        description: "Vietnamese baguette with grilled meat and pickled vegetables",
+        price: 10.99,
+        image: "https://images.unsplash.com/photo-1600454309261-3dcb1a11a8c8?q=80&w=200&h=150",
+      },
+    ],
+  },
+];
+
+const mockReviews = [
+  {
+    id: "r1",
+    userName: "Sarah L.",
+    rating: 5,
+    comment: "Best Vietnamese food in the city! The pho is amazing.",
+    date: "2023-11-10",
+  },
+  {
+    id: "r2",
+    userName: "Michael T.",
+    rating: 4,
+    comment: "Great flavors, though delivery was a bit slow.",
+    date: "2023-10-29",
+  },
+];
 
 const RestaurantProfile = () => {
   const { id } = useParams<{ id: string }>();
