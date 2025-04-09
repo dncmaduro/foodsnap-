@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [cartItems, setCartItems] = useState(0);
+  const [cartItems, setCartItems] = useState(3); // Mock cart count for demonstration
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
