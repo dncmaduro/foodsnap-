@@ -2,6 +2,7 @@
 import { Star } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
 
 // Restaurant data
 const restaurants = [
@@ -78,7 +79,7 @@ const FeaturedRestaurants = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {restaurants.map((restaurant) => (
-            <div key={restaurant.id} className="bg-white rounded-lg overflow-hidden shadow-md hover-scale card-shadow">
+            <Link key={restaurant.id} to={`/restaurant/${restaurant.id}`} className="bg-white rounded-lg overflow-hidden shadow-md hover-scale card-shadow">
               <div className="relative h-48 overflow-hidden">
                 <img 
                   src={restaurant.image} 
@@ -108,11 +109,13 @@ const FeaturedRestaurants = () => {
                   </span>
                 </div>
                 
-                <Button className="w-full bg-white text-foodsnap-teal border border-foodsnap-teal hover:bg-foodsnap-teal hover:text-white transition-colors">
-                  View Menu
-                </Button>
+                <div className="w-full text-center">
+                  <span className="inline-block w-full py-2 text-foodsnap-teal border border-foodsnap-teal hover:bg-foodsnap-teal hover:text-white transition-colors rounded">
+                    View Menu
+                  </span>
+                </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
         

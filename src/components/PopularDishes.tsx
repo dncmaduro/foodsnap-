@@ -2,6 +2,7 @@
 import { useState, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { Link } from 'react-router-dom';
 
 // Dish data
 const dishes = [
@@ -11,15 +12,17 @@ const dishes = [
     image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
     price: 9.99,
     restaurant: "Burger Heaven",
-    category: "American"
+    category: "American",
+    restaurantId: 1
   },
   {
     id: 2,
     name: "Margherita Pizza",
     image: "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
     price: 12.99,
-    restaurant: "Pizza Place",
-    category: "Italian"
+    restaurant: "Pasta Palace",
+    category: "Italian",
+    restaurantId: 2
   },
   {
     id: 3,
@@ -27,7 +30,8 @@ const dishes = [
     image: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
     price: 15.99,
     restaurant: "Sushi Express",
-    category: "Japanese"
+    category: "Japanese",
+    restaurantId: 3
   },
   {
     id: 4,
@@ -35,7 +39,8 @@ const dishes = [
     image: "https://images.unsplash.com/photo-1559847844-5315695dadae?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
     price: 13.99,
     restaurant: "Thai Delight",
-    category: "Thai"
+    category: "Thai",
+    restaurantId: 6
   },
   {
     id: 5,
@@ -43,7 +48,8 @@ const dishes = [
     image: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
     price: 10.99,
     restaurant: "Taco Fiesta",
-    category: "Mexican"
+    category: "Mexican",
+    restaurantId: 4
   },
   {
     id: 6,
@@ -51,7 +57,8 @@ const dishes = [
     image: "https://images.unsplash.com/photo-1585937421612-70a008356c36?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
     price: 14.99,
     restaurant: "Curry House",
-    category: "Indian"
+    category: "Indian",
+    restaurantId: 5
   },
   {
     id: 7,
@@ -59,7 +66,8 @@ const dishes = [
     image: "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
     price: 13.99,
     restaurant: "Pasta Palace",
-    category: "Italian"
+    category: "Italian",
+    restaurantId: 2
   },
   {
     id: 8,
@@ -67,7 +75,8 @@ const dishes = [
     image: "https://images.unsplash.com/photo-1544025162-d76694265947?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
     price: 17.99,
     restaurant: "Grill Master",
-    category: "American"
+    category: "American",
+    restaurantId: 1
   }
 ];
 
@@ -123,8 +132,9 @@ const PopularDishes = () => {
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {dishes.map((dish) => (
-            <div 
+            <Link 
               key={dish.id} 
+              to={`/restaurant/${dish.restaurantId}`} 
               className="flex-none w-[280px] bg-white rounded-lg overflow-hidden shadow-md hover-scale card-shadow snap-start"
             >
               <div className="h-40 overflow-hidden">
@@ -141,12 +151,12 @@ const PopularDishes = () => {
                 
                 <div className="flex justify-between items-center">
                   <span className="font-semibold text-foodsnap-darkText">${dish.price.toFixed(2)}</span>
-                  <Button variant="ghost" className="text-foodsnap-teal hover:text-white hover:bg-foodsnap-teal p-2 h-auto">
-                    Add to Cart
-                  </Button>
+                  <span className="text-foodsnap-teal hover:text-white hover:bg-foodsnap-teal p-2 h-auto font-medium">
+                    View Restaurant
+                  </span>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

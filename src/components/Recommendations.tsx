@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Link } from 'react-router-dom';
 
 // Recommendation data
 const recommendedRestaurants = [
@@ -11,7 +12,8 @@ const recommendedRestaurants = [
     image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
     cuisine: "Vegetarian",
     rating: 4.6,
-    distance: "0.8 mi"
+    distance: "0.8 mi",
+    restaurantId: 5
   },
   {
     id: 102,
@@ -19,7 +21,8 @@ const recommendedRestaurants = [
     image: "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
     cuisine: "Seafood",
     rating: 4.7,
-    distance: "1.2 mi"
+    distance: "1.2 mi",
+    restaurantId: 3
   },
   {
     id: 103,
@@ -27,7 +30,8 @@ const recommendedRestaurants = [
     image: "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
     cuisine: "Vietnamese",
     rating: 4.5,
-    distance: "1.5 mi"
+    distance: "1.5 mi",
+    restaurantId: 6
   },
   {
     id: 104,
@@ -35,7 +39,8 @@ const recommendedRestaurants = [
     image: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
     cuisine: "Dessert",
     rating: 4.8,
-    distance: "0.7 mi"
+    distance: "0.7 mi",
+    restaurantId: 2
   }
 ];
 
@@ -45,28 +50,32 @@ const recommendedDishes = [
     name: "Chicken Caesar Salad",
     image: "https://images.unsplash.com/photo-1546793665-c74683f339c1?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
     restaurant: "Green Garden",
-    price: 11.99
+    price: 11.99,
+    restaurantId: 5
   },
   {
     id: 202,
     name: "Seafood Paella",
     image: "https://images.unsplash.com/photo-1534080564583-6be75777b70a?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
     restaurant: "Fresh Catch",
-    price: 16.99
+    price: 16.99,
+    restaurantId: 3
   },
   {
     id: 203,
     name: "Beef Pho",
     image: "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
     restaurant: "Pho Express",
-    price: 12.99
+    price: 12.99,
+    restaurantId: 6
   },
   {
     id: 204,
     name: "Chocolate Lava Cake",
     image: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
     restaurant: "Sweet Treats",
-    price: 7.99
+    price: 7.99,
+    restaurantId: 2
   }
 ];
 
@@ -88,7 +97,11 @@ const Recommendations = () => {
           <TabsContent value="restaurants" className="mt-2">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {recommendedRestaurants.map((restaurant) => (
-                <div key={restaurant.id} className="bg-white rounded-lg overflow-hidden shadow-md hover-scale card-shadow">
+                <Link 
+                  key={restaurant.id} 
+                  to={`/restaurant/${restaurant.restaurantId}`} 
+                  className="bg-white rounded-lg overflow-hidden shadow-md hover-scale card-shadow"
+                >
                   <div className="h-40 overflow-hidden">
                     <img 
                       src={restaurant.image} 
@@ -110,11 +123,13 @@ const Recommendations = () => {
                       <span>{restaurant.distance}</span>
                     </div>
                     
-                    <Button className="w-full text-foodsnap-teal border border-foodsnap-teal bg-white hover:bg-foodsnap-teal hover:text-white">
-                      Order Again
-                    </Button>
+                    <div className="text-center">
+                      <span className="block w-full text-foodsnap-teal border border-foodsnap-teal bg-white hover:bg-foodsnap-teal hover:text-white py-2 rounded">
+                        View Restaurant
+                      </span>
+                    </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </TabsContent>
@@ -122,7 +137,11 @@ const Recommendations = () => {
           <TabsContent value="dishes" className="mt-2">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {recommendedDishes.map((dish) => (
-                <div key={dish.id} className="bg-white rounded-lg overflow-hidden shadow-md hover-scale card-shadow">
+                <Link 
+                  key={dish.id} 
+                  to={`/restaurant/${dish.restaurantId}`} 
+                  className="bg-white rounded-lg overflow-hidden shadow-md hover-scale card-shadow"
+                >
                   <div className="h-40 overflow-hidden">
                     <img 
                       src={dish.image} 
@@ -137,12 +156,12 @@ const Recommendations = () => {
                     
                     <div className="flex justify-between items-center">
                       <span className="font-bold text-foodsnap-darkText">${dish.price.toFixed(2)}</span>
-                      <Button size="sm" className="bg-foodsnap-orange hover:bg-foodsnap-orange/90 text-white">
-                        Add to Cart
-                      </Button>
+                      <span className="text-foodsnap-orange text-sm font-medium">
+                        View Restaurant
+                      </span>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </TabsContent>
