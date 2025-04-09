@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { useCart } from '@/contexts/CartContext';
+import EditNoteDialog from '@/components/EditNoteDialog';
 
 // Mock data for promotional codes
 const PROMO_CODES = {
@@ -18,7 +19,7 @@ const PROMO_CODES = {
 };
 
 const CartPage = () => {
-  const { items: cartItems, updateQuantity, removeFromCart, clearCart } = useCart();
+  const { items: cartItems, updateQuantity, updateNotes, removeFromCart, clearCart } = useCart();
   const [promoCode, setPromoCode] = useState('');
   const [appliedPromo, setAppliedPromo] = useState<null | { code: string, discount: number }>(null);
   const navigate = useNavigate();
@@ -135,7 +136,14 @@ const CartPage = () => {
                       {restaurant.items.map(item => (
                         <div key={item.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-3 border-b border-gray-100">
                           <div className="flex-grow mb-2 sm:mb-0">
-                            <h3 className="font-medium">{item.name}</h3>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-medium">{item.name}</h3>
+                              <EditNoteDialog
+                                itemName={item.name}
+                                currentNote={item.notes}
+                                onSaveNote={(note) => updateNotes(item.id, note)}
+                              />
+                            </div>
                             {item.notes && <p className="text-sm text-gray-500 mt-1">{item.notes}</p>}
                           </div>
                           
