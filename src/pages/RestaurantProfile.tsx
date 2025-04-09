@@ -51,7 +51,11 @@ const RestaurantProfile = () => {
             </TabsList>
             
             <TabsContent value="menu" className="mt-0">
-              <RestaurantMenu menu={menu} />
+              <RestaurantMenu 
+                menu={menu} 
+                restaurantId={id || ''} 
+                restaurantName={restaurant.name} 
+              />
             </TabsContent>
             
             <TabsContent value="reviews" className="mt-0">

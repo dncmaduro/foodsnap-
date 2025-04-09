@@ -1,7 +1,9 @@
 
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
+import AddToCartDialog from "./AddToCartDialog";
 
 interface MenuItem {
   id: string;
@@ -18,9 +20,19 @@ interface MenuCategory {
 
 interface RestaurantMenuProps {
   menu: MenuCategory[];
+  restaurantId: string;
+  restaurantName: string;
 }
 
-const RestaurantMenu = ({ menu }: RestaurantMenuProps) => {
+const RestaurantMenu = ({ menu, restaurantId, restaurantName }: RestaurantMenuProps) => {
+  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleOpenAddToCartDialog = (item: MenuItem) => {
+    setSelectedItem(item);
+    setDialogOpen(true);
+  };
+
   return (
     <div className="space-y-8">
       {menu.map((category, index) => (
@@ -48,6 +60,7 @@ const RestaurantMenu = ({ menu }: RestaurantMenuProps) => {
                         variant="ghost" 
                         size="sm" 
                         className="mt-2 text-foodsnap-teal hover:text-foodsnap-teal/80 hover:bg-foodsnap-teal/10 p-0 h-auto"
+                        onClick={() => handleOpenAddToCartDialog(item)}
                       >
                         <PlusCircle size={16} className="mr-1" /> Add to cart
                       </Button>
@@ -69,6 +82,16 @@ const RestaurantMenu = ({ menu }: RestaurantMenuProps) => {
           </div>
         </div>
       ))}
+
+      {selectedItem && (
+        <AddToCartDialog
+          item={selectedItem}
+          restaurantId={restaurantId}
+          restaurantName={restaurantName}
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+        />
+      )}
     </div>
   );
 };

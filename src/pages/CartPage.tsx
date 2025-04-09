@@ -6,85 +6,69 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import { useCart } from '@/contexts/CartContext';
 
-// Mock data for cart items
-const initialCartItems = [
-  {
-    id: 1,
-    name: 'Spicy Chicken Burger',
-    price: 12.99,
-    quantity: 1,
-    notes: 'Extra spicy, please',
-    restaurantId: 1
-  },
-  {
-    id: 2,
-    name: 'Truffle Fries',
-    price: 6.99,
-    quantity: 2,
-    notes: '',
-    restaurantId: 1
-  },
-  {
-    id: 3,
-    name: 'Chocolate Milkshake',
-    price: 4.99,
-    quantity: 1,
-    notes: 'No whipped cream',
-    restaurantId: 1
-  }
-];
-
-const mockRestaurant = {
-  name: 'Burger Heaven',
-  deliveryFee: 2.99
+// Mock data for promotional codes
+const PROMO_CODES = {
+  'WELCOME10': { discount: 5.00, type: 'fixed' },
+  'FREESHIP': { discount: 2.99, type: 'shipping' }
 };
 
 const CartPage = () => {
-  const [cartItems, setCartItems] = useState(initialCartItems);
+  const { items: cartItems, updateQuantity, removeFromCart, clearCart } = useCart();
   const [promoCode, setPromoCode] = useState('');
   const [appliedPromo, setAppliedPromo] = useState<null | { code: string, discount: number }>(null);
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  // Group items by restaurant
+  const itemsByRestaurant = cartItems.reduce((acc, item) => {
+    const restId = item.restaurantId;
+    if (!acc[restId]) {
+      acc[restId] = {
+        restaurantId: restId,
+        restaurantName: item.restaurantName || 'Unknown Restaurant',
+        items: []
+      };
+    }
+    acc[restId].items.push(item);
+    return acc;
+  }, {} as Record<string, { restaurantId: string, restaurantName: string, items: typeof cartItems }>);
 
   // Calculate subtotal
   const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+  
+  // Fixed delivery fee for now
+  const deliveryFee = cartItems.length > 0 ? 2.99 : 0;
   
   // Calculate discount
   const discount = appliedPromo ? appliedPromo.discount : 0;
   
   // Calculate total
-  const total = subtotal + mockRestaurant.deliveryFee - discount;
-
-  // Handle quantity change
-  const updateQuantity = (id: number, newQuantity: number) => {
-    if (newQuantity < 1) return;
-    setCartItems(cartItems.map(item => 
-      item.id === id ? { ...item, quantity: newQuantity } : item
-    ));
-  };
-
-  // Remove item from cart
-  const removeItem = (id: number) => {
-    setCartItems(cartItems.filter(item => item.id !== id));
-  };
-
-  // Clear entire cart
-  const clearCart = () => {
-    setCartItems([]);
-    setAppliedPromo(null);
-  };
+  const total = subtotal + deliveryFee - discount;
 
   // Apply promo code
   const applyPromoCode = () => {
-    // Mock promo validation logic
-    if (promoCode.toUpperCase() === 'WELCOME10') {
-      setAppliedPromo({ code: 'WELCOME10', discount: 5.00 });
-    } else if (promoCode.toUpperCase() === 'FREESHIP') {
-      setAppliedPromo({ code: 'FREESHIP', discount: mockRestaurant.deliveryFee });
+    const code = promoCode.toUpperCase();
+    if (PROMO_CODES[code as keyof typeof PROMO_CODES]) {
+      const promoDetails = PROMO_CODES[code as keyof typeof PROMO_CODES];
+      setAppliedPromo({ 
+        code, 
+        discount: promoDetails.type === 'shipping' ? deliveryFee : promoDetails.discount 
+      });
+      toast({
+        title: "Promo code applied!",
+        description: `${code} has been applied to your order.`,
+      });
     } else {
-      alert('Invalid promo code');
+      toast({
+        title: "Invalid promo code",
+        description: "Please check your code and try again.",
+        variant: "destructive"
+      });
     }
     setPromoCode('');
   };
@@ -93,6 +77,15 @@ const CartPage = () => {
   const proceedToCheckout = () => {
     // In a real app, this would navigate to the checkout page
     navigate('/checkout');
+  };
+
+  // Handle removing item with confirmation toast
+  const handleRemoveItem = (id: string, name: string) => {
+    removeFromCart(id);
+    toast({
+      title: "Item removed",
+      description: `${name} has been removed from your cart.`,
+    });
   };
 
   return (
@@ -106,11 +99,21 @@ const CartPage = () => {
           <h1 className="text-3xl font-bold">Your Cart</h1>
           {cartItems.length > 0 ? (
             <div className="flex justify-between items-center mt-2">
-              <p className="text-gray-600">Items from {mockRestaurant.name}</p>
+              <p className="text-gray-600">
+                {Object.keys(itemsByRestaurant).length > 1 
+                  ? `Items from ${Object.keys(itemsByRestaurant).length} restaurants` 
+                  : `Items from ${Object.values(itemsByRestaurant)[0]?.restaurantName || 'restaurant'}`}
+              </p>
               <Button 
                 variant="outline" 
                 className="text-gray-500 border-gray-300"
-                onClick={clearCart}
+                onClick={() => {
+                  clearCart();
+                  toast({
+                    title: "Cart cleared",
+                    description: "All items have been removed from your cart.",
+                  });
+                }}
               >
                 Clear Cart
               </Button>
@@ -124,58 +127,61 @@ const CartPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Cart Items List */}
             <div className="md:col-span-2">
-              <Card>
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    {cartItems.map(item => (
-                      <div key={item.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-3 border-b border-gray-100">
-                        <div className="flex-grow mb-2 sm:mb-0">
-                          <h3 className="font-medium">{item.name}</h3>
-                          {item.notes && <p className="text-sm text-gray-500 mt-1">{item.notes}</p>}
-                        </div>
-                        
-                        <div className="flex items-center space-x-6 w-full sm:w-auto">
-                          {/* Quantity Selector */}
-                          <div className="flex items-center border rounded-md">
+              {Object.values(itemsByRestaurant).map((restaurant) => (
+                <Card key={restaurant.restaurantId} className="mb-6">
+                  <CardContent className="p-6">
+                    <h3 className="font-medium text-lg mb-4">{restaurant.restaurantName}</h3>
+                    <div className="space-y-4">
+                      {restaurant.items.map(item => (
+                        <div key={item.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-3 border-b border-gray-100">
+                          <div className="flex-grow mb-2 sm:mb-0">
+                            <h3 className="font-medium">{item.name}</h3>
+                            {item.notes && <p className="text-sm text-gray-500 mt-1">{item.notes}</p>}
+                          </div>
+                          
+                          <div className="flex items-center space-x-6 w-full sm:w-auto">
+                            {/* Quantity Selector */}
+                            <div className="flex items-center border rounded-md">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-8 px-2"
+                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                              >
+                                <Minus size={16} />
+                              </Button>
+                              <span className="px-2">{item.quantity}</span>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-8 px-2"
+                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              >
+                                <Plus size={16} />
+                              </Button>
+                            </div>
+                            
+                            {/* Price */}
+                            <div className="w-16 text-right">
+                              ${(item.price * item.quantity).toFixed(2)}
+                            </div>
+                            
+                            {/* Remove Button */}
                             <Button 
                               variant="ghost" 
                               size="sm" 
-                              className="h-8 px-2"
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                              className="text-gray-400 hover:text-red-500"
+                              onClick={() => handleRemoveItem(item.id, item.name)}
                             >
-                              <Minus size={16} />
-                            </Button>
-                            <span className="px-2">{item.quantity}</span>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="h-8 px-2"
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            >
-                              <Plus size={16} />
+                              <Trash2 size={18} />
                             </Button>
                           </div>
-                          
-                          {/* Price */}
-                          <div className="w-16 text-right">
-                            ${(item.price * item.quantity).toFixed(2)}
-                          </div>
-                          
-                          {/* Remove Button */}
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="text-gray-400 hover:text-red-500"
-                            onClick={() => removeItem(item.id)}
-                          >
-                            <Trash2 size={18} />
-                          </Button>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
               
               {/* Promotions Section */}
               <Card className="mt-6">
@@ -224,7 +230,7 @@ const CartPage = () => {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Delivery Fee</span>
-                      <span>${mockRestaurant.deliveryFee.toFixed(2)}</span>
+                      <span>${deliveryFee.toFixed(2)}</span>
                     </div>
                     
                     {appliedPromo && (
