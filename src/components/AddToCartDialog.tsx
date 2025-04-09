@@ -7,7 +7,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Minus, Plus } from 'lucide-react';
 import { useCart, CartItem } from '@/contexts/CartContext';
 import { useToast } from "@/hooks/use-toast";
-import { toast } from "@/hooks/use-toast";
 
 interface MenuItem {
   id: string;
@@ -167,18 +166,18 @@ const AddToCartDialog = ({ item, restaurantId, restaurantName, open, onOpenChang
       <AlertDialog open={showClearCartConfirmation} onOpenChange={setShowClearCartConfirmation}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Clear your cart?</AlertDialogTitle>
+            <AlertDialogTitle>Your cart has items from another restaurant</AlertDialogTitle>
             <AlertDialogDescription>
-              Your cart contains items from a different restaurant. Would you like to clear your current cart and add this item instead?
+              Would you like to clear your current cart and add this item instead?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleCancelClearCart}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel onClick={handleCancelClearCart}>Keep current cart</AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleClearCartAndAdd}
               className="bg-foodsnap-orange hover:bg-foodsnap-orange/90"
             >
-              Clear cart & add item
+              Clear cart & add new item
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
