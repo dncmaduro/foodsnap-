@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { Search, SlidersHorizontal, Star, Clock, DollarSign } from 'lucide-react';
@@ -276,28 +277,32 @@ const SearchResults = () => {
             <h2 className="text-xl font-semibold mb-4">Dishes</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {filteredDishes.slice(0, itemsPerPage).map((dish) => (
-                <Card key={dish.id} className="overflow-hidden hover-scale card-shadow">
-                  <div className="relative h-40 overflow-hidden">
-                    <img 
-                      src={dish.image} 
-                      alt={dish.name} 
-                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                    />
-                  </div>
-                  <CardContent className="p-4">
-                    <h3 className="font-bold mb-1">{dish.name}</h3>
-                    <p className="text-gray-600 text-sm mb-2">From {dish.restaurant}</p>
-                    <div className="flex justify-between items-center">
-                      <div className="font-medium text-foodsnap-orange flex items-center">
-                        <DollarSign size={14} className="mr-0.5" />
-                        {dish.price.toFixed(2)}
-                      </div>
-                      <Button size="sm">
-                        Add to Cart
-                      </Button>
+                // Find the restaurant ID based on the restaurant name
+                <Link 
+                  to={`/restaurant/${getRestaurantIdByName(dish.restaurant)}`} 
+                  key={dish.id}
+                >
+                  <Card className="overflow-hidden hover-scale card-shadow">
+                    <div className="relative h-40 overflow-hidden">
+                      <img 
+                        src={dish.image} 
+                        alt={dish.name} 
+                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                      />
                     </div>
-                  </CardContent>
-                </Card>
+                    <CardContent className="p-4">
+                      <h3 className="font-bold mb-1">{dish.name}</h3>
+                      <p className="text-gray-600 text-sm mb-2">From {dish.restaurant}</p>
+                      <div className="flex justify-between items-center">
+                        <div className="font-medium text-foodsnap-orange flex items-center">
+                          <DollarSign size={14} className="mr-0.5" />
+                          {dish.price.toFixed(2)}
+                        </div>
+                        <span className="text-foodsnap-teal font-medium">View Restaurant</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
               ))}
             </div>
           </div>
@@ -362,6 +367,12 @@ const SearchResults = () => {
       <Footer />
     </div>
   );
+};
+
+// Helper function to get restaurant ID by name
+const getRestaurantIdByName = (restaurantName: string): number => {
+  const restaurant = mockRestaurants.find(r => r.name === restaurantName);
+  return restaurant ? restaurant.id : 1; // Default to first restaurant if not found
 };
 
 export default SearchResults;
