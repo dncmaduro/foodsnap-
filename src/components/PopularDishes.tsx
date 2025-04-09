@@ -74,7 +74,7 @@ const dishes = [
     name: "BBQ Ribs",
     image: "https://images.unsplash.com/photo-1544025162-d76694265947?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
     price: 17.99,
-    restaurant: "Grill Master",
+    restaurant: "Burger Heaven",
     category: "American",
     restaurantId: 1
   }
