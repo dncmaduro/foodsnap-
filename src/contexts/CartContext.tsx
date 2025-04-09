@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { toast } from "@/hooks/use-toast";
 
 export interface CartItem {
   id: string;
@@ -12,12 +13,13 @@ export interface CartItem {
 
 interface CartContextType {
   items: CartItem[];
-  addToCart: (item: CartItem) => void;
+  addToCart: (item: CartItem) => boolean;
   removeFromCart: (itemId: string) => void;
   updateQuantity: (itemId: string, quantity: number) => void;
   updateNotes: (itemId: string, notes: string) => void;
   clearCart: () => void;
   totalItems: number;
+  getCartRestaurantId: () => string | null;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -46,7 +48,21 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setTotalItems(count);
   }, [items]);
 
-  const addToCart = (newItem: CartItem) => {
+  // Get the restaurant ID of items in the cart
+  const getCartRestaurantId = (): string | null => {
+    if (items.length === 0) return null;
+    return items[0].restaurantId;
+  };
+
+  const addToCart = (newItem: CartItem): boolean => {
+    // Check if cart already has items from a different restaurant
+    const currentRestaurantId = getCartRestaurantId();
+    
+    if (currentRestaurantId && currentRestaurantId !== newItem.restaurantId) {
+      // Don't add the item and return false to indicate failure
+      return false;
+    }
+    
     setItems(prevItems => {
       // Check if the item already exists in the cart
       const existingItemIndex = prevItems.findIndex(item => item.id === newItem.id);
@@ -65,6 +81,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return [...prevItems, newItem];
       }
     });
+    
+    return true; // Indicate success
   };
 
   const removeFromCart = (itemId: string) => {
@@ -105,7 +123,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         updateQuantity,
         updateNotes,
         clearCart,
-        totalItems
+        totalItems,
+        getCartRestaurantId
       }}
     >
       {children}

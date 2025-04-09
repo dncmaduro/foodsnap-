@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Minus, Plus } from 'lucide-react';
 import { useCart, CartItem } from '@/contexts/CartContext';
 import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 interface MenuItem {
   id: string;
@@ -26,7 +27,7 @@ interface AddToCartDialogProps {
 const AddToCartDialog = ({ item, restaurantId, restaurantName, open, onOpenChange }: AddToCartDialogProps) => {
   const [quantity, setQuantity] = useState(1);
   const [notes, setNotes] = useState('');
-  const { addToCart } = useCart();
+  const { addToCart, getCartRestaurantId } = useCart();
   const { toast } = useToast();
 
   const handleQuantityChange = (amount: number) => {
@@ -37,6 +38,19 @@ const AddToCartDialog = ({ item, restaurantId, restaurantName, open, onOpenChang
   };
 
   const handleAddToCart = () => {
+    const cartRestaurantId = getCartRestaurantId();
+    
+    // Check if adding from a different restaurant
+    if (cartRestaurantId && cartRestaurantId !== restaurantId) {
+      // Show a warning dialog
+      toast({
+        title: "Cannot mix restaurants",
+        description: "Your cart already contains items from a different restaurant. Clear your cart before adding items from a new restaurant.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     const cartItem: CartItem = {
       id: item.id,
       name: item.name,
@@ -47,17 +61,19 @@ const AddToCartDialog = ({ item, restaurantId, restaurantName, open, onOpenChang
       restaurantName
     };
     
-    addToCart(cartItem);
+    const success = addToCart(cartItem);
     
-    toast({
-      title: "Added to cart!",
-      description: `${quantity} × ${item.name} added to your cart.`,
-    });
-    
-    // Reset and close
-    setQuantity(1);
-    setNotes('');
-    onOpenChange(false);
+    if (success) {
+      toast({
+        title: "Added to cart!",
+        description: `${quantity} × ${item.name} added to your cart.`,
+      });
+      
+      // Reset and close
+      setQuantity(1);
+      setNotes('');
+      onOpenChange(false);
+    }
   };
 
   const handleClose = () => {
