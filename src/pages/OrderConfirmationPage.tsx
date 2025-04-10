@@ -192,7 +192,7 @@ const OrderConfirmationPage = () => {
               <CardContent className="space-y-4">
                 <Button
                   className="w-full py-6 bg-foodsnap-teal hover:bg-foodsnap-teal/90 flex items-center justify-center"
-                  onClick={() => navigate('/track-order')}
+                  onClick={() => navigate(`/track-order/${orderDetails.orderId}`, { state: { orderDetails } })}
                 >
                   <Truck className="mr-2 h-5 w-5" />
                   Track Order

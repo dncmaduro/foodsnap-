@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShoppingCart, User, Menu, X } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, X, Clock } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from '@/contexts/CartContext';
@@ -52,7 +52,10 @@ const Navigation = () => {
           <div className="hidden md:flex items-center space-x-6">
             <Link to="/" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Home</Link>
             <Link to="/restaurants" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Browse Restaurants</Link>
-            <Link to="/promotions" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Promotions</Link>
+            <Link to="/track-order" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
+              <Clock size={18} className="mr-1" />
+              Orders
+            </Link>
             
             {/* Cart */}
             <div className="relative">
@@ -103,7 +106,10 @@ const Navigation = () => {
             <div className="flex flex-col space-y-3 pt-3">
               <Link to="/" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Home</Link>
               <Link to="/restaurants" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Browse Restaurants</Link>
-              <Link to="/promotions" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Promotions</Link>
+              <Link to="/track-order" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
+                <Clock size={20} className="mr-2" />
+                <span>Orders</span>
+              </Link>
               <Link to="/cart" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
                 <ShoppingCart size={20} className="mr-2" />
                 <span>Cart {totalItems > 0 && `(${totalItems})`}</span>
