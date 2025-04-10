@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
-import { Clock, Package, MapPin, Truck, Check, Phone, MessageCircle, HelpCircle } from 'lucide-react';
+import { Clock, Package, MapPin, Truck, Check, Phone, MessageCircle, HelpCircle, User } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -33,6 +33,11 @@ type OrderDetails = {
     phone: string;
     address: string;
     notes?: string;
+  };
+  driver?: {
+    name: string;
+    phone: string;
+    photo?: string;
   };
 };
 
@@ -77,6 +82,12 @@ const OrderTrackingPage = () => {
           phone: "(123) 456-7890",
           address: "123 Main St, Apt 4B, New York, NY 10001",
           notes: "Please ring the doorbell twice."
+        },
+        // Added driver information for orders that are out for delivery
+        driver: {
+          name: "Michael Johnson",
+          phone: "(555) 123-4567",
+          photo: "https://randomuser.me/api/portraits/men/32.jpg"
         }
       };
       setOrderDetails(mockOrder);
@@ -325,6 +336,42 @@ const OrderTrackingPage = () => {
                 
                 <Separator />
                 
+                {/* Driver contact info section */}
+                {orderDetails.driver && (
+                  <div>
+                    <h4 className="font-medium mb-2">Your Delivery Driver</h4>
+                    <div className="flex items-center space-x-3 mb-3">
+                      {orderDetails.driver.photo ? (
+                        <div className="h-12 w-12 rounded-full overflow-hidden">
+                          <img 
+                            src={orderDetails.driver.photo} 
+                            alt={orderDetails.driver.name} 
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center">
+                          <User className="h-6 w-6 text-gray-500" />
+                        </div>
+                      )}
+                      <div>
+                        <p className="font-medium">{orderDetails.driver.name}</p>
+                        <p className="text-sm text-gray-600">{orderDetails.driver.phone}</p>
+                      </div>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full text-foodsnap-teal border-foodsnap-teal hover:bg-foodsnap-teal/10 gap-1"
+                    >
+                      <Phone className="h-4 w-4" />
+                      Call Driver
+                    </Button>
+                  </div>
+                )}
+                
+                {orderDetails.driver && <Separator />}
+                
                 <div>
                   <h4 className="font-medium mb-2">Need Help?</h4>
                   <div className="space-y-2">
@@ -364,3 +411,4 @@ const OrderTrackingPage = () => {
 };
 
 export default OrderTrackingPage;
+
