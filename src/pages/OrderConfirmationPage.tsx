@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Check, Clock, Truck, Home, FileText } from 'lucide-react';
+import { Check, Clock, Truck, Home, FileText, MessageSquare } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -31,6 +31,7 @@ type OrderDetails = {
     address: string;
     notes?: string;
   };
+  driverNote?: string;
 };
 
 const OrderConfirmationPage = () => {
@@ -67,7 +68,8 @@ const OrderConfirmationPage = () => {
           phone: "(123) 456-7890",
           address: "123 Main St, Apt 4B, New York, NY 10001",
           notes: "Please ring the doorbell twice."
-        }
+        },
+        driverNote: "Please call me when you arrive at the gate."
       });
     }
   }, [location]);
@@ -176,6 +178,19 @@ const OrderConfirmationPage = () => {
                   {orderDetails.deliveryAddress.notes && (
                     <div className="mt-2 text-gray-600">
                       <span className="font-medium">Notes:</span> {orderDetails.deliveryAddress.notes}
+                    </div>
+                  )}
+
+                  {/* Driver Note Section */}
+                  {orderDetails.driverNote && (
+                    <div className="mt-4 p-3 bg-blue-50 rounded-md">
+                      <div className="flex items-start">
+                        <MessageSquare className="h-5 w-5 text-blue-500 mr-2 mt-0.5" />
+                        <div>
+                          <p className="font-medium text-blue-700">Note for Driver:</p>
+                          <p className="text-blue-600">{orderDetails.driverNote}</p>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
