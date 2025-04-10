@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, CreditCard, MapPin, Wallet, Plus, DollarSign, BadgeInfo } from 'lucide-react';
+import { Check, CreditCard, MapPin, Wallet, Plus, DollarSign, BadgeInfo, MessageSquare } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -13,15 +13,20 @@ import { useToast } from "@/hooks/use-toast";
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { useCart } from '@/contexts/CartContext';
+import { useAuth } from "@/contexts/AuthContext";
+import LoginDialog from "@/components/LoginDialog";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const { items: cartItems, clearCart } = useCart();
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
+  const [loginDialogOpen, setLoginDialogOpen] = useState(!isAuthenticated);
   
   // State for form data
   const [deliveryAddress, setDeliveryAddress] = useState('saved');
   const [paymentMethod, setPaymentMethod] = useState('cash');
+  const [driverNote, setDriverNote] = useState('');
   const [addressForm, setAddressForm] = useState({
     name: '',
     phone: '',
@@ -68,7 +73,8 @@ const CheckoutPage = () => {
       total: total,
       paymentMethod: paymentMethod === 'cash' ? 'Cash on Delivery' : 
                     paymentMethod === 'card' ? 'Credit/Debit Card' : 'E-Wallet',
-      deliveryAddress: deliveryAddress === 'saved' ? savedAddress : addressForm
+      deliveryAddress: deliveryAddress === 'saved' ? savedAddress : addressForm,
+      driverNote: driverNote
     };
     
     // Clear cart
@@ -76,6 +82,12 @@ const CheckoutPage = () => {
     
     // Navigate to confirmation page with order details
     navigate('/order-confirmation', { state: { orderDetails } });
+  };
+  
+  // If user is not authenticated, redirect to login dialog
+  const handleLoginSuccess = () => {
+    // Continue with checkout after successful login
+    setLoginDialogOpen(false);
   };
   
   // If cart is empty, redirect to cart page
@@ -212,6 +224,28 @@ const CheckoutPage = () => {
               </CardContent>
             </Card>
             
+            {/* Delivery Note Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <MessageSquare className="mr-2 h-5 w-5 text-foodsnap-orange" />
+                  Note for Driver
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-2">
+                  <Label htmlFor="driverNote">Add instructions for the delivery driver</Label>
+                  <Textarea 
+                    id="driverNote" 
+                    placeholder="E.g., 'Please knock on the door instead of ringing the bell.' or 'The gate code is 1234.'"
+                    value={driverNote}
+                    onChange={(e) => setDriverNote(e.target.value)}
+                    className="min-h-[100px]"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+            
             {/* Payment Method Section */}
             <Card>
               <CardHeader>
@@ -340,6 +374,13 @@ const CheckoutPage = () => {
       </main>
       
       <Footer />
+      
+      {/* Login Dialog */}
+      <LoginDialog 
+        isOpen={loginDialogOpen} 
+        onClose={() => navigate('/cart')} 
+        onSuccess={handleLoginSuccess} 
+      />
     </div>
   );
 };
