@@ -4,13 +4,13 @@ import { createContext, useContext, useState, ReactNode } from 'react';
 type User = {
   id: string;
   name: string;
-  email: string;
+  phone: string; // Changed from email to phone
 };
 
 type AuthContextType = {
   user: User | null;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => void;
+  login: (phone: string, password: string) => void; // Changed parameter from email to phone
   logout: () => void;
 };
 
@@ -20,13 +20,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Mock user for demonstration
   const [user, setUser] = useState<User | null>(null);
 
-  const login = (email: string, password: string) => {
+  const login = (phone: string, password: string) => {
     // This is just a mock login function
     // In a real app, you would validate credentials with a backend
     setUser({
       id: '1',
       name: 'Demo User',
-      email: email
+      phone: phone
     });
   };
 

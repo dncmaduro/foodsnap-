@@ -14,7 +14,7 @@ type LoginDialogProps = {
 
 const LoginDialog = ({ isOpen, onClose, onSuccess }: LoginDialogProps) => {
   const { login } = useAuth();
-  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
@@ -22,19 +22,20 @@ const LoginDialog = ({ isOpen, onClose, onSuccess }: LoginDialogProps) => {
     e.preventDefault();
     setError("");
     
-    if (!email || !password) {
+    if (!phone || !password) {
       setError("Please fill in all fields");
       return;
     }
     
-    // Simple validation
-    if (!email.includes('@')) {
-      setError("Please enter a valid email address");
+    // Simple validation for phone number - expecting at least 10 digits
+    const phoneRegex = /^\d{10,}$/;
+    if (!phoneRegex.test(phone.replace(/\D/g, ''))) {
+      setError("Please enter a valid phone number (at least 10 digits)");
       return;
     }
     
     // Perform login
-    login(email, password);
+    login(phone, password);
     onClose();
     
     if (onSuccess) {
@@ -54,13 +55,13 @@ const LoginDialog = ({ isOpen, onClose, onSuccess }: LoginDialogProps) => {
         
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
           <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="phone">Phone Number</Label>
             <Input
-              id="email"
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="phone"
+              type="tel"
+              placeholder="(123) 456-7890"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
             />
           </div>
           
