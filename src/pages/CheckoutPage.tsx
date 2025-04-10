@@ -51,17 +51,31 @@ const CheckoutPage = () => {
   
   // Handle place order
   const handlePlaceOrder = () => {
-    // In a real app, this would handle the order submission
+    // Show toast notification
     toast({
       title: "Order placed successfully!",
       description: "Your order has been received and is being processed.",
     });
     
-    // Clear cart and redirect to confirmation
+    // Prepare order details to pass to confirmation page
+    const orderDetails = {
+      orderId: `ORD-${Math.floor(Math.random() * 9000) + 1000}`,
+      restaurantName: cartItems[0]?.restaurantName || "Restaurant",
+      estimatedDelivery: "30-45 minutes",
+      items: cartItems,
+      subtotal: subtotal,
+      deliveryFee: deliveryFee,
+      total: total,
+      paymentMethod: paymentMethod === 'cash' ? 'Cash on Delivery' : 
+                    paymentMethod === 'card' ? 'Credit/Debit Card' : 'E-Wallet',
+      deliveryAddress: deliveryAddress === 'saved' ? savedAddress : addressForm
+    };
+    
+    // Clear cart
     clearCart();
-    setTimeout(() => {
-      navigate('/');
-    }, 2000);
+    
+    // Navigate to confirmation page with order details
+    navigate('/order-confirmation', { state: { orderDetails } });
   };
   
   // If cart is empty, redirect to cart page
