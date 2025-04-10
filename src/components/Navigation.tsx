@@ -1,16 +1,20 @@
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShoppingCart, User, Menu, X, Clock } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, X, Clock, LogOut } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
+import LoginDialog from './LoginDialog';
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const navigate = useNavigate();
   const { totalItems } = useCart();
+  const { user, isAuthenticated, logout } = useAuth();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -19,6 +23,14 @@ const Navigation = () => {
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     }
+  };
+
+  const handleLoginClick = () => {
+    setLoginDialogOpen(true);
+  };
+
+  const handleLogout = () => {
+    logout();
   };
 
   return (
@@ -70,10 +82,30 @@ const Navigation = () => {
             </div>
             
             {/* Profile/Login */}
-            <Button variant="ghost" className="flex items-center space-x-1 text-gray-700 hover:text-foodsnap-orange">
-              <User size={22} />
-              <span className="hidden lg:inline">Login</span>
-            </Button>
+            {isAuthenticated ? (
+              <div className="flex items-center space-x-2">
+                <Button variant="ghost" className="flex items-center space-x-1 text-gray-700 hover:text-foodsnap-orange">
+                  <User size={22} />
+                  <span className="hidden lg:inline">{user?.name}</span>
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  onClick={handleLogout} 
+                  className="text-gray-700 hover:text-red-500"
+                >
+                  <LogOut size={20} />
+                </Button>
+              </div>
+            ) : (
+              <Button 
+                variant="ghost" 
+                className="flex items-center space-x-1 text-gray-700 hover:text-foodsnap-orange"
+                onClick={handleLoginClick}
+              >
+                <User size={22} />
+                <span className="hidden lg:inline">Login</span>
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -114,14 +146,41 @@ const Navigation = () => {
                 <ShoppingCart size={20} className="mr-2" />
                 <span>Cart {totalItems > 0 && `(${totalItems})`}</span>
               </Link>
-              <Link to="/login" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
-                <User size={20} className="mr-2" />
-                <span>Login / Profile</span>
-              </Link>
+              
+              {isAuthenticated ? (
+                <>
+                  <div className="text-gray-700 flex items-center">
+                    <User size={20} className="mr-2" />
+                    <span>{user?.name}</span>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    onClick={handleLogout} 
+                    className="text-gray-700 hover:text-red-500 flex items-center justify-start p-0"
+                  >
+                    <LogOut size={20} className="mr-2" />
+                    <span>Logout</span>
+                  </Button>
+                </>
+              ) : (
+                <Button 
+                  variant="ghost" 
+                  className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center justify-start p-0"
+                  onClick={handleLoginClick}
+                >
+                  <User size={20} className="mr-2" />
+                  <span>Login</span>
+                </Button>
+              )}
             </div>
           </div>
         )}
       </div>
+      
+      <LoginDialog 
+        isOpen={loginDialogOpen} 
+        onClose={() => setLoginDialogOpen(false)} 
+      />
     </nav>
   );
 };

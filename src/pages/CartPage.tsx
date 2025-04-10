@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Minus, Plus, Trash2, Tag } from 'lucide-react';
+import { Minus, Plus, Trash2, Tag, LogIn } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,9 @@ import { useToast } from "@/hooks/use-toast";
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
 import EditNoteDialog from '@/components/EditNoteDialog';
+import LoginDialog from '@/components/LoginDialog';
 
 // Mock data for promotional codes
 const PROMO_CODES = {
@@ -20,8 +22,10 @@ const PROMO_CODES = {
 
 const CartPage = () => {
   const { items: cartItems, updateQuantity, updateNotes, removeFromCart, clearCart } = useCart();
+  const { isAuthenticated } = useAuth();
   const [promoCode, setPromoCode] = useState('');
   const [appliedPromo, setAppliedPromo] = useState<null | { code: string, discount: number }>(null);
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -76,8 +80,13 @@ const CartPage = () => {
 
   // Proceed to checkout
   const proceedToCheckout = () => {
-    // In a real app, this would navigate to the checkout page
-    navigate('/checkout');
+    if (isAuthenticated) {
+      // In a real app, this would navigate to the checkout page
+      navigate('/checkout');
+    } else {
+      // Open login dialog if not authenticated
+      setLoginDialogOpen(true);
+    }
   };
 
   // Handle removing item with confirmation toast
@@ -87,6 +96,12 @@ const CartPage = () => {
       title: "Item removed",
       description: `${name} has been removed from your cart.`,
     });
+  };
+
+  // Handle successful login
+  const handleLoginSuccess = () => {
+    // Navigate to checkout after successful login
+    navigate('/checkout');
   };
 
   return (
@@ -257,11 +272,28 @@ const CartPage = () => {
                   </div>
                   
                   <Button 
-                    className="w-full mt-2 py-6 text-base bg-foodsnap-orange hover:bg-foodsnap-orange/90"
+                    className={`w-full mt-2 py-6 text-base flex items-center justify-center ${
+                      isAuthenticated 
+                        ? "bg-foodsnap-orange hover:bg-foodsnap-orange/90" 
+                        : "bg-gray-700 hover:bg-gray-600"
+                    }`}
                     onClick={proceedToCheckout}
                   >
-                    Proceed to Checkout
+                    {isAuthenticated ? (
+                      "Proceed to Checkout"
+                    ) : (
+                      <>
+                        <LogIn className="mr-2 h-5 w-5" />
+                        Login to Checkout
+                      </>
+                    )}
                   </Button>
+                  
+                  {!isAuthenticated && (
+                    <p className="mt-3 text-sm text-gray-500 text-center">
+                      You need to be logged in to complete your order
+                    </p>
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -288,6 +320,13 @@ const CartPage = () => {
       
       {/* Footer */}
       <Footer />
+      
+      {/* Login Dialog */}
+      <LoginDialog 
+        isOpen={loginDialogOpen} 
+        onClose={() => setLoginDialogOpen(false)}
+        onSuccess={handleLoginSuccess}
+      />
     </div>
   );
 };
