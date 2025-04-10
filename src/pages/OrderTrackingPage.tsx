@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { Clock, Package, MapPin, Truck, Check, Phone, MessageCircle, HelpCircle, User } from 'lucide-react';
@@ -8,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import { format } from 'date-fns';
 
 // Mock order status - in a real app, this would come from an API
 type OrderStatus = 'received' | 'preparing' | 'out_for_delivery' | 'delivered';
@@ -53,15 +53,12 @@ const OrderTrackingPage = () => {
   ]);
   const [progressValue, setProgressValue] = useState(0);
 
-  // In a real app, this would fetch the order details from an API
   useEffect(() => {
-    // Check if we have order details in the location state
     const stateOrderDetails = location.state?.orderDetails;
     
     if (stateOrderDetails) {
       setOrderDetails(stateOrderDetails);
     } else {
-      // Mock data as fallback
       const mockOrder: OrderDetails = {
         orderId: id || `ORD-${Math.floor(Math.random() * 9000) + 1000}`,
         restaurantName: "Delicious Restaurant",
@@ -83,7 +80,6 @@ const OrderTrackingPage = () => {
           address: "123 Main St, Apt 4B, New York, NY 10001",
           notes: "Please ring the doorbell twice."
         },
-        // Added driver information for orders that are out for delivery
         driver: {
           name: "Michael Johnson",
           phone: "(555) 123-4567",
@@ -94,7 +90,6 @@ const OrderTrackingPage = () => {
     }
   }, [id, location]);
 
-  // Update status timeline based on current status
   useEffect(() => {
     if (orderDetails) {
       const now = new Date();
@@ -105,31 +100,33 @@ const OrderTrackingPage = () => {
         'delivered': 100
       };
       
-      // Set progress value based on current status
       setProgressValue(statusMap[orderDetails.status]);
       
-      // Update timestamps for completed statuses
       const updatedStatuses = [...orderStatuses];
       let allCompleted = true;
+      
+      const timeOffsets = {
+        received: 0,
+        preparing: 15,
+        out_for_delivery: 30,
+        delivered: 45
+      };
       
       for (let i = 0; i < updatedStatuses.length; i++) {
         const status = updatedStatuses[i];
         const statusKey = status.status;
         
-        // If this status is before or equal to the current order status, mark as completed
         if (
           (statusKey === 'received') ||
           (statusKey === 'preparing' && ['preparing', 'out_for_delivery', 'delivered'].includes(orderDetails.status)) ||
           (statusKey === 'out_for_delivery' && ['out_for_delivery', 'delivered'].includes(orderDetails.status)) ||
           (statusKey === 'delivered' && orderDetails.status === 'delivered')
         ) {
-          // Set a timestamp for completed steps (in a real app, this would come from the server)
-          const timeOffset = i * 15; // mock time differences between steps
-          const statusTime = new Date(now.getTime() - timeOffset * 60000);
+          const statusTime = new Date(now.getTime() - timeOffsets[statusKey] * 60000);
           
           updatedStatuses[i] = {
             ...status,
-            timestamp: statusTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            timestamp: format(statusTime, 'h:mm a'),
             completed: true
           };
         } else {
@@ -156,7 +153,6 @@ const OrderTrackingPage = () => {
     );
   }
 
-  // Status icon mapping
   const StatusIcon = ({ status }: { status: OrderStatus }) => {
     switch (status) {
       case 'received':
@@ -172,7 +168,6 @@ const OrderTrackingPage = () => {
     }
   };
 
-  // Status label mapping
   const getStatusLabel = (status: OrderStatus) => {
     switch (status) {
       case 'received':
@@ -193,24 +188,22 @@ const OrderTrackingPage = () => {
       <Navigation />
       
       <main className="flex-grow container mx-auto px-4 py-6 max-w-4xl">
-        {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Track Your Order</h1>
           <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
             <div>
-              <p className="text-gray-600">Order #: <span className="font-semibold">{orderDetails.orderId}</span></p>
-              <p className="text-gray-600">Placed: <span className="font-semibold">{orderDetails.timeOrdered}</span></p>
+              <p className="text-gray-600">Order #: <span className="font-semibold">{orderDetails?.orderId}</span></p>
+              <p className="text-gray-600">Placed: <span className="font-semibold">{orderDetails?.timeOrdered}</span></p>
             </div>
             <div>
               <p className="text-gray-600">
                 <Clock className="inline-block mr-1 h-4 w-4 text-foodsnap-orange" />
-                Estimated Delivery: <span className="font-semibold">{orderDetails.estimatedDelivery}</span>
+                Estimated Delivery: <span className="font-semibold">{orderDetails?.estimatedDelivery}</span>
               </p>
             </div>
           </div>
         </div>
         
-        {/* Order Status Timeline */}
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -249,7 +242,6 @@ const OrderTrackingPage = () => {
         </Card>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Order Details Section */}
           <div className="md:col-span-2">
             <Card>
               <CardHeader>
@@ -259,11 +251,10 @@ const OrderTrackingPage = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <h3 className="font-semibold text-lg mb-2">{orderDetails.restaurantName}</h3>
+                <h3 className="font-semibold text-lg mb-2">{orderDetails?.restaurantName}</h3>
                 
-                {/* Items Ordered */}
                 <div className="space-y-2 mb-6">
-                  {orderDetails.items.map((item) => (
+                  {orderDetails?.items.map((item) => (
                     <div key={item.id} className="flex justify-between">
                       <span>
                         <span className="font-medium">{item.quantity}× </span>
@@ -275,33 +266,31 @@ const OrderTrackingPage = () => {
                 
                 <Separator className="my-4" />
                 
-                {/* Payment Details */}
                 <div className="space-y-2">
                   <div className="flex justify-between font-medium">
                     <span>Total Paid</span>
-                    <span>${orderDetails.total.toFixed(2)}</span>
+                    <span>${orderDetails?.total.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-gray-600 text-sm">
                     <span>Payment Method</span>
-                    <span>{orderDetails.paymentMethod}</span>
+                    <span>{orderDetails?.paymentMethod}</span>
                   </div>
                 </div>
                 
                 <Separator className="my-4" />
                 
-                {/* Delivery Address */}
                 <div className="mt-4">
                   <h4 className="font-medium flex items-center gap-2 mb-2">
                     <MapPin className="h-4 w-4 text-foodsnap-orange" />
                     Delivery Address
                   </h4>
                   <div className="text-gray-700">
-                    <p className="font-medium">{orderDetails.deliveryAddress.name}</p>
-                    <p>{orderDetails.deliveryAddress.phone}</p>
-                    <p className="mt-1">{orderDetails.deliveryAddress.address}</p>
-                    {orderDetails.deliveryAddress.notes && (
+                    <p className="font-medium">{orderDetails?.deliveryAddress.name}</p>
+                    <p>{orderDetails?.deliveryAddress.phone}</p>
+                    <p className="mt-1">{orderDetails?.deliveryAddress.address}</p>
+                    {orderDetails?.deliveryAddress.notes && (
                       <p className="mt-2 text-sm text-gray-600">
-                        <span className="font-medium">Notes:</span> {orderDetails.deliveryAddress.notes}
+                        <span className="font-medium">Notes:</span> {orderDetails?.deliveryAddress.notes}
                       </p>
                     )}
                   </div>
@@ -310,7 +299,6 @@ const OrderTrackingPage = () => {
             </Card>
           </div>
           
-          {/* Contact Section */}
           <div>
             <Card>
               <CardHeader>
@@ -322,8 +310,8 @@ const OrderTrackingPage = () => {
               <CardContent className="space-y-4">
                 <div>
                   <h4 className="font-medium mb-1">Restaurant</h4>
-                  <p className="text-gray-700">{orderDetails.restaurantName}</p>
-                  <p className="text-gray-700">{orderDetails.restaurantPhone}</p>
+                  <p className="text-gray-700">{orderDetails?.restaurantName}</p>
+                  <p className="text-gray-700">{orderDetails?.restaurantPhone}</p>
                   <Button 
                     variant="outline" 
                     size="sm" 
@@ -336,16 +324,15 @@ const OrderTrackingPage = () => {
                 
                 <Separator />
                 
-                {/* Driver contact info section */}
-                {orderDetails.driver && (
+                {orderDetails?.driver && (
                   <div>
                     <h4 className="font-medium mb-2">Your Delivery Driver</h4>
                     <div className="flex items-center space-x-3 mb-3">
-                      {orderDetails.driver.photo ? (
+                      {orderDetails?.driver.photo ? (
                         <div className="h-12 w-12 rounded-full overflow-hidden">
                           <img 
-                            src={orderDetails.driver.photo} 
-                            alt={orderDetails.driver.name} 
+                            src={orderDetails?.driver.photo} 
+                            alt={orderDetails?.driver.name} 
                             className="h-full w-full object-cover"
                           />
                         </div>
@@ -355,8 +342,8 @@ const OrderTrackingPage = () => {
                         </div>
                       )}
                       <div>
-                        <p className="font-medium">{orderDetails.driver.name}</p>
-                        <p className="text-sm text-gray-600">{orderDetails.driver.phone}</p>
+                        <p className="font-medium">{orderDetails?.driver.name}</p>
+                        <p className="text-sm text-gray-600">{orderDetails?.driver.phone}</p>
                       </div>
                     </div>
                     <Button 
@@ -370,7 +357,7 @@ const OrderTrackingPage = () => {
                   </div>
                 )}
                 
-                {orderDetails.driver && <Separator />}
+                {orderDetails?.driver && <Separator />}
                 
                 <div>
                   <h4 className="font-medium mb-2">Need Help?</h4>
@@ -411,4 +398,3 @@ const OrderTrackingPage = () => {
 };
 
 export default OrderTrackingPage;
-
