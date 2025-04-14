@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, ShoppingCart, User, Menu, X, Clock, LogOut, History } from 'lucide-react';
@@ -37,14 +36,12 @@ const Navigation = () => {
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          {/* Logo */}
           <div className="flex-shrink-0">
             <Link to="/" className="flex items-center">
               <span className="text-2xl font-bold text-foodsnap-orange">Food<span className="text-foodsnap-teal">Snap</span></span>
             </Link>
           </div>
 
-          {/* Search Bar - Hidden on mobile */}
           <div className="hidden md:flex items-center justify-center flex-1 max-w-md mx-4">
             <form onSubmit={handleSearch} className="relative w-full">
               <Input 
@@ -60,7 +57,6 @@ const Navigation = () => {
             </form>
           </div>
 
-          {/* Navigation Links - Hidden on mobile */}
           <div className="hidden md:flex items-center space-x-6">
             <Link to="/" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Home</Link>
             <Link to="/restaurants" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Browse Restaurants</Link>
@@ -76,7 +72,6 @@ const Navigation = () => {
               </Link>
             )}
             
-            {/* Cart */}
             <div className="relative">
               <Link to="/cart" className="text-gray-700 hover:text-foodsnap-orange transition-colors">
                 <ShoppingCart size={22} />
@@ -88,7 +83,6 @@ const Navigation = () => {
               </Link>
             </div>
             
-            {/* Profile/Login */}
             {isAuthenticated ? (
               <div className="flex items-center space-x-2">
                 <Button variant="ghost" className="flex items-center space-x-1 text-gray-700 hover:text-foodsnap-orange">
@@ -115,7 +109,6 @@ const Navigation = () => {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
           <div className="flex md:hidden">
             <Button variant="ghost" onClick={toggleMenu} aria-label="Menu">
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -123,7 +116,6 @@ const Navigation = () => {
           </div>
         </div>
 
-        {/* Mobile Search Bar */}
         <div className="mt-3 flex md:hidden">
           <form onSubmit={handleSearch} className="relative w-full">
             <Input 
@@ -139,7 +131,6 @@ const Navigation = () => {
           </form>
         </div>
 
-        {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden mt-3 pb-3 border-t border-gray-200">
             <div className="flex flex-col space-y-3 pt-3">
