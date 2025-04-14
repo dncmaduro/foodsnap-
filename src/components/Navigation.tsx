@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShoppingCart, User, Menu, X, Clock, LogOut } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, X, Clock, LogOut, History } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from '@/contexts/CartContext';
@@ -68,6 +68,13 @@ const Navigation = () => {
               <Clock size={18} className="mr-1" />
               Orders
             </Link>
+
+            {isAuthenticated && (
+              <Link to="/order-history" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
+                <History size={18} className="mr-1" />
+                History
+              </Link>
+            )}
             
             {/* Cart */}
             <div className="relative">
@@ -142,6 +149,14 @@ const Navigation = () => {
                 <Clock size={20} className="mr-2" />
                 <span>Orders</span>
               </Link>
+              
+              {isAuthenticated && (
+                <Link to="/order-history" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
+                  <History size={20} className="mr-2" />
+                  <span>Order History</span>
+                </Link>
+              )}
+              
               <Link to="/cart" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
                 <ShoppingCart size={20} className="mr-2" />
                 <span>Cart {totalItems > 0 && `(${totalItems})`}</span>
