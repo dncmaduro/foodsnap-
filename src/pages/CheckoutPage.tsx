@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, CreditCard, MapPin, Wallet, Plus, DollarSign, BadgeInfo, MessageSquare } from 'lucide-react';
+import { Check, MapPin, Wallet, MessageSquare } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -71,8 +71,7 @@ const CheckoutPage = () => {
       subtotal: subtotal,
       deliveryFee: deliveryFee,
       total: total,
-      paymentMethod: paymentMethod === 'cash' ? 'Cash on Delivery' : 
-                    paymentMethod === 'card' ? 'Credit/Debit Card' : 'E-Wallet',
+      paymentMethod: 'Cash on Delivery',
       deliveryAddress: deliveryAddress === 'saved' ? savedAddress : addressForm,
       driverNote: driverNote
     };
@@ -255,47 +254,15 @@ const CheckoutPage = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <RadioGroup 
-                  value={paymentMethod} 
-                  onValueChange={setPaymentMethod}
-                  className="space-y-4"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="cash" id="cash" />
-                    <Label htmlFor="cash" className="flex items-center">
-                      <DollarSign className="mr-2 h-5 w-5" />
-                      Cash on Delivery
-                    </Label>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="card" id="card" />
-                    <Label htmlFor="card" className="flex items-center">
-                      <CreditCard className="mr-2 h-5 w-5" />
-                      Credit/Debit Card
-                    </Label>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="ewallet" id="ewallet" />
-                    <Label htmlFor="ewallet" className="flex items-center">
-                      <Wallet className="mr-2 h-5 w-5" />
-                      E-Wallet (MoMo, ZaloPay, etc.)
-                    </Label>
-                  </div>
-                  
-                  {/* Add New Card Option */}
-                  <div className="pt-2">
-                    <Button variant="outline" className="flex items-center" disabled={paymentMethod !== 'card'}>
-                      <Plus className="mr-2 h-4 w-4" />
-                      Add New Card
-                    </Button>
-                    <p className="mt-2 text-sm text-gray-500">
-                      <BadgeInfo className="inline h-4 w-4 mr-1" />
-                      Card payment will be available soon.
-                    </p>
-                  </div>
-                </RadioGroup>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="cash" id="cash" checked readOnly />
+                  <Label htmlFor="cash" className="flex items-center">
+                    Cash on Delivery
+                  </Label>
+                </div>
+                <p className="mt-4 text-sm text-gray-500">
+                  You will pay with cash upon delivery of your order.
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -353,11 +320,7 @@ const CheckoutPage = () => {
                   className="w-full mt-4 py-6 text-base bg-foodsnap-orange hover:bg-foodsnap-orange/90 flex items-center justify-center"
                   onClick={handlePlaceOrder}
                 >
-                  {paymentMethod === 'cash' ? (
-                    <>Place Order</>
-                  ) : (
-                    <>Confirm & Pay</>
-                  )}
+                  Place Order
                   <Check className="ml-2 h-5 w-5" />
                 </Button>
                 
