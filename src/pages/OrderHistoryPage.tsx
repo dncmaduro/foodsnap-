@@ -294,7 +294,7 @@ const OrderHistoryPage = () => {
                   <Button 
                     variant="ghost" 
                     className="ml-auto flex items-center text-foodsnap-teal hover:text-foodsnap-teal/80"
-                    onClick={() => navigate(`/order-confirmation`, { state: { orderDetails: order } })}
+                    onClick={() => navigate(`/order/${order.id}`)}
                   >
                     View Details
                     <ChevronRight className="ml-1 h-4 w-4" />
