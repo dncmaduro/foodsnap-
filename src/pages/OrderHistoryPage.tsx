@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
@@ -51,6 +50,20 @@ const currentOrder = {
 
 // Mock data for past orders
 const pastOrders = [
+  {
+    id: 'ORD-TEST',
+    restaurantName: 'Test Restaurant (Not Rated)',
+    restaurantLogo: '/placeholder.svg',
+    orderDate: new Date(Date.now() - 86400000), // 1 day ago
+    items: [
+      { name: 'Test Burger', quantity: 1 },
+      { name: 'Test Fries', quantity: 1 }
+    ],
+    itemCount: 2,
+    total: 19.99,
+    status: 'completed',
+    // This order doesn't have a rating or review
+  },
   {
     id: 'ORD-4814',
     restaurantName: 'Pizza Haven',

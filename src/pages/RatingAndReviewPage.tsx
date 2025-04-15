@@ -23,6 +23,11 @@ type OrderDetails = {
   orderDate: string;
   items: OrderItem[];
   total: number;
+  userRating?: {
+    rating: number;
+    comment?: string;
+    date: string;
+  };
 };
 
 const RatingAndReviewPage = () => {
@@ -72,24 +77,6 @@ const RatingAndReviewPage = () => {
           total: 34.95,
         };
 
-        const hasRating = Math.random() > 0.5;
-        if (hasRating) {
-          mockOrder.userRating = {
-            rating: 4,
-            comment: "Food was delicious and arrived hot.",
-            date: new Date().toISOString(),
-          };
-          setAlreadyRated(true);
-          toast({
-            title: "Already Rated",
-            description: "This order has already been rated and reviewed.",
-            variant: "destructive",
-          });
-          setTimeout(() => {
-            navigate(`/order/${id}`);
-          }, 2000);
-        }
-        
         setOrderDetails(mockOrder);
         setLoading(false);
       }, 500);

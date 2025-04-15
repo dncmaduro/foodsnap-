@@ -76,43 +76,80 @@ const OrderDetailsPage = () => {
     setLoading(true);
     
     setTimeout(() => {
-      // Mock order data
-      const mockOrder: OrderDetails = {
-        orderId: id || 'ORD-1234',
-        restaurantId: 'rest-1',
-        restaurantName: 'Burger Palace',
-        restaurantAddress: '123 Main St, Anytown, USA',
-        orderDate: '2025-04-14T18:30:00',
-        status: 'delivered',
-        items: [
-          { id: '1', name: 'Cheeseburger', quantity: 2, price: 9.99 },
-          { id: '2', name: 'French Fries', quantity: 1, price: 4.99 },
-          { id: '3', name: 'Chocolate Shake', quantity: 1, price: 5.99 },
-        ],
-        subtotal: 30.96,
-        deliveryFee: 3.99,
-        total: 34.95,
-        paymentMethod: 'Credit Card (•••• 4242)',
-        deliveryAddress: {
-          name: 'John Doe',
-          phone: '(555) 123-4567',
-          address: '456 Oak Lane, Apt 3B, Anytown, USA',
-          notes: 'Please leave at the door.',
-        },
-        driver: {
-          name: 'Michael Rodriguez',
-          photo: 'https://randomuser.me/api/portraits/men/75.jpg',
-          phone: '(555) 987-6543',
-          deliveryTime: '2025-04-14T19:15:00',
-        },
-        userRating: {
-          rating: 4,
-          comment: 'Food was delicious and arrived hot. Driver was very friendly.',
-          date: '2025-04-14T20:00:00',
-        },
-      };
+      // Check if this is our test order
+      if (id === 'ORD-TEST') {
+        // This is our unrated test order
+        const testOrder: OrderDetails = {
+          orderId: 'ORD-TEST',
+          restaurantId: 'rest-test',
+          restaurantName: 'Test Restaurant',
+          restaurantAddress: '789 Test St, Testville, USA',
+          orderDate: new Date().toISOString(),
+          status: 'delivered',
+          items: [
+            { id: 't1', name: 'Test Burger', quantity: 1, price: 12.99 },
+            { id: 't2', name: 'Test Fries', quantity: 1, price: 4.99 },
+            { id: 't3', name: 'Test Soda', quantity: 1, price: 2.99 },
+          ],
+          subtotal: 20.97,
+          deliveryFee: 2.99,
+          total: 23.96,
+          paymentMethod: 'Credit Card (•••• 1234)',
+          deliveryAddress: {
+            name: 'Test User',
+            phone: '(555) 987-6543',
+            address: '321 Test Ave, Testville, USA',
+            notes: 'Test delivery notes.',
+          },
+          driver: {
+            name: 'Test Driver',
+            photo: 'https://randomuser.me/api/portraits/men/22.jpg',
+            phone: '(555) 123-4567',
+            deliveryTime: new Date().toISOString(),
+          },
+          // No userRating field, so it can be rated
+        };
+        setOrderDetails(testOrder);
+      } else {
+        // Use the original mock data for other orders
+        const mockOrder: OrderDetails = {
+          orderId: id || 'ORD-1234',
+          restaurantId: 'rest-1',
+          restaurantName: 'Burger Palace',
+          restaurantAddress: '123 Main St, Anytown, USA',
+          orderDate: '2025-04-14T18:30:00',
+          status: 'delivered',
+          items: [
+            { id: '1', name: 'Cheeseburger', quantity: 2, price: 9.99 },
+            { id: '2', name: 'French Fries', quantity: 1, price: 4.99 },
+            { id: '3', name: 'Chocolate Shake', quantity: 1, price: 5.99 },
+          ],
+          subtotal: 30.96,
+          deliveryFee: 3.99,
+          total: 34.95,
+          paymentMethod: 'Credit Card (•••• 4242)',
+          deliveryAddress: {
+            name: 'John Doe',
+            phone: '(555) 123-4567',
+            address: '456 Oak Lane, Apt 3B, Anytown, USA',
+            notes: 'Please leave at the door.',
+          },
+          driver: {
+            name: 'Michael Rodriguez',
+            photo: 'https://randomuser.me/api/portraits/men/75.jpg',
+            phone: '(555) 987-6543',
+            deliveryTime: '2025-04-14T19:15:00',
+          },
+          userRating: {
+            rating: 4,
+            comment: 'Food was delicious and arrived hot. Driver was very friendly.',
+            date: '2025-04-14T20:00:00',
+          },
+        };
+        
+        setOrderDetails(mockOrder);
+      }
       
-      setOrderDetails(mockOrder);
       setLoading(false);
     }, 500);
   }, [id]);
