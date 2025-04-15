@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
@@ -69,7 +68,6 @@ const OrderDetailsPage = () => {
   const navigate = useNavigate();
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showRatingDialog, setShowRatingDialog] = useState(false);
 
   useEffect(() => {
     // In a real app, this would be an API call to fetch order details
@@ -403,7 +401,11 @@ const OrderDetailsPage = () => {
                 )}
                 
                 <div className="mt-3">
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => navigate(`/rate-order/${orderDetails.orderId}`, { state: { orderDetails } })}
+                  >
                     Edit Review
                   </Button>
                 </div>
@@ -413,7 +415,7 @@ const OrderDetailsPage = () => {
                 <p className="text-gray-600 mb-4">You haven't rated this order yet.</p>
                 <Button 
                   className="bg-foodsnap-teal hover:bg-foodsnap-teal/90"
-                  onClick={() => setShowRatingDialog(true)}
+                  onClick={() => navigate(`/rate-order/${orderDetails.orderId}`, { state: { orderDetails } })}
                 >
                   <Star className="h-4 w-4 mr-1" />
                   Rate This Order
