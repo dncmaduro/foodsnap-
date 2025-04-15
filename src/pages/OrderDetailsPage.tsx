@@ -12,7 +12,8 @@ import {
   ChevronLeft, 
   Star, 
   ExternalLink,
-  Truck
+  Truck,
+  Lock
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -382,6 +383,12 @@ const OrderDetailsPage = () => {
             <CardTitle className="flex items-center gap-2">
               <Star className="h-5 w-5 text-foodsnap-orange" />
               Your Rating & Review
+              {orderDetails.userRating && (
+                <span className="text-sm text-gray-500 flex items-center ml-2">
+                  <Lock className="h-4 w-4 mr-1" />
+                  Submitted
+                </span>
+              )}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -399,16 +406,6 @@ const OrderDetailsPage = () => {
                     <p className="italic text-gray-700">{orderDetails.userRating.comment}</p>
                   </div>
                 )}
-                
-                <div className="mt-3">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => navigate(`/rate-order/${orderDetails.orderId}`, { state: { orderDetails } })}
-                  >
-                    Edit Review
-                  </Button>
-                </div>
               </div>
             ) : (
               <div className="text-center py-6">

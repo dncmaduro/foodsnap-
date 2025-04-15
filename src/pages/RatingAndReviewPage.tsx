@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { Star, ArrowLeft } from 'lucide-react';
+import { Star, ArrowLeft, Lock } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -10,7 +9,6 @@ import { useToast } from "@/components/ui/use-toast";
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 
-// Types for the order details (simplified version from OrderDetailsPage)
 type OrderItem = {
   id: string;
   name: string;
@@ -38,21 +36,29 @@ const RatingAndReviewPage = () => {
   const [review, setReview] = useState<string>("");
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
   const [loading, setLoading] = useState(true);
+  const [alreadyRated, setAlreadyRated] = useState(false);
 
-  // In a real app, this would fetch the order details from an API
   useEffect(() => {
     setLoading(true);
     
-    // Try to get order details from location state first
     const stateOrderDetails = location.state?.orderDetails;
     
     if (stateOrderDetails) {
       setOrderDetails(stateOrderDetails);
+      if (stateOrderDetails.userRating) {
+        setAlreadyRated(true);
+        toast({
+          title: "Already Rated",
+          description: "This order has already been rated and reviewed.",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          navigate(`/order/${id}`);
+        }, 2000);
+      }
       setLoading(false);
     } else if (id) {
-      // Mock fetch order details if not provided in state
       setTimeout(() => {
-        // Mock order data
         const mockOrder: OrderDetails = {
           orderId: id,
           restaurantId: 'rest-1',
@@ -65,18 +71,45 @@ const RatingAndReviewPage = () => {
           ],
           total: 34.95,
         };
+
+        const hasRating = Math.random() > 0.5;
+        if (hasRating) {
+          mockOrder.userRating = {
+            rating: 4,
+            comment: "Food was delicious and arrived hot.",
+            date: new Date().toISOString(),
+          };
+          setAlreadyRated(true);
+          toast({
+            title: "Already Rated",
+            description: "This order has already been rated and reviewed.",
+            variant: "destructive",
+          });
+          setTimeout(() => {
+            navigate(`/order/${id}`);
+          }, 2000);
+        }
         
         setOrderDetails(mockOrder);
         setLoading(false);
       }, 500);
     }
-  }, [id, location.state]);
+  }, [id, location.state, navigate, toast]);
 
   const handleRatingClick = (selectedRating: number) => {
     setRating(selectedRating);
   };
 
   const handleSubmit = () => {
+    if (alreadyRated) {
+      toast({
+        title: "Cannot Submit",
+        description: "This order has already been rated and reviewed.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (rating === 0) {
       toast({
         title: "Rating Required",
@@ -86,13 +119,11 @@ const RatingAndReviewPage = () => {
       return;
     }
     
-    // In a real app, this would be an API call to submit the rating and review
     toast({
       title: "Review Submitted!",
       description: "Thank you for your feedback.",
     });
     
-    // After successful submission, navigate back to order details
     setTimeout(() => {
       navigate(`/order/${id}`);
     }, 1500);
@@ -143,6 +174,38 @@ const RatingAndReviewPage = () => {
     );
   }
 
+  if (alreadyRated) {
+    return (
+      <div className="flex flex-col min-h-screen bg-gray-50">
+        <Navigation />
+        
+        <main className="flex-grow container mx-auto px-4 py-12 flex items-center justify-center">
+          <Card className="w-full max-w-md">
+            <CardHeader className="text-center">
+              <CardTitle className="flex items-center justify-center gap-2 text-amber-500">
+                <Lock className="h-6 w-6" />
+                Already Rated
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-center">
+              <p>This order has already been rated and reviewed.</p>
+              <p>You cannot submit multiple reviews for the same order.</p>
+              
+              <Button 
+                className="mt-4 bg-foodsnap-orange hover:bg-foodsnap-orange/90"
+                onClick={() => navigate(`/order/${id}`)}
+              >
+                Return to Order Details
+              </Button>
+            </CardContent>
+          </Card>
+        </main>
+        
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       <Navigation />
@@ -161,7 +224,6 @@ const RatingAndReviewPage = () => {
           <h1 className="text-3xl font-bold text-gray-900">Rate Your Order</h1>
         </div>
         
-        {/* Order Summary Block */}
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="text-lg">Order Summary</CardTitle>
@@ -186,7 +248,6 @@ const RatingAndReviewPage = () => {
           </CardContent>
         </Card>
         
-        {/* Rating Section */}
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="text-lg">Rate your experience</CardTitle>
@@ -228,7 +289,6 @@ const RatingAndReviewPage = () => {
           </CardContent>
         </Card>
         
-        {/* Review Section */}
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="text-lg">Write a review (optional)</CardTitle>
@@ -243,7 +303,6 @@ const RatingAndReviewPage = () => {
           </CardContent>
         </Card>
         
-        {/* Submit Button */}
         <div className="text-center mb-6">
           <Button 
             className="px-8 py-6 bg-foodsnap-teal hover:bg-foodsnap-teal/90"
