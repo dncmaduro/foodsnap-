@@ -128,7 +128,7 @@ const OrderConfirmationPage = () => {
                         <span className="font-medium">{item.quantity}× </span>
                         <span>{item.name}</span>
                       </div>
-                      <span>${((item.price * item.quantity) || 0).toFixed(2)}</span>
+                      <span>${(item.price * item.quantity).toFixed(2)}</span>
                     </div>
                   ))}
                 </div>
@@ -139,18 +139,18 @@ const OrderConfirmationPage = () => {
                 <div className="space-y-2 mb-4">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Subtotal</span>
-                    <span>${(orderDetails.subtotal || 0).toFixed(2)}</span>
+                    <span>${orderDetails.subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Delivery Fee</span>
-                    <span>${(orderDetails.deliveryFee || 0).toFixed(2)}</span>
+                    <span>${orderDetails.deliveryFee.toFixed(2)}</span>
                   </div>
                   
                   <Separator className="my-2" />
                   
                   <div className="flex justify-between font-bold text-lg">
                     <span>Total</span>
-                    <span>${(orderDetails.total || 0).toFixed(2)}</span>
+                    <span>${orderDetails.total.toFixed(2)}</span>
                   </div>
                 </div>
                 
