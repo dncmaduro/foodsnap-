@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Check, MapPin, Wallet, MessageSquare } from 'lucide-react';
@@ -23,7 +22,6 @@ const CheckoutPage = () => {
   const { isAuthenticated } = useAuth();
   const [loginDialogOpen, setLoginDialogOpen] = useState(!isAuthenticated);
   
-  // State for form data
   const [deliveryAddress, setDeliveryAddress] = useState('saved');
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [driverNote, setDriverNote] = useState('');
@@ -34,7 +32,6 @@ const CheckoutPage = () => {
     notes: ''
   });
   
-  // Mock saved address
   const savedAddress = {
     name: 'John Doe',
     phone: '(123) 456-7890',
@@ -42,27 +39,22 @@ const CheckoutPage = () => {
     notes: 'Doorbell not working, please call when arriving'
   };
   
-  // Calculate totals
   const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   const deliveryFee = cartItems.length > 0 ? 2.99 : 0;
-  const discount = 0; // Implement promo code logic if needed
+  const discount = 0;
   const total = subtotal + deliveryFee - discount;
   
-  // Handle form input changes
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setAddressForm(prev => ({ ...prev, [name]: value }));
   };
   
-  // Handle place order
   const handlePlaceOrder = () => {
-    // Show toast notification
     toast({
       title: "Order placed successfully!",
       description: "Your order has been received and is being processed.",
     });
     
-    // Prepare order details to pass to confirmation page
     const orderDetails = {
       orderId: `ORD-${Math.floor(Math.random() * 9000) + 1000}`,
       restaurantName: cartItems[0]?.restaurantName || "Restaurant",
@@ -76,20 +68,14 @@ const CheckoutPage = () => {
       driverNote: driverNote
     };
     
-    // Clear cart
     clearCart();
-    
-    // Navigate to confirmation page with order details
     navigate('/order-confirmation', { state: { orderDetails } });
   };
   
-  // If user is not authenticated, redirect to login dialog
   const handleLoginSuccess = () => {
-    // Continue with checkout after successful login
     setLoginDialogOpen(false);
   };
   
-  // If cart is empty, redirect to cart page
   if (cartItems.length === 0) {
     return (
       <div className="flex flex-col min-h-screen">
@@ -116,7 +102,6 @@ const CheckoutPage = () => {
       <Navigation />
       
       <main className="flex-grow container mx-auto px-4 py-6 max-w-4xl">
-        {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Checkout</h1>
           <div className="flex items-center mt-2 text-sm">
@@ -129,9 +114,7 @@ const CheckoutPage = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Delivery and Payment Info */}
           <div className="md:col-span-2 space-y-6">
-            {/* Delivery Information Section */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
@@ -223,7 +206,6 @@ const CheckoutPage = () => {
               </CardContent>
             </Card>
             
-            {/* Delivery Note Section */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
@@ -245,7 +227,6 @@ const CheckoutPage = () => {
               </CardContent>
             </Card>
             
-            {/* Payment Method Section */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
@@ -255,7 +236,9 @@ const CheckoutPage = () => {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="cash" id="cash" checked readOnly />
+                  <RadioGroup value="cash" className="hidden">
+                    <RadioGroupItem value="cash" id="cash" />
+                  </RadioGroup>
                   <Label htmlFor="cash" className="flex items-center">
                     Cash on Delivery
                   </Label>
@@ -267,14 +250,12 @@ const CheckoutPage = () => {
             </Card>
           </div>
           
-          {/* Order Summary */}
           <div className="md:col-span-1">
             <Card className="sticky top-20">
               <CardHeader>
                 <CardTitle>Order Summary</CardTitle>
               </CardHeader>
               <CardContent>
-                {/* Items List */}
                 <div className="space-y-3 mb-4">
                   {cartItems.map((item) => (
                     <div key={item.id} className="flex justify-between items-center text-sm">
@@ -289,7 +270,6 @@ const CheckoutPage = () => {
                 
                 <Separator className="my-4" />
                 
-                {/* Totals */}
                 <div className="space-y-3 mb-4">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Subtotal</span>
@@ -315,7 +295,6 @@ const CheckoutPage = () => {
                   </div>
                 </div>
                 
-                {/* Place Order Button */}
                 <Button 
                   className="w-full mt-4 py-6 text-base bg-foodsnap-orange hover:bg-foodsnap-orange/90 flex items-center justify-center"
                   onClick={handlePlaceOrder}
@@ -338,7 +317,6 @@ const CheckoutPage = () => {
       
       <Footer />
       
-      {/* Login Dialog */}
       <LoginDialog 
         isOpen={loginDialogOpen} 
         onClose={() => navigate('/cart')} 
