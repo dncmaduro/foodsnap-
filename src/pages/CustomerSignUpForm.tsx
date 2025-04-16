@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Phone, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -7,12 +6,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
+import LoginDialog from '@/components/LoginDialog';
 
 const CustomerSignUpForm = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   
   const [formData, setFormData] = useState({
     phoneNumber: '',
@@ -37,7 +38,6 @@ const CustomerSignUpForm = () => {
       [name]: type === 'checkbox' ? checked : value
     });
     
-    // Clear error when field is edited
     if (errors[name as keyof typeof errors]) {
       setErrors({
         ...errors,
@@ -58,7 +58,6 @@ const CustomerSignUpForm = () => {
     let valid = true;
     const newErrors = { ...errors };
     
-    // Phone validation
     if (!formData.phoneNumber.trim()) {
       newErrors.phoneNumber = 'Phone number is required';
       valid = false;
@@ -67,7 +66,6 @@ const CustomerSignUpForm = () => {
       valid = false;
     }
 
-    // Email validation
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
       valid = false;
@@ -76,7 +74,6 @@ const CustomerSignUpForm = () => {
       valid = false;
     }
 
-    // Password validation
     if (!formData.password) {
       newErrors.password = 'Password is required';
       valid = false;
@@ -85,13 +82,11 @@ const CustomerSignUpForm = () => {
       valid = false;
     }
 
-    // Confirm password validation
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
       valid = false;
     }
 
-    // Terms agreement validation
     if (!formData.agreeToTerms) {
       newErrors.agreeToTerms = 'You must agree to the terms';
       valid = false;
@@ -105,18 +100,19 @@ const CustomerSignUpForm = () => {
     e.preventDefault();
     
     if (validateForm()) {
-      // Here you would typically call an API to register the user
       toast({
         title: "Account created!",
         description: "We've created your account for you.",
         duration: 3000
       });
       
-      // Redirect to home or login page after successful registration
-      // For now just log the data and navigate home
       console.log("Form submitted with data:", formData);
       setTimeout(() => navigate('/'), 1500);
     }
+  };
+
+  const handleLoginClick = () => {
+    setLoginDialogOpen(true);
   };
 
   return (
@@ -124,7 +120,6 @@ const CustomerSignUpForm = () => {
       <h2 className="text-2xl font-bold text-center mb-6">Create Your Account</h2>
       
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Phone Number Input */}
         <div className="space-y-2">
           <Label htmlFor="phoneNumber">Phone Number</Label>
           <div className="relative">
@@ -146,7 +141,6 @@ const CustomerSignUpForm = () => {
           )}
         </div>
 
-        {/* Email Input */}
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <div className="relative">
@@ -168,7 +162,6 @@ const CustomerSignUpForm = () => {
           )}
         </div>
 
-        {/* Password Input */}
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
           <div className="relative">
@@ -198,7 +191,6 @@ const CustomerSignUpForm = () => {
           )}
         </div>
 
-        {/* Confirm Password Input */}
         <div className="space-y-2">
           <Label htmlFor="confirmPassword">Confirm Password</Label>
           <div className="relative">
@@ -228,7 +220,6 @@ const CustomerSignUpForm = () => {
           )}
         </div>
 
-        {/* Terms & Privacy */}
         <div className="space-y-2">
           <div className="flex items-start">
             <Checkbox 
@@ -264,7 +255,6 @@ const CustomerSignUpForm = () => {
           )}
         </div>
 
-        {/* Submit Button */}
         <Button 
           type="submit" 
           className="w-full bg-foodsnap-orange hover:bg-foodsnap-orange/90"
@@ -273,18 +263,22 @@ const CustomerSignUpForm = () => {
         </Button>
       </form>
 
-      {/* Alternative Navigation */}
       <div className="text-center mt-4">
         <p className="text-sm text-gray-600">
           Already have an account?{" "}
           <button 
-            onClick={() => navigate('/')} 
+            onClick={handleLoginClick} 
             className="text-foodsnap-orange hover:underline font-medium"
           >
             Login Here
           </button>
         </p>
       </div>
+
+      <LoginDialog 
+        isOpen={loginDialogOpen} 
+        onClose={() => setLoginDialogOpen(false)} 
+      />
     </div>
   );
 };
