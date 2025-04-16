@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import LoginDialog from '@/components/LoginDialog';
 import CustomerSignUpForm from './CustomerSignUpForm';
 
 const SignUpPage = () => {
@@ -14,6 +15,7 @@ const SignUpPage = () => {
   const { toast } = useToast();
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [showCustomerForm, setShowCustomerForm] = useState(false);
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
   const handleTypeSelect = (type: string) => {
     setSelectedType(type);
@@ -28,6 +30,10 @@ const SignUpPage = () => {
         duration: 3000,
       });
     }
+  };
+
+  const handleLoginClick = () => {
+    setLoginDialogOpen(true);
   };
 
   return (
@@ -151,7 +157,7 @@ const SignUpPage = () => {
               <p className="text-center mt-8 text-gray-600">
                 Already have an account? <span 
                   className="text-foodsnap-orange font-medium cursor-pointer" 
-                  onClick={() => navigate('/login')}
+                  onClick={handleLoginClick}
                 >
                   Log in
                 </span>
@@ -176,8 +182,14 @@ const SignUpPage = () => {
       </main>
       
       <Footer />
+      
+      <LoginDialog 
+        isOpen={loginDialogOpen} 
+        onClose={() => setLoginDialogOpen(false)} 
+      />
     </div>
   );
 };
 
 export default SignUpPage;
+
