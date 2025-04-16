@@ -1,6 +1,7 @@
+
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShoppingCart, User, Menu, X, Clock, LogOut } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, X, Clock, LogOut, UserPlus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from '@/contexts/CartContext';
@@ -91,14 +92,24 @@ const Navigation = () => {
                 </Button>
               </div>
             ) : (
-              <Button 
-                variant="ghost" 
-                className="flex items-center space-x-1 text-gray-700 hover:text-foodsnap-orange"
-                onClick={handleLoginClick}
-              >
-                <User size={22} />
-                <span className="hidden lg:inline">Login</span>
-              </Button>
+              <div className="flex items-center space-x-2">
+                <Button 
+                  variant="ghost" 
+                  className="flex items-center space-x-1 text-gray-700 hover:text-foodsnap-orange"
+                  onClick={handleLoginClick}
+                >
+                  <User size={22} />
+                  <span className="hidden lg:inline">Login</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="flex items-center space-x-1 text-foodsnap-orange border-foodsnap-orange hover:bg-foodsnap-orange hover:text-white"
+                  onClick={() => navigate('/signup')}
+                >
+                  <UserPlus size={18} />
+                  <span className="hidden lg:inline">Sign Up</span>
+                </Button>
+              </div>
             )}
           </div>
 
@@ -155,14 +166,24 @@ const Navigation = () => {
                   </Button>
                 </>
               ) : (
-                <Button 
-                  variant="ghost" 
-                  className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center justify-start p-0"
-                  onClick={handleLoginClick}
-                >
-                  <User size={20} className="mr-2" />
-                  <span>Login</span>
-                </Button>
+                <>
+                  <Button 
+                    variant="ghost" 
+                    className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center justify-start p-0"
+                    onClick={handleLoginClick}
+                  >
+                    <User size={20} className="mr-2" />
+                    <span>Login</span>
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center justify-start p-0"
+                    onClick={() => { navigate('/signup'); setIsMenuOpen(false); }}
+                  >
+                    <UserPlus size={20} className="mr-2" />
+                    <span>Sign Up</span>
+                  </Button>
+                </>
               )}
             </div>
           </div>
