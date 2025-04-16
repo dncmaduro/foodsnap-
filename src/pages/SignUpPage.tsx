@@ -149,7 +149,12 @@ const SignUpPage = () => {
               </div>
 
               <p className="text-center mt-8 text-gray-600">
-                Already have an account? <span className="text-foodsnap-orange font-medium cursor-pointer" onClick={() => navigate('/')}>Log in</span>
+                Already have an account? <span 
+                  className="text-foodsnap-orange font-medium cursor-pointer" 
+                  onClick={() => navigate('/login')}
+                >
+                  Log in
+                </span>
               </p>
             </>
           ) : (
