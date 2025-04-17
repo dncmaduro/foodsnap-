@@ -17,6 +17,7 @@ import OrderHistoryPage from "./pages/OrderHistoryPage";
 import OrderDetailsPage from "./pages/OrderDetailsPage";
 import RatingAndReviewPage from "./pages/RatingAndReviewPage";
 import SignUpPage from "./pages/SignUpPage";
+import RestaurantSignUpForm from "./pages/RestaurantSignUpForm";  // Ensure this import exists
 import ProfilePage from "./pages/ProfilePage";
 import RestaurantDetailsForm from "./pages/RestaurantDetailsForm";
 import NotFound from "./pages/NotFound";
@@ -43,6 +44,7 @@ const App = () => (
               <Route path="/order/:id" element={<OrderDetailsPage />} />
               <Route path="/rate-order/:id" element={<RatingAndReviewPage />} />
               <Route path="/signup" element={<SignUpPage />} />
+              <Route path="/signup/restaurant" element={<RestaurantSignUpForm />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/restaurant-details" element={<RestaurantDetailsForm />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

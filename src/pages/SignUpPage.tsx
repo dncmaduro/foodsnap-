@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Store, Truck } from 'lucide-react';
@@ -37,6 +36,11 @@ const SignUpPage = () => {
       setShowCustomerForm(false);
       setShowRestaurantForm(false);
     }
+  };
+
+  const handleRestaurantSignUp = () => {
+    // Directly navigate to the restaurant sign-up page
+    navigate('/signup/restaurant');
   };
 
   const handleLoginClick = () => {
@@ -125,7 +129,7 @@ const SignUpPage = () => {
                   <CardFooter>
                     <Button 
                       className="w-full bg-foodsnap-orange hover:bg-foodsnap-orange/90" 
-                      onClick={() => handleTypeSelect('restaurant')}
+                      onClick={handleRestaurantSignUp}
                     >
                       Sign Up as Restaurant
                     </Button>
