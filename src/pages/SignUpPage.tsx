@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import LoginDialog from '@/components/LoginDialog';
 import CustomerSignUpForm from './CustomerSignUpForm';
 import RestaurantSignUpForm from './RestaurantSignUpForm';
+import DriverSignUpForm from './DriverSignUpForm';
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ const SignUpPage = () => {
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [showCustomerForm, setShowCustomerForm] = useState(false);
   const [showRestaurantForm, setShowRestaurantForm] = useState(false);
+  const [showDriverForm, setShowDriverForm] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
   const handleTypeSelect = (type: string) => {
@@ -25,16 +27,15 @@ const SignUpPage = () => {
     if (type === 'customer') {
       setShowCustomerForm(true);
       setShowRestaurantForm(false);
+      setShowDriverForm(false);
     } else if (type === 'restaurant') {
       setShowRestaurantForm(true);
       setShowCustomerForm(false);
-    } else {
-      // For driver, show toast as this form is not implemented yet
-      toast({
-        title: `Sign up as ${type}`,
-        description: `You selected to sign up as a ${type}. This feature is coming soon!`,
-        duration: 3000,
-      });
+      setShowDriverForm(false);
+    } else if (type === 'driver') {
+      setShowDriverForm(true);
+      setShowCustomerForm(false);
+      setShowRestaurantForm(false);
     }
   };
 
@@ -45,6 +46,7 @@ const SignUpPage = () => {
   const handleBackToOptions = () => {
     setShowCustomerForm(false);
     setShowRestaurantForm(false);
+    setShowDriverForm(false);
     setSelectedType(null);
   };
 
@@ -54,7 +56,7 @@ const SignUpPage = () => {
       
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
-          {!showCustomerForm && !showRestaurantForm ? (
+          {!showCustomerForm && !showRestaurantForm && !showDriverForm ? (
             <>
               <h1 className="text-3xl font-bold text-center mb-2">Join FoodSnap</h1>
               <p className="text-gray-600 text-center mb-8">Choose how you want to use FoodSnap</p>
@@ -186,6 +188,7 @@ const SignUpPage = () => {
               </Button>
               {showCustomerForm && <CustomerSignUpForm />}
               {showRestaurantForm && <RestaurantSignUpForm />}
+              {showDriverForm && <DriverSignUpForm />}
             </>
           )}
         </div>
