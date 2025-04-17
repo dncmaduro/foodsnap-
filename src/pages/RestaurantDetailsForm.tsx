@@ -1,11 +1,12 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Store, MapPin, CreditCard, Upload, Building, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import {
@@ -70,6 +71,8 @@ const FileUpload = ({ label, onChange, accept = "image/*" }: FileUploadProps) =>
 const RestaurantDetailsForm = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, isAuthenticated, isRestaurant } = useAuth();
+  
   const [idCardFront, setIdCardFront] = useState<File | null>(null);
   const [idCardBack, setIdCardBack] = useState<File | null>(null);
   
@@ -95,19 +98,24 @@ const RestaurantDetailsForm = () => {
     idCardBack: ''
   });
 
-  // Load account info from previous step
-  useEffect(() => {
-    const savedData = localStorage.getItem('restaurantSignUpData');
-    if (!savedData) {
-      // If no data exists, redirect back to the first form
+  // Redirect if not authenticated or not a restaurant user
+  React.useEffect(() => {
+    if (!isAuthenticated) {
       toast({
-        title: "Error",
-        description: "Please complete the first step of registration",
+        title: "Authentication Required",
+        description: "Please log in to add your restaurant",
         variant: "destructive"
       });
       navigate('/signup');
+    } else if (!isRestaurant) {
+      toast({
+        title: "Access Denied",
+        description: "Only restaurant owners can access this page",
+        variant: "destructive"
+      });
+      navigate('/');
     }
-  }, [navigate, toast]);
+  }, [isAuthenticated, isRestaurant, navigate, toast]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -202,29 +210,14 @@ const RestaurantDetailsForm = () => {
     e.preventDefault();
     
     if (validateForm()) {
-      // Get account data from previous step
-      const accountData = JSON.parse(localStorage.getItem('restaurantSignUpData') || '{}');
-      
-      // Combine data from both forms
-      const completeFormData = {
-        ...accountData,
-        ...formData,
-        // We don't store the files in localStorage, but in a real app 
-        // you would upload them to a server
-        idCardFrontUploaded: !!idCardFront,
-        idCardBackUploaded: !!idCardBack
-      };
-      
-      console.log("Complete form submitted with data:", completeFormData);
+      // In a real app, you would send this data to your backend
+      console.log("Restaurant details submitted:", formData);
       
       toast({
         title: "Application submitted!",
         description: "We'll review your restaurant application and get back to you soon.",
         duration: 3000
       });
-      
-      // Clear the localStorage data since submission is complete
-      localStorage.removeItem('restaurantSignUpData');
       
       // Redirect to homepage
       setTimeout(() => navigate('/'), 1500);
@@ -237,7 +230,7 @@ const RestaurantDetailsForm = () => {
       
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-bold text-center mb-6">Complete Your Restaurant Registration</h2>
+          <h2 className="text-2xl font-bold text-center mb-6">Add Your Restaurant</h2>
           
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Restaurant Information Section */}
@@ -457,17 +450,7 @@ const RestaurantDetailsForm = () => {
               type="submit" 
               className="w-full bg-foodsnap-orange hover:bg-foodsnap-orange/90"
             >
-              Sign Up & Submit for Verification
-            </Button>
-
-            {/* Back Button */}
-            <Button 
-              type="button" 
-              variant="outline"
-              className="w-full mt-4"
-              onClick={() => navigate('/signup')}
-            >
-              Back to Account Information
+              Submit for Verification
             </Button>
           </form>
         </div>

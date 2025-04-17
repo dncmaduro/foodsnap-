@@ -7,11 +7,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import LoginDialog from '@/components/LoginDialog';
 
 const RestaurantSignUpForm = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
@@ -106,11 +108,25 @@ const RestaurantSignUpForm = () => {
     e.preventDefault();
     
     if (validateForm()) {
-      // Store user data in localStorage for the next step
-      localStorage.setItem('restaurantSignUpData', JSON.stringify(formData));
+      // In a real application, you would make an API call to create a new account
+      // For now we'll simulate account creation with a toast message
       
-      // Navigate to restaurant details form
-      navigate('/restaurant-details');
+      // Mark this account as a restaurant account type
+      localStorage.setItem('accountType', 'restaurant');
+      
+      toast({
+        title: "Account created successfully!",
+        description: "You can now log in to your restaurant account.",
+        duration: 3000
+      });
+      
+      // Auto-login the user
+      login(formData.phoneNumber, formData.password);
+      
+      // Redirect to login dialog or home
+      setTimeout(() => {
+        setLoginDialogOpen(true);
+      }, 1500);
     }
   };
 
@@ -274,7 +290,7 @@ const RestaurantSignUpForm = () => {
           type="submit" 
           className="w-full bg-foodsnap-orange hover:bg-foodsnap-orange/90"
         >
-          Continue to Restaurant Details
+          Create Restaurant Account
         </Button>
       </form>
 
@@ -303,7 +319,7 @@ const RestaurantSignUpForm = () => {
 
       <LoginDialog 
         isOpen={loginDialogOpen} 
-        onClose={() => setLoginDialogOpen(false)} 
+        onClose={() => navigate('/')} 
       />
     </div>
   );

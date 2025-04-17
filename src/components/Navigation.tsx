@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShoppingCart, User, Menu, X, Clock, LogOut, UserPlus } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, X, Clock, LogOut, UserPlus, Store, PlusCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from '@/contexts/CartContext';
@@ -14,7 +14,7 @@ const Navigation = () => {
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const navigate = useNavigate();
   const { totalItems } = useCart();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, isRestaurant, logout } = useAuth();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -37,12 +37,14 @@ const Navigation = () => {
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
+          {/* Logo */}
           <div className="flex-shrink-0">
             <Link to="/" className="flex items-center">
               <span className="text-2xl font-bold text-foodsnap-orange">Food<span className="text-foodsnap-teal">Snap</span></span>
             </Link>
           </div>
 
+          {/* Search Bar */}
           <div className="hidden md:flex items-center justify-center flex-1 max-w-md mx-4">
             <form onSubmit={handleSearch} className="relative w-full">
               <Input 
@@ -58,9 +60,18 @@ const Navigation = () => {
             </form>
           </div>
 
+          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
             <Link to="/" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Home</Link>
             <Link to="/restaurants" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Browse Restaurants</Link>
+            
+            {isAuthenticated && isRestaurant && (
+              <Link to="/restaurant-details" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
+                <PlusCircle size={18} className="mr-1" />
+                Add Restaurant
+              </Link>
+            )}
+            
             <Link to="/order-history" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
               <Clock size={18} className="mr-1" />
               Order History
@@ -117,6 +128,7 @@ const Navigation = () => {
             )}
           </div>
 
+          {/* Mobile Menu Button */}
           <div className="flex md:hidden">
             <Button variant="ghost" onClick={toggleMenu} aria-label="Menu">
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -124,6 +136,7 @@ const Navigation = () => {
           </div>
         </div>
 
+        {/* Mobile Search */}
         <div className="mt-3 flex md:hidden">
           <form onSubmit={handleSearch} className="relative w-full">
             <Input 
@@ -139,11 +152,20 @@ const Navigation = () => {
           </form>
         </div>
 
+        {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden mt-3 pb-3 border-t border-gray-200">
             <div className="flex flex-col space-y-3 pt-3">
               <Link to="/" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Home</Link>
               <Link to="/restaurants" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Browse Restaurants</Link>
+              
+              {isAuthenticated && isRestaurant && (
+                <Link to="/restaurant-details" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
+                  <PlusCircle size={20} className="mr-2" />
+                  <span>Add Restaurant</span>
+                </Link>
+              )}
+              
               <Link to="/order-history" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
                 <Clock size={20} className="mr-2" />
                 <span>Order History</span>
