@@ -8,6 +8,13 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import LoginDialog from '@/components/LoginDialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { 
   Form,
   FormControl,
@@ -84,7 +91,8 @@ const RestaurantSignUpForm = () => {
     password: '',
     confirmPassword: '',
     restaurantName: '',
-    restaurantAddress: '',
+    restaurantDistrict: '',
+    restaurantSpecificAddress: '',
     identificationNumber: '',
     accountHolderName: '',
     bankName: '',
@@ -98,7 +106,8 @@ const RestaurantSignUpForm = () => {
     password: '',
     confirmPassword: '',
     restaurantName: '',
-    restaurantAddress: '',
+    restaurantDistrict: '',
+    restaurantSpecificAddress: '',
     identificationNumber: '',
     accountHolderName: '',
     bankName: '',
@@ -113,6 +122,20 @@ const RestaurantSignUpForm = () => {
     setFormData({
       ...formData,
       [name]: type === 'checkbox' ? checked : value
+    });
+    
+    if (errors[name as keyof typeof errors]) {
+      setErrors({
+        ...errors,
+        [name]: ''
+      });
+    }
+  };
+
+  const handleSelectChange = (value: string, name: string) => {
+    setFormData({
+      ...formData,
+      [name]: value
     });
     
     if (errors[name as keyof typeof errors]) {
@@ -174,8 +197,13 @@ const RestaurantSignUpForm = () => {
       valid = false;
     }
 
-    if (!formData.restaurantAddress.trim()) {
-      newErrors.restaurantAddress = 'Restaurant address is required';
+    if (!formData.restaurantDistrict) {
+      newErrors.restaurantDistrict = 'Please select a district';
+      valid = false;
+    }
+
+    if (!formData.restaurantSpecificAddress.trim()) {
+      newErrors.restaurantSpecificAddress = 'Specific address is required';
       valid = false;
     }
 
@@ -387,25 +415,60 @@ const RestaurantSignUpForm = () => {
               )}
             </div>
 
-            {/* Restaurant Address Input */}
+            {/* Restaurant City (Fixed) */}
             <div className="space-y-2">
-              <Label htmlFor="restaurantAddress">Restaurant Address *</Label>
+              <Label htmlFor="restaurantCity">City</Label>
+              <Input
+                id="restaurantCity"
+                name="restaurantCity"
+                type="text"
+                value="Hà Nội"
+                className="bg-gray-100"
+                readOnly
+              />
+            </div>
+            
+            {/* Restaurant District Dropdown */}
+            <div className="space-y-2">
+              <Label htmlFor="restaurantDistrict">District *</Label>
+              <Select 
+                value={formData.restaurantDistrict} 
+                onValueChange={(value) => handleSelectChange(value, 'restaurantDistrict')}
+              >
+                <SelectTrigger id="restaurantDistrict" className="w-full">
+                  <SelectValue placeholder="Select district" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Cầu Giấy">Cầu Giấy</SelectItem>
+                  <SelectItem value="Đống Đa">Đống Đa</SelectItem>
+                  <SelectItem value="Ba Đình">Ba Đình</SelectItem>
+                  <SelectItem value="Thanh Xuân">Thanh Xuân</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.restaurantDistrict && (
+                <p className="text-sm text-red-500">{errors.restaurantDistrict}</p>
+              )}
+            </div>
+
+            {/* Restaurant Specific Address */}
+            <div className="space-y-2">
+              <Label htmlFor="restaurantSpecificAddress">Specific Address *</Label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                   <MapPin className="h-4 w-4 text-gray-400" />
                 </div>
                 <Input
-                  id="restaurantAddress"
-                  name="restaurantAddress"
+                  id="restaurantSpecificAddress"
+                  name="restaurantSpecificAddress"
                   type="text"
-                  placeholder="Full Restaurant Address"
+                  placeholder="Nhập địa chỉ cụ thể"
                   className="pl-10"
-                  value={formData.restaurantAddress}
+                  value={formData.restaurantSpecificAddress}
                   onChange={handleChange}
                 />
               </div>
-              {errors.restaurantAddress && (
-                <p className="text-sm text-red-500">{errors.restaurantAddress}</p>
+              {errors.restaurantSpecificAddress && (
+                <p className="text-sm text-red-500">{errors.restaurantSpecificAddress}</p>
               )}
             </div>
           </div>
