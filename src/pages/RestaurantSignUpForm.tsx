@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Phone } from 'lucide-react';
@@ -63,7 +62,6 @@ const RestaurantSignUpForm = () => {
     let valid = true;
     const newErrors = { ...errors };
     
-    // Phone validation
     if (!formData.phoneNumber.trim()) {
       newErrors.phoneNumber = 'Phone number is required';
       valid = false;
@@ -72,7 +70,6 @@ const RestaurantSignUpForm = () => {
       valid = false;
     }
 
-    // Email validation
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
       valid = false;
@@ -81,7 +78,6 @@ const RestaurantSignUpForm = () => {
       valid = false;
     }
 
-    // Password validation
     if (!formData.password) {
       newErrors.password = 'Password is required';
       valid = false;
@@ -90,13 +86,11 @@ const RestaurantSignUpForm = () => {
       valid = false;
     }
 
-    // Confirm password validation
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
       valid = false;
     }
 
-    // Terms agreement validation
     if (!formData.agreeToTerms) {
       newErrors.agreeToTerms = 'You must agree to the terms';
       valid = false;
@@ -110,10 +104,6 @@ const RestaurantSignUpForm = () => {
     e.preventDefault();
     
     if (validateForm()) {
-      // In a real application, you would make an API call to create a new account
-      // For now we'll simulate account creation with a toast message
-      
-      // Mark this account as a restaurant account type
       localStorage.setItem('accountType', 'restaurant');
       
       toast({
@@ -122,10 +112,8 @@ const RestaurantSignUpForm = () => {
         duration: 3000
       });
       
-      // Auto-login the user
       login(formData.phoneNumber, formData.password);
       
-      // Redirect to login dialog or home
       setTimeout(() => {
         setLoginDialogOpen(true);
       }, 1500);
@@ -136,20 +124,30 @@ const RestaurantSignUpForm = () => {
     setLoginDialogOpen(true);
   };
 
+  const handleBackToOptions = () => {
+    navigate('/signup');
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation />
       
       <main className="flex-grow container mx-auto px-4 py-8">
+        <Button
+          variant="ghost"
+          className="mb-4"
+          onClick={handleBackToOptions}
+        >
+          ← Back to options
+        </Button>
+
         <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
           <h2 className="text-2xl font-bold text-center mb-6">Create Your Restaurant Account</h2>
           
           <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Account Information Section */}
             <div className="space-y-6">
               <h3 className="text-lg font-semibold border-b pb-2">Account Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Phone Number Input */}
                 <div className="space-y-2">
                   <Label htmlFor="phoneNumber">Phone Number *</Label>
                   <div className="relative">
@@ -171,7 +169,6 @@ const RestaurantSignUpForm = () => {
                   )}
                 </div>
 
-                {/* Email Input */}
                 <div className="space-y-2">
                   <Label htmlFor="email">Email *</Label>
                   <div className="relative">
@@ -193,7 +190,6 @@ const RestaurantSignUpForm = () => {
                   )}
                 </div>
 
-                {/* Password Input */}
                 <div className="space-y-2">
                   <Label htmlFor="password">Password *</Label>
                   <div className="relative">
@@ -223,7 +219,6 @@ const RestaurantSignUpForm = () => {
                   )}
                 </div>
 
-                {/* Confirm Password Input */}
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword">Confirm Password *</Label>
                   <div className="relative">
@@ -255,7 +250,6 @@ const RestaurantSignUpForm = () => {
               </div>
             </div>
 
-            {/* Terms & Privacy */}
             <div className="space-y-2">
               <div className="flex items-start">
                 <Checkbox 
@@ -291,7 +285,6 @@ const RestaurantSignUpForm = () => {
               )}
             </div>
 
-            {/* Continue Button */}
             <Button 
               type="submit" 
               className="w-full bg-foodsnap-orange hover:bg-foodsnap-orange/90"
@@ -300,7 +293,6 @@ const RestaurantSignUpForm = () => {
             </Button>
           </form>
 
-          {/* Alternative Navigation */}
           <div className="text-center mt-6">
             <p className="text-sm text-gray-600">
               Already registered?{" "}
