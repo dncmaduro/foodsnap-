@@ -9,12 +9,14 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from '@/hooks/use-toast';
 import LoginDialog from '@/components/LoginDialog';
 import CustomerSignUpForm from './CustomerSignUpForm';
+import RestaurantSignUpForm from './RestaurantSignUpForm';
 
 const SignUpPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [showCustomerForm, setShowCustomerForm] = useState(false);
+  const [showRestaurantForm, setShowRestaurantForm] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
   const handleTypeSelect = (type: string) => {
@@ -22,8 +24,12 @@ const SignUpPage = () => {
     
     if (type === 'customer') {
       setShowCustomerForm(true);
+      setShowRestaurantForm(false);
+    } else if (type === 'restaurant') {
+      setShowRestaurantForm(true);
+      setShowCustomerForm(false);
     } else {
-      // For restaurant and driver, show toast as these forms are not implemented yet
+      // For driver, show toast as this form is not implemented yet
       toast({
         title: `Sign up as ${type}`,
         description: `You selected to sign up as a ${type}. This feature is coming soon!`,
@@ -36,13 +42,19 @@ const SignUpPage = () => {
     setLoginDialogOpen(true);
   };
 
+  const handleBackToOptions = () => {
+    setShowCustomerForm(false);
+    setShowRestaurantForm(false);
+    setSelectedType(null);
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation />
       
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
-          {!showCustomerForm ? (
+          {!showCustomerForm && !showRestaurantForm ? (
             <>
               <h1 className="text-3xl font-bold text-center mb-2">Join FoodSnap</h1>
               <p className="text-gray-600 text-center mb-8">Choose how you want to use FoodSnap</p>
@@ -168,14 +180,12 @@ const SignUpPage = () => {
               <Button
                 variant="ghost"
                 className="mb-4"
-                onClick={() => {
-                  setShowCustomerForm(false);
-                  setSelectedType(null);
-                }}
+                onClick={handleBackToOptions}
               >
                 ← Back to options
               </Button>
-              <CustomerSignUpForm />
+              {showCustomerForm && <CustomerSignUpForm />}
+              {showRestaurantForm && <RestaurantSignUpForm />}
             </>
           )}
         </div>
@@ -192,4 +202,3 @@ const SignUpPage = () => {
 };
 
 export default SignUpPage;
-
