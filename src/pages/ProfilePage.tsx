@@ -10,11 +10,21 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+// Constants for the district options
+const DISTRICTS = ["Cầu Giấy", "Đống Đa", "Ba Đình", "Thanh Xuân"];
 
 // Mock data for saved addresses
 const initialAddresses = [
-  { id: '1', label: 'Home', address: '123 Main St, Anytown, USA, 12345' },
-  { id: '2', label: 'Work', address: '456 Office Blvd, Business City, USA, 67890' },
+  { id: '1', district: 'Cầu Giấy', specificAddress: 'Số 123, ngõ 45, đường Trung Kính' },
+  { id: '2', district: 'Đống Đa', specificAddress: 'Số 67, ngõ 8, đường Tôn Đức Thắng' },
 ];
 
 const ProfilePage = () => {
@@ -26,7 +36,7 @@ const ProfilePage = () => {
   const [name, setName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [addresses, setAddresses] = useState(initialAddresses);
-  const [newAddress, setNewAddress] = useState({ label: '', address: '' });
+  const [newAddress, setNewAddress] = useState({ district: '', specificAddress: '' });
   const [isAddingAddress, setIsAddingAddress] = useState(false);
   const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
 
@@ -53,10 +63,10 @@ const ProfilePage = () => {
   };
 
   const handleAddAddress = () => {
-    if (newAddress.label.trim() === '' || newAddress.address.trim() === '') {
+    if (newAddress.district.trim() === '' || newAddress.specificAddress.trim() === '') {
       toast({
         title: "Invalid Address",
-        description: "Please enter both label and address.",
+        description: "Please select a district and enter a specific address.",
         variant: "destructive",
       });
       return;
@@ -64,7 +74,7 @@ const ProfilePage = () => {
     
     const newId = Date.now().toString();
     setAddresses([...addresses, { id: newId, ...newAddress }]);
-    setNewAddress({ label: '', address: '' });
+    setNewAddress({ district: '', specificAddress: '' });
     setIsAddingAddress(false);
     
     toast({
@@ -76,7 +86,10 @@ const ProfilePage = () => {
   const handleEditAddress = (id: string) => {
     const addressToEdit = addresses.find(addr => addr.id === id);
     if (addressToEdit) {
-      setNewAddress({ label: addressToEdit.label, address: addressToEdit.address });
+      setNewAddress({ 
+        district: addressToEdit.district, 
+        specificAddress: addressToEdit.specificAddress 
+      });
       setEditingAddressId(id);
       setIsAddingAddress(true);
     }
@@ -86,10 +99,10 @@ const ProfilePage = () => {
     if (editingAddressId) {
       setAddresses(addresses.map(addr => 
         addr.id === editingAddressId 
-          ? { ...addr, label: newAddress.label, address: newAddress.address } 
+          ? { ...addr, district: newAddress.district, specificAddress: newAddress.specificAddress } 
           : addr
       ));
-      setNewAddress({ label: '', address: '' });
+      setNewAddress({ district: '', specificAddress: '' });
       setIsAddingAddress(false);
       setEditingAddressId(null);
       
@@ -211,7 +224,7 @@ const ProfilePage = () => {
                   onClick={() => {
                     setIsAddingAddress(true);
                     setEditingAddressId(null);
-                    setNewAddress({ label: '', address: '' });
+                    setNewAddress({ district: '', specificAddress: '' });
                   }}
                   className="flex items-center"
                 >
@@ -226,28 +239,54 @@ const ProfilePage = () => {
                   <h3 className="font-medium">
                     {editingAddressId ? "Edit Address" : "Add New Address"}
                   </h3>
+                  
+                  {/* City (Fixed) */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Address Label
+                      City
                     </label>
                     <Input 
-                      value={newAddress.label} 
-                      onChange={(e) => setNewAddress({...newAddress, label: e.target.value})}
-                      placeholder="Home, Work, etc."
-                      className="max-w-md mb-2"
+                      value="Hà Nội" 
+                      readOnly
+                      className="max-w-md mb-2 bg-gray-100"
                     />
                   </div>
+                  
+                  {/* District Dropdown */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Full Address
+                      District
+                    </label>
+                    <Select
+                      value={newAddress.district}
+                      onValueChange={(value) => setNewAddress({...newAddress, district: value})}
+                    >
+                      <SelectTrigger className="max-w-md mb-2">
+                        <SelectValue placeholder="Select district" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DISTRICTS.map((district) => (
+                          <SelectItem key={district} value={district}>
+                            {district}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {/* Specific Address */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Specific Address
                     </label>
                     <Input 
-                      value={newAddress.address} 
-                      onChange={(e) => setNewAddress({...newAddress, address: e.target.value})}
-                      placeholder="Street, City, State, Zip"
+                      value={newAddress.specificAddress} 
+                      onChange={(e) => setNewAddress({...newAddress, specificAddress: e.target.value})}
+                      placeholder="Nhập địa chỉ cụ thể"
                       className="max-w-md mb-4"
                     />
                   </div>
+                  
                   <div className="flex space-x-2">
                     {editingAddressId ? (
                       <Button onClick={handleUpdateAddress}>
@@ -263,7 +302,7 @@ const ProfilePage = () => {
                       onClick={() => {
                         setIsAddingAddress(false);
                         setEditingAddressId(null);
-                        setNewAddress({ label: '', address: '' });
+                        setNewAddress({ district: '', specificAddress: '' });
                       }}
                     >
                       Cancel
@@ -286,8 +325,9 @@ const ProfilePage = () => {
                           <div className="flex items-start">
                             <MapPin className="text-gray-400 mt-1 mr-2 flex-shrink-0" size={18} />
                             <div>
-                              <p className="font-medium">{address.label}</p>
-                              <p className="text-sm text-gray-600">{address.address}</p>
+                              <p className="text-sm text-gray-600">Hà Nội</p>
+                              <p className="font-medium">{address.district}</p>
+                              <p className="text-sm text-gray-600">{address.specificAddress}</p>
                             </div>
                           </div>
                           <div className="flex space-x-1">
