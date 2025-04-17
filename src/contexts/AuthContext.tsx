@@ -7,6 +7,7 @@ type User = {
   id: string;
   name: string;
   phone: string;
+  email?: string; // Adding email field
   type: UserType;
 };
 
@@ -16,9 +17,20 @@ type AuthContextType = {
   isRestaurant: boolean;
   login: (phone: string, password: string) => void;
   logout: () => void;
+  // Adding new function to login as test restaurant account
+  loginAsTestRestaurant: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// Mock restaurant account
+const TEST_RESTAURANT_ACCOUNT: User = {
+  id: 'test-restaurant-1',
+  name: 'Test Restaurant',
+  phone: '1234567890',
+  email: 'test@restaurant.com',
+  type: 'restaurant'
+};
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   // Check if there's a saved user in localStorage
@@ -61,6 +73,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('accountType');
   };
 
+  // New function to login as the test restaurant account
+  const loginAsTestRestaurant = () => {
+    setUser(TEST_RESTAURANT_ACCOUNT);
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
@@ -73,7 +90,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated: !!user,
         isRestaurant: user?.type === 'restaurant',
         login,
-        logout
+        logout,
+        loginAsTestRestaurant
       }}
     >
       {children}

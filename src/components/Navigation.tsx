@@ -63,30 +63,44 @@ const Navigation = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
             <Link to="/" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Home</Link>
-            <Link to="/restaurants" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Browse Restaurants</Link>
             
-            {isAuthenticated && isRestaurant && (
-              <Link to="/restaurant-details" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
-                <PlusCircle size={18} className="mr-1" />
-                Add Restaurant
-              </Link>
+            {/* Show different links for restaurant owners */}
+            {isAuthenticated && isRestaurant ? (
+              <>
+                <Link to="/restaurant-dashboard" className="text-gray-700 hover:text-foodsnap-orange transition-colors">
+                  Dashboard
+                </Link>
+                <Link to="/restaurant-details" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
+                  <PlusCircle size={18} className="mr-1" />
+                  Manage Restaurant
+                </Link>
+                <Link to="/restaurant-orders" className="text-gray-700 hover:text-foodsnap-orange transition-colors">
+                  Orders
+                </Link>
+              </>
+            ) : (
+              <Link to="/restaurants" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Browse Restaurants</Link>
             )}
             
-            <Link to="/order-history" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
-              <Clock size={18} className="mr-1" />
-              Order History
-            </Link>
-            
-            <div className="relative">
-              <Link to="/cart" className="text-gray-700 hover:text-foodsnap-orange transition-colors">
-                <ShoppingCart size={22} />
-                {totalItems > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-foodsnap-orange text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                    {totalItems}
-                  </span>
-                )}
-              </Link>
-            </div>
+            {!isRestaurant && (
+              <>
+                <Link to="/order-history" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
+                  <Clock size={18} className="mr-1" />
+                  Order History
+                </Link>
+                
+                <div className="relative">
+                  <Link to="/cart" className="text-gray-700 hover:text-foodsnap-orange transition-colors">
+                    <ShoppingCart size={22} />
+                    {totalItems > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-foodsnap-orange text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                        {totalItems}
+                      </span>
+                    )}
+                  </Link>
+                </div>
+              </>
+            )}
             
             {isAuthenticated ? (
               <div className="flex items-center space-x-2">
@@ -97,6 +111,9 @@ const Navigation = () => {
                 >
                   <User size={22} />
                   <span className="hidden lg:inline">{user?.name}</span>
+                  {isRestaurant && (
+                    <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded ml-1">Restaurant</span>
+                  )}
                 </Button>
                 <Button 
                   variant="ghost" 
@@ -157,30 +174,47 @@ const Navigation = () => {
           <div className="md:hidden mt-3 pb-3 border-t border-gray-200">
             <div className="flex flex-col space-y-3 pt-3">
               <Link to="/" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Home</Link>
-              <Link to="/restaurants" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Browse Restaurants</Link>
               
-              {isAuthenticated && isRestaurant && (
-                <Link to="/restaurant-details" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
-                  <PlusCircle size={20} className="mr-2" />
-                  <span>Add Restaurant</span>
-                </Link>
+              {/* Show different links for restaurant owners in mobile menu */}
+              {isAuthenticated && isRestaurant ? (
+                <>
+                  <Link to="/restaurant-dashboard" className="text-gray-700 hover:text-foodsnap-orange transition-colors">
+                    Dashboard
+                  </Link>
+                  <Link to="/restaurant-details" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
+                    <PlusCircle size={20} className="mr-2" />
+                    <span>Manage Restaurant</span>
+                  </Link>
+                  <Link to="/restaurant-orders" className="text-gray-700 hover:text-foodsnap-orange transition-colors">
+                    Orders
+                  </Link>
+                </>
+              ) : (
+                <Link to="/restaurants" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Browse Restaurants</Link>
               )}
               
-              <Link to="/order-history" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
-                <Clock size={20} className="mr-2" />
-                <span>Order History</span>
-              </Link>
-              
-              <Link to="/cart" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
-                <ShoppingCart size={20} className="mr-2" />
-                <span>Cart {totalItems > 0 && `(${totalItems})`}</span>
-              </Link>
+              {!isRestaurant && (
+                <>
+                  <Link to="/order-history" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
+                    <Clock size={20} className="mr-2" />
+                    <span>Order History</span>
+                  </Link>
+                  
+                  <Link to="/cart" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
+                    <ShoppingCart size={20} className="mr-2" />
+                    <span>Cart {totalItems > 0 && `(${totalItems})`}</span>
+                  </Link>
+                </>
+              )}
               
               {isAuthenticated ? (
                 <>
                   <Link to="/profile" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
                     <User size={20} className="mr-2" />
                     <span>{user?.name}</span>
+                    {isRestaurant && (
+                      <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded ml-1">Restaurant</span>
+                    )}
                   </Link>
                   <Button 
                     variant="ghost" 
