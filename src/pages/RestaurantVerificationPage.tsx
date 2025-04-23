@@ -91,8 +91,7 @@ const RestaurantVerificationPage = () => {
           {restaurants.map((restaurant) => (
             <Card 
               key={restaurant.id}
-              className="hover:shadow-md transition-shadow cursor-pointer"
-              onClick={() => handleViewDetails(restaurant.id)}
+              className="hover:shadow-md transition-shadow"
             >
               <CardHeader className="pb-2">
                 <CardTitle>{restaurant.name}</CardTitle>
@@ -112,6 +111,14 @@ const RestaurantVerificationPage = () => {
                     <Badge className={`${getStatusColor(restaurant.status)} capitalize`}>
                       {restaurant.status}
                     </Badge>
+                    {restaurant.status === 'approved' && (
+                      <Button 
+                        onClick={() => handleViewDetails(restaurant.id)}
+                        className="ml-4 bg-foodsnap-teal hover:bg-foodsnap-teal/90"
+                      >
+                        View Dashboard
+                      </Button>
+                    )}
                   </div>
                 </div>
               </CardContent>
