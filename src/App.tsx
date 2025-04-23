@@ -26,14 +26,15 @@ import RestaurantMenu from "./pages/RestaurantMenu";
 
 const queryClient = new QueryClient();
 
+// The key fix is moving BrowserRouter to wrap everything, including TooltipProvider
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <CartProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
+    <BrowserRouter>
+      <AuthProvider>
+        <CartProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/search" element={<SearchResults />} />
@@ -53,10 +54,10 @@ const App = () => (
               <Route path="/restaurant-menu" element={<RestaurantMenu />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </CartProvider>
-    </AuthProvider>
+          </TooltipProvider>
+        </CartProvider>
+      </AuthProvider>
+    </BrowserRouter>
   </QueryClientProvider>
 );
 
