@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShoppingCart, User, Menu, X, Clock, LogOut, UserPlus, Store, PlusCircle } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Search, ShoppingCart, User, Menu, X, Clock, LogOut, UserPlus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from '@/contexts/CartContext';
@@ -13,8 +13,20 @@ const Navigation = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { totalItems } = useCart();
   const { user, isAuthenticated, isRestaurant, logout } = useAuth();
+
+  const isProfilePage = location.pathname === '/profile';
+
+  const handleLogoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isRestaurant) {
+      navigate('/profile');
+    } else {
+      navigate('/');
+    }
+  };
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -39,56 +51,40 @@ const Navigation = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link to="/" className="flex items-center">
+            <a href="#" onClick={handleLogoClick} className="flex items-center">
               <span className="text-2xl font-bold text-foodsnap-orange">Food<span className="text-foodsnap-teal">Snap</span></span>
-            </Link>
+            </a>
           </div>
 
-          {/* Search Bar */}
-          <div className="hidden md:flex items-center justify-center flex-1 max-w-md mx-4">
-            <form onSubmit={handleSearch} className="relative w-full">
-              <Input 
-                type="text" 
-                placeholder="Search for restaurants or dishes" 
-                className="pr-10 border-gray-300 focus:border-foodsnap-teal"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <button type="submit" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-foodsnap-orange">
-                <Search size={18} />
-              </button>
-            </form>
-          </div>
+          {/* Search Bar - Hide on profile page for restaurant users */}
+          {(!isRestaurant || !isProfilePage) && (
+            <div className="hidden md:flex items-center justify-center flex-1 max-w-md mx-4">
+              <form onSubmit={handleSearch} className="relative w-full">
+                <Input 
+                  type="text" 
+                  placeholder="Search for restaurants or dishes" 
+                  className="pr-10 border-gray-300 focus:border-foodsnap-teal"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <button type="submit" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-foodsnap-orange">
+                  <Search size={18} />
+                </button>
+              </form>
+            </div>
+          )}
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
-            <Link to="/" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Home</Link>
-            
-            {/* Show different links for restaurant owners */}
-            {isAuthenticated && isRestaurant ? (
+            {/* Show different links based on user type and page */}
+            {!isProfilePage && !isRestaurant && (
               <>
-                <Link to="/restaurant-dashboard" className="text-gray-700 hover:text-foodsnap-orange transition-colors">
-                  Dashboard
-                </Link>
-                <Link to="/restaurant-details" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
-                  <PlusCircle size={18} className="mr-1" />
-                  Manage Restaurant
-                </Link>
-                <Link to="/restaurant-orders" className="text-gray-700 hover:text-foodsnap-orange transition-colors">
-                  Orders
-                </Link>
-              </>
-            ) : (
-              <Link to="/restaurants" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Browse Restaurants</Link>
-            )}
-            
-            {!isRestaurant && (
-              <>
+                <Link to="/" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Home</Link>
+                <Link to="/restaurants" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Browse Restaurants</Link>
                 <Link to="/order-history" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
                   <Clock size={18} className="mr-1" />
                   Order History
                 </Link>
-                
                 <div className="relative">
                   <Link to="/cart" className="text-gray-700 hover:text-foodsnap-orange transition-colors">
                     <ShoppingCart size={22} />
@@ -153,53 +149,36 @@ const Navigation = () => {
           </div>
         </div>
 
-        {/* Mobile Search */}
-        <div className="mt-3 flex md:hidden">
-          <form onSubmit={handleSearch} className="relative w-full">
-            <Input 
-              type="text" 
-              placeholder="Search for food or restaurants" 
-              className="pr-10 border-gray-300"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button type="submit" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-foodsnap-orange">
-              <Search size={18} />
-            </button>
-          </form>
-        </div>
+        {/* Mobile Search - Hide on profile page for restaurant users */}
+        {(!isRestaurant || !isProfilePage) && (
+          <div className="mt-3 flex md:hidden">
+            <form onSubmit={handleSearch} className="relative w-full">
+              <Input 
+                type="text" 
+                placeholder="Search for food or restaurants" 
+                className="pr-10 border-gray-300"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <button type="submit" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-foodsnap-orange">
+                <Search size={18} />
+              </button>
+            </form>
+          </div>
+        )}
 
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden mt-3 pb-3 border-t border-gray-200">
             <div className="flex flex-col space-y-3 pt-3">
-              <Link to="/" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Home</Link>
-              
-              {/* Show different links for restaurant owners in mobile menu */}
-              {isAuthenticated && isRestaurant ? (
+              {!isProfilePage && !isRestaurant && (
                 <>
-                  <Link to="/restaurant-dashboard" className="text-gray-700 hover:text-foodsnap-orange transition-colors">
-                    Dashboard
-                  </Link>
-                  <Link to="/restaurant-details" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
-                    <PlusCircle size={20} className="mr-2" />
-                    <span>Manage Restaurant</span>
-                  </Link>
-                  <Link to="/restaurant-orders" className="text-gray-700 hover:text-foodsnap-orange transition-colors">
-                    Orders
-                  </Link>
-                </>
-              ) : (
-                <Link to="/restaurants" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Browse Restaurants</Link>
-              )}
-              
-              {!isRestaurant && (
-                <>
+                  <Link to="/" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Home</Link>
+                  <Link to="/restaurants" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Browse Restaurants</Link>
                   <Link to="/order-history" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
                     <Clock size={20} className="mr-2" />
                     <span>Order History</span>
                   </Link>
-                  
                   <Link to="/cart" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
                     <ShoppingCart size={20} className="mr-2" />
                     <span>Cart {totalItems > 0 && `(${totalItems})`}</span>
