@@ -144,6 +144,26 @@ const ProfilePage = () => {
         <div className="max-w-3xl mx-auto">
           <h1 className="text-3xl font-bold mb-6">My Profile</h1>
           
+          {/* Restaurant Verification Link for Restaurant Users */}
+          {user?.type === 'restaurant' && (
+            <Card className="mb-8">
+              <CardContent className="p-6">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2">Restaurant Management</h3>
+                    <p className="text-sm text-gray-600">View and manage your restaurant verification status</p>
+                  </div>
+                  <Button 
+                    onClick={() => navigate('/restaurant-verification')}
+                    className="bg-foodsnap-orange hover:bg-foodsnap-orange/90"
+                  >
+                    View Restaurants
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          
           {/* User Information Section */}
           <Card className="mb-8">
             <CardHeader>
