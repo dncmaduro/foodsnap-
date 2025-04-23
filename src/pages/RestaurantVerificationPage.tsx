@@ -1,10 +1,10 @@
-
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Info } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type Restaurant = {
   id: string;
@@ -38,7 +38,7 @@ const getStatusColor = (status: Restaurant['status']) => {
 
 const RestaurantVerificationPage = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const [restaurants] = useState<Restaurant[]>(mockRestaurants);
 
   useEffect(() => {
@@ -51,6 +51,11 @@ const RestaurantVerificationPage = () => {
     if (restaurants.find(r => r.id === restaurantId)?.status === 'approved') {
       navigate(`/restaurant-dashboard`);
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
   };
 
   return (
@@ -67,12 +72,13 @@ const RestaurantVerificationPage = () => {
             <Link to="/" className="text-gray-600 hover:text-foodsnap-orange transition-colors">
               Home
             </Link>
-            <button 
-              onClick={() => { /* Add logout logic */ }}
+            <Button 
+              variant="ghost"
+              onClick={handleLogout}
               className="text-gray-600 hover:text-foodsnap-orange transition-colors"
             >
               Logout
-            </button>
+            </Button>
           </nav>
         </div>
       </header>
