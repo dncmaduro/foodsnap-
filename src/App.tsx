@@ -23,6 +23,7 @@ import NotFound from "./pages/NotFound";
 import RestaurantDashboard from "./pages/RestaurantDashboard";
 import RestaurantMenu from "./pages/RestaurantMenu";
 import RestaurantVerificationPage from "./pages/RestaurantVerificationPage";
+import RestaurantOrders from "./pages/RestaurantOrders";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,7 @@ const App = () => (
               <Route path="/restaurant-dashboard" element={<RestaurantDashboard />} />
               <Route path="/restaurant-menu" element={<RestaurantMenu />} />
               <Route path="/restaurant-verification" element={<RestaurantVerificationPage />} />
+              <Route path="/restaurant-orders" element={<RestaurantOrders />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </TooltipProvider>

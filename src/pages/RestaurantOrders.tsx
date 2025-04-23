@@ -1,17 +1,14 @@
 
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import DashboardStats from "@/components/restaurant/DashboardStats";
-import DashboardActions from "@/components/restaurant/DashboardActions";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { RestaurantSidebar } from "@/components/restaurant/RestaurantSidebar";
 
-const RestaurantDashboard = () => {
+const RestaurantOrders = () => {
   const { isAuthenticated, isRestaurant } = useAuth();
 
-  // Redirect if not authenticated or not a restaurant
   if (!isAuthenticated || !isRestaurant) {
     return <Navigate to="/" replace />;
   }
@@ -25,14 +22,16 @@ const RestaurantDashboard = () => {
           <RestaurantSidebar />
           <main className="flex-1 p-8 overflow-auto">
             <div className="mb-8">
-              <h1 className="text-3xl font-bold mb-2">Restaurant Dashboard</h1>
+              <h1 className="text-3xl font-bold mb-2">Restaurant Orders</h1>
               <p className="text-muted-foreground">
-                Manage your restaurant operations and track performance
+                View and manage your restaurant orders
               </p>
             </div>
 
-            <DashboardStats />
-            <DashboardActions />
+            {/* Orders content will be implemented later */}
+            <div className="text-center py-12">
+              <p className="text-gray-500">Orders management coming soon</p>
+            </div>
           </main>
         </div>
       </SidebarProvider>
@@ -42,4 +41,4 @@ const RestaurantDashboard = () => {
   );
 };
 
-export default RestaurantDashboard;
+export default RestaurantOrders;
