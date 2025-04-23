@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -23,10 +22,10 @@ import RestaurantDetailsForm from "./pages/RestaurantDetailsForm";
 import NotFound from "./pages/NotFound";
 import RestaurantDashboard from "./pages/RestaurantDashboard";
 import RestaurantMenu from "./pages/RestaurantMenu";
+import RestaurantVerificationPage from "./pages/RestaurantVerificationPage";
 
 const queryClient = new QueryClient();
 
-// The key fix is moving BrowserRouter to wrap everything, including TooltipProvider
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
@@ -52,6 +51,7 @@ const App = () => (
               <Route path="/restaurant-details" element={<RestaurantDetailsForm />} />
               <Route path="/restaurant-dashboard" element={<RestaurantDashboard />} />
               <Route path="/restaurant-menu" element={<RestaurantMenu />} />
+              <Route path="/restaurant-verification" element={<RestaurantVerificationPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </TooltipProvider>
