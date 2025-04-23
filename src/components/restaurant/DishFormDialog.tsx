@@ -47,14 +47,21 @@ const DishFormDialog = ({
 }: DishFormDialogProps) => {
   const [formData, setFormData] = useState<DishFormData>(initialFormData);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
 
   useEffect(() => {
     if (initialData) {
       setFormData(initialData);
+      if (initialData.image) {
+        setPreviewUrl(initialData.image);
+      }
     } else {
       setFormData(initialFormData);
+      setPreviewUrl("");
     }
     setErrors({});
+    setSelectedFile(null);
   }, [initialData, isOpen]);
 
   const handleChange = (
@@ -62,9 +69,22 @@ const DishFormDialog = ({
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error when field is changed
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.type.startsWith('image/')) {
+        setSelectedFile(file);
+        const url = URL.createObjectURL(file);
+        setPreviewUrl(url);
+        setFormData(prev => ({ ...prev, image: url }));
+      } else {
+        setErrors(prev => ({ ...prev, image: "Please select an image file" }));
+      }
     }
   };
 
@@ -91,10 +111,15 @@ const DishFormDialog = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (validateForm()) {
       onSave(formData);
     }
+  };
+
+  const removeImage = () => {
+    setSelectedFile(null);
+    setPreviewUrl("");
+    setFormData(prev => ({ ...prev, image: "" }));
   };
 
   return (
@@ -153,14 +178,52 @@ const DishFormDialog = ({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="image">Image URL</Label>
-              <Input
-                id="image"
-                name="image"
-                value={formData.image}
-                onChange={handleChange}
-                placeholder="https://example.com/image.jpg"
-              />
+              <Label htmlFor="image">Dish Image</Label>
+              <div className="flex flex-col gap-4">
+                {previewUrl ? (
+                  <div className="relative w-full h-48">
+                    <img
+                      src={previewUrl}
+                      alt="Dish preview"
+                      className="w-full h-full object-cover rounded-md"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      className="absolute top-2 right-2"
+                      onClick={removeImage}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center w-full">
+                    <label
+                      htmlFor="image-upload"
+                      className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                    >
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <Image className="w-8 h-8 mb-4 text-gray-500" />
+                        <p className="mb-2 text-sm text-gray-500">
+                          <span className="font-semibold">Click to upload</span> or drag and drop
+                        </p>
+                        <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                      </div>
+                      <Input
+                        id="image-upload"
+                        type="file"
+                        className="hidden"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                      />
+                    </label>
+                  </div>
+                )}
+                {errors.image && (
+                  <p className="text-xs text-red-500">{errors.image}</p>
+                )}
+              </div>
             </div>
 
             <div className="flex items-center space-x-2">
