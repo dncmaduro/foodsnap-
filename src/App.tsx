@@ -51,6 +51,8 @@ const App = () => (
               <Route path="/restaurant-details" element={<RestaurantDetailsForm />} />
               <Route path="/restaurant-dashboard" element={<RestaurantDashboard />} />
               <Route path="/restaurant-menu" element={<RestaurantMenu />} />
+              <Route path="/restaurant-orders" element={<div>Restaurant Orders</div>} />
+              <Route path="/restaurant-info" element={<div>Restaurant Information</div>} />
               <Route path="/restaurant-verification" element={<RestaurantVerificationPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
