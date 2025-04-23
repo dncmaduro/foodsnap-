@@ -1,6 +1,7 @@
+
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Menu as MenuIcon, ShoppingCart, Info, Search, User, Menu, X, LogOut, UserPlus, Clock } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, X, Clock, LogOut, UserPlus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from '@/contexts/CartContext';
@@ -17,7 +18,6 @@ const Navigation = () => {
   const { user, isAuthenticated, isRestaurant, logout } = useAuth();
 
   const isProfilePage = location.pathname === '/profile';
-  const isRestaurantManagement = location.pathname.includes('/restaurant-');
 
   const handleLogoClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -45,30 +45,6 @@ const Navigation = () => {
     logout();
   };
 
-  // Restaurant management navigation items
-  const restaurantNavItems = [
-    {
-      title: "Dashboard",
-      path: "/restaurant-dashboard",
-      icon: LayoutDashboard
-    },
-    {
-      title: "Menu",
-      path: "/restaurant-menu",
-      icon: MenuIcon
-    },
-    {
-      title: "Orders",
-      path: "/restaurant-orders",
-      icon: ShoppingCart
-    },
-    {
-      title: "Information",
-      path: "/restaurant-info",
-      icon: Info
-    }
-  ];
-
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
       <div className="container mx-auto px-4 py-3">
@@ -80,28 +56,29 @@ const Navigation = () => {
             </a>
           </div>
 
-          {/* Restaurant Management Navigation - Desktop */}
-          {isRestaurant && isRestaurantManagement && (
-            <div className="hidden md:flex items-center space-x-6 flex-1 justify-center">
-              {restaurantNavItems.map((item) => (
-                <Link
-                  key={item.title}
-                  to={item.path}
-                  className={`flex items-center space-x-2 text-gray-700 hover:text-foodsnap-orange transition-colors ${
-                    location.pathname === item.path ? 'text-foodsnap-orange' : ''
-                  }`}
-                >
-                  <item.icon size={20} />
-                  <span>{item.title}</span>
-                </Link>
-              ))}
+          {/* Search Bar - Hide on profile page for restaurant users */}
+          {(!isRestaurant || !isProfilePage) && (
+            <div className="hidden md:flex items-center justify-center flex-1 max-w-md mx-4">
+              <form onSubmit={handleSearch} className="relative w-full">
+                <Input 
+                  type="text" 
+                  placeholder="Search for restaurants or dishes" 
+                  className="pr-10 border-gray-300 focus:border-foodsnap-teal"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <button type="submit" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-foodsnap-orange">
+                  <Search size={18} />
+                </button>
+              </form>
             </div>
           )}
 
-          {/* Regular Navigation - Desktop */}
-          {(!isRestaurant || !isRestaurantManagement) && !isProfilePage && (
-            <>
-              <div className="hidden md:flex items-center space-x-6">
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-6">
+            {/* Show different links based on user type and page */}
+            {!isProfilePage && !isRestaurant && (
+              <>
                 <Link to="/" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Home</Link>
                 <Link to="/restaurants" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Browse Restaurants</Link>
                 <Link to="/order-history" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
@@ -118,12 +95,9 @@ const Navigation = () => {
                     )}
                   </Link>
                 </div>
-              </div>
-            </>
-          )}
-
-          {/* User Actions - Desktop */}
-          <div className="hidden md:flex items-center space-x-2">
+              </>
+            )}
+            
             {isAuthenticated ? (
               <div className="flex items-center space-x-2">
                 <Button 
@@ -197,27 +171,7 @@ const Navigation = () => {
         {isMenuOpen && (
           <div className="md:hidden mt-3 pb-3 border-t border-gray-200">
             <div className="flex flex-col space-y-3 pt-3">
-              {/* Restaurant Management Navigation - Mobile */}
-              {isRestaurant && isRestaurantManagement && (
-                <>
-                  {restaurantNavItems.map((item) => (
-                    <Link
-                      key={item.title}
-                      to={item.path}
-                      className={`flex items-center space-x-2 text-gray-700 hover:text-foodsnap-orange transition-colors ${
-                        location.pathname === item.path ? 'text-foodsnap-orange' : ''
-                      }`}
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <item.icon size={20} />
-                      <span>{item.title}</span>
-                    </Link>
-                  ))}
-                </>
-              )}
-
-              {/* Regular Navigation - Mobile */}
-              {(!isRestaurant || !isRestaurantManagement) && !isProfilePage && (
+              {!isProfilePage && !isRestaurant && (
                 <>
                   <Link to="/" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Home</Link>
                   <Link to="/restaurants" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Browse Restaurants</Link>
@@ -231,8 +185,7 @@ const Navigation = () => {
                   </Link>
                 </>
               )}
-
-              {/* User Actions - Mobile */}
+              
               {isAuthenticated ? (
                 <>
                   <Link to="/profile" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
