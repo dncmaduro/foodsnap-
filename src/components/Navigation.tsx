@@ -45,6 +45,7 @@ const Navigation = () => {
     logout();
   };
 
+  // Restaurant management navigation items
   const restaurantNavItems = [
     {
       title: "Dashboard",
@@ -72,12 +73,14 @@ const Navigation = () => {
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
+          {/* Logo */}
           <div className="flex-shrink-0">
             <a href="#" onClick={handleLogoClick} className="flex items-center">
               <span className="text-2xl font-bold text-foodsnap-orange">Food<span className="text-foodsnap-teal">Snap</span></span>
             </a>
           </div>
 
+          {/* Restaurant Management Navigation - Desktop */}
           {isRestaurant && isRestaurantManagement && (
             <div className="hidden md:flex items-center space-x-6 flex-1 justify-center">
               {restaurantNavItems.map((item) => (
@@ -95,7 +98,8 @@ const Navigation = () => {
             </div>
           )}
 
-          {!isRestaurant || (!isRestaurantManagement && !isProfilePage) && (
+          {/* Regular Navigation - Desktop */}
+          {(!isRestaurant || !isRestaurantManagement) && !isProfilePage && (
             <>
               <div className="hidden md:flex items-center space-x-6">
                 <Link to="/" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Home</Link>
@@ -118,6 +122,7 @@ const Navigation = () => {
             </>
           )}
 
+          {/* User Actions - Desktop */}
           <div className="hidden md:flex items-center space-x-2">
             {isAuthenticated ? (
               <div className="flex items-center space-x-2">
@@ -162,6 +167,7 @@ const Navigation = () => {
             )}
           </div>
 
+          {/* Mobile Menu Button */}
           <div className="flex md:hidden">
             <Button variant="ghost" onClick={toggleMenu} aria-label="Menu">
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -169,7 +175,8 @@ const Navigation = () => {
           </div>
         </div>
 
-        {!isRestaurant || (!isRestaurantManagement && !isProfilePage) ? (
+        {/* Mobile Search - Hide on profile page for restaurant users */}
+        {(!isRestaurant || !isProfilePage) && (
           <div className="mt-3 flex md:hidden">
             <form onSubmit={handleSearch} className="relative w-full">
               <Input 
@@ -184,11 +191,13 @@ const Navigation = () => {
               </button>
             </form>
           </div>
-        ) : null}
+        )}
 
+        {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden mt-3 pb-3 border-t border-gray-200">
             <div className="flex flex-col space-y-3 pt-3">
+              {/* Restaurant Management Navigation - Mobile */}
               {isRestaurant && isRestaurantManagement && (
                 <>
                   {restaurantNavItems.map((item) => (
@@ -207,6 +216,7 @@ const Navigation = () => {
                 </>
               )}
 
+              {/* Regular Navigation - Mobile */}
               {(!isRestaurant || !isRestaurantManagement) && !isProfilePage && (
                 <>
                   <Link to="/" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Home</Link>
@@ -222,6 +232,7 @@ const Navigation = () => {
                 </>
               )}
 
+              {/* User Actions - Mobile */}
               {isAuthenticated ? (
                 <>
                   <Link to="/profile" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
