@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -14,14 +15,14 @@ type Restaurant = {
   status: 'pending' | 'approved' | 'rejected';
 };
 
-// Mock data - replace with actual API call
+// Updated mock data with an approved restaurant
 const mockRestaurants: Restaurant[] = [
   {
     id: "1",
     name: "Test Restaurant",
     address: "123 Test St, Test City, TS 12345",
     submittedDate: "2024-04-20",
-    status: "pending"
+    status: "approved"  // Changed from 'pending' to 'approved'
   }
 ];
 
