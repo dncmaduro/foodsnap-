@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,10 +16,11 @@ import OrderHistoryPage from "./pages/OrderHistoryPage";
 import OrderDetailsPage from "./pages/OrderDetailsPage";
 import RatingAndReviewPage from "./pages/RatingAndReviewPage";
 import SignUpPage from "./pages/SignUpPage";
-import RestaurantSignUpForm from "./pages/RestaurantSignUpForm";  // Ensure this import exists
+import RestaurantSignUpForm from "./pages/RestaurantSignUpForm";
 import ProfilePage from "./pages/ProfilePage";
 import RestaurantDetailsForm from "./pages/RestaurantDetailsForm";
 import NotFound from "./pages/NotFound";
+import RestaurantDashboard from "./pages/RestaurantDashboard";
 
 const queryClient = new QueryClient();
 
@@ -47,7 +47,7 @@ const App = () => (
               <Route path="/signup/restaurant" element={<RestaurantSignUpForm />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/restaurant-details" element={<RestaurantDetailsForm />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="/restaurant-dashboard" element={<RestaurantDashboard />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
