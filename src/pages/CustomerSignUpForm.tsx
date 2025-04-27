@@ -16,6 +16,7 @@ const CustomerSignUpForm = () => {
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   
   const [formData, setFormData] = useState({
+    username: '',
     phoneNumber: '',
     email: '',
     password: '',
@@ -24,6 +25,7 @@ const CustomerSignUpForm = () => {
   });
 
   const [errors, setErrors] = useState({
+    username: '',
     phoneNumber: '',
     email: '',
     password: '',
@@ -58,6 +60,14 @@ const CustomerSignUpForm = () => {
     let valid = true;
     const newErrors = { ...errors };
     
+    if (!formData.username.trim()) {
+      newErrors.username = 'Username is required';
+      valid = false;
+    } else if (formData.username.trim().length < 2) {
+      newErrors.username = 'Username must be at least 2 characters';
+      valid = false;
+    }
+
     if (!formData.phoneNumber.trim()) {
       newErrors.phoneNumber = 'Phone number is required';
       valid = false;
@@ -120,6 +130,27 @@ const CustomerSignUpForm = () => {
       <h2 className="text-2xl font-bold text-center mb-6">Create Your Account</h2>
       
       <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="username">Username</Label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <User className="h-4 w-4 text-gray-400" />
+            </div>
+            <Input
+              id="username"
+              name="username"
+              type="text"
+              placeholder="Enter your username"
+              className="pl-10"
+              value={formData.username}
+              onChange={handleChange}
+            />
+          </div>
+          {errors.username && (
+            <p className="text-sm text-red-500">{errors.username}</p>
+          )}
+        </div>
+
         <div className="space-y-2">
           <Label htmlFor="phoneNumber">Phone Number</Label>
           <div className="relative">

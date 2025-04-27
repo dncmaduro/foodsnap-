@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Phone } from 'lucide-react';
+import { Eye, EyeOff, Mail, Phone, User } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,7 @@ const RestaurantSignUpForm = () => {
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   
   const [formData, setFormData] = useState({
+    username: '',
     phoneNumber: '',
     email: '',
     password: '',
@@ -28,6 +29,7 @@ const RestaurantSignUpForm = () => {
   });
 
   const [errors, setErrors] = useState({
+    username: '',
     phoneNumber: '',
     email: '',
     password: '',
@@ -62,6 +64,14 @@ const RestaurantSignUpForm = () => {
     let valid = true;
     const newErrors = { ...errors };
     
+    if (!formData.username.trim()) {
+      newErrors.username = 'Username is required';
+      valid = false;
+    } else if (formData.username.trim().length < 2) {
+      newErrors.username = 'Username must be at least 2 characters';
+      valid = false;
+    }
+
     if (!formData.phoneNumber.trim()) {
       newErrors.phoneNumber = 'Phone number is required';
       valid = false;
@@ -148,6 +158,27 @@ const RestaurantSignUpForm = () => {
             <div className="space-y-6">
               <h3 className="text-lg font-semibold border-b pb-2">Account Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="username">Username *</Label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                      <User className="h-4 w-4 text-gray-400" />
+                    </div>
+                    <Input
+                      id="username"
+                      name="username"
+                      type="text"
+                      placeholder="Enter username"
+                      className="pl-10"
+                      value={formData.username}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  {errors.username && (
+                    <p className="text-sm text-red-500">{errors.username}</p>
+                  )}
+                </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="phoneNumber">Phone Number *</Label>
                   <div className="relative">

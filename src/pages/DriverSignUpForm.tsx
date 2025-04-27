@@ -1,7 +1,6 @@
-
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Eye, EyeOff, Upload, Check, Phone, Mail, Lock, IdCard, FileImage } from 'lucide-react';
+import { Eye, EyeOff, Upload, Check, Phone, Mail, Lock, IdCard, FileImage, User } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useNavigate } from 'react-router-dom';
@@ -18,6 +17,8 @@ import LoginDialog from '@/components/LoginDialog';
 const phoneRegex = /^\d{10,}$/;
 
 const formSchema = z.object({
+  username: z.string()
+    .min(2, "Username must be at least 2 characters"),
   phone: z.string()
     .min(10, "Phone number must be at least 10 digits")
     .regex(phoneRegex, "Please enter a valid phone number"),
@@ -56,6 +57,7 @@ const DriverSignUpForm = () => {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      username: "",
       phone: "",
       email: "",
       password: "",
@@ -73,8 +75,6 @@ const DriverSignUpForm = () => {
       duration: 5000,
     });
     
-    // In a real app, you would send this data to your backend
-    // For now, we'll just redirect to the home page after a short delay
     setTimeout(() => {
       navigate('/');
     }, 2000);
@@ -110,10 +110,30 @@ const DriverSignUpForm = () => {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Basic Information Section */}
               <div className="space-y-4">
                 <h3 className="text-lg font-medium">Account Information</h3>
                 
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Username</FormLabel>
+                      <div className="relative">
+                        <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                        <FormControl>
+                          <Input 
+                            className="pl-10" 
+                            placeholder="Enter your username" 
+                            {...field} 
+                          />
+                        </FormControl>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <FormField
                   control={form.control}
                   name="phone"
@@ -233,7 +253,6 @@ const DriverSignUpForm = () => {
                 />
               </div>
 
-              {/* Driver Verification Section */}
               <div className="space-y-4 pt-4 border-t">
                 <h3 className="text-lg font-medium">Driver Verification</h3>
                 
@@ -394,7 +413,6 @@ const DriverSignUpForm = () => {
                 </div>
               </div>
 
-              {/* Terms & Agreement Section */}
               <div className="space-y-4 pt-4 border-t">
                 <FormField
                   control={form.control}
