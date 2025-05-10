@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Store, Truck } from 'lucide-react';
@@ -65,33 +64,6 @@ const SignUpPage = () => {
             <>
               <h1 className="text-3xl font-bold text-center mb-2">Join FoodSnap</h1>
               <p className="text-gray-600 text-center mb-8">Choose how you want to use FoodSnap</p>
-              
-              {/* Three signup option buttons in a flex row */}
-              <div className="flex flex-col md:flex-row justify-center gap-4 mb-8">
-                <Button 
-                  onClick={() => handleTypeSelect('customer')}
-                  className="flex items-center gap-2 bg-foodsnap-orange hover:bg-foodsnap-orange/90 py-6 px-4 flex-1"
-                >
-                  <User size={20} />
-                  Sign up as Customer
-                </Button>
-                
-                <Button 
-                  onClick={handleRestaurantSignUp}
-                  className="flex items-center gap-2 bg-foodsnap-orange hover:bg-foodsnap-orange/90 py-6 px-4 flex-1"
-                >
-                  <Store size={20} />
-                  Sign up as Restaurant
-                </Button>
-                
-                <Button 
-                  onClick={() => handleTypeSelect('driver')}
-                  className="flex items-center gap-2 bg-foodsnap-orange hover:bg-foodsnap-orange/90 py-6 px-4 flex-1"
-                >
-                  <Truck size={20} />
-                  Sign up as Driver
-                </Button>
-              </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Customer Option */}
