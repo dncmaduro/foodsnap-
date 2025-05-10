@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Edit2, MapPin, Plus, Trash2, Save, User, LogOut } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
@@ -28,12 +29,8 @@ const initialAddresses = [
 
 const ProfilePage = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { toast } = useToast();
-  const { user, isAuthenticated, logout, loginAsTestRestaurant } = useAuth();
-  
-  // Check if this is for restaurant signup from state
-  const isRestaurantSignUp = location.state?.isRestaurantSignUp;
+  const { user, isAuthenticated, logout } = useAuth();
   
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState('');
@@ -44,31 +41,17 @@ const ProfilePage = () => {
   const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
 
   useEffect(() => {
-    // If it's not a restaurant signup and user is not authenticated, redirect to signup
-    if (!isRestaurantSignUp && !isAuthenticated) {
+    if (!isAuthenticated) {
       navigate('/signup');
       return;
     }
     
-    // Initialize form with user data if authenticated
+    // Initialize form with user data
     if (user) {
       setName(user.name);
       setPhoneNumber(user.phone);
     }
-  }, [user, isAuthenticated, navigate, isRestaurantSignUp]);
-
-  // Handle restaurant registration navigation
-  const handleRegisterRestaurant = () => {
-    navigate('/restaurant-details');
-  };
-
-  // Handle view restaurants navigation - updated to change user type to restaurant
-  const handleViewRestaurants = () => {
-    // First change the user type to restaurant by using the test restaurant account
-    loginAsTestRestaurant();
-    // Then navigate to restaurant verification page
-    navigate('/restaurant-verification');
-  };
+  }, [user, isAuthenticated, navigate]);
 
   const handleSaveProfile = () => {
     // In a real app, you would save changes to the backend here
@@ -149,67 +132,10 @@ const ProfilePage = () => {
     });
   };
 
-  // If this is a restaurant signup flow, show a simplified version
-  if (isRestaurantSignUp) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Navigation />
-        
-        <main className="flex-grow container mx-auto px-4 py-8">
-          <div className="max-w-3xl mx-auto">
-            <h1 className="text-3xl font-bold mb-6">Restaurant Profile</h1>
-            
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle>Restaurant Management</CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-semibold mb-4">Register Your Restaurant</h3>
-                    <p className="text-sm text-gray-600 mb-4">
-                      Fill in your restaurant details and submit for verification to start receiving orders through FoodSnap.
-                    </p>
-                    <Button 
-                      onClick={handleRegisterRestaurant}
-                      className="bg-foodsnap-orange hover:bg-foodsnap-orange/90"
-                    >
-                      Register New Restaurant
-                    </Button>
-                  </div>
-                  
-                  <div className="border-t pt-6">
-                    <h3 className="text-lg font-semibold mb-4">View Your Restaurants</h3>
-                    <p className="text-sm text-gray-600 mb-4">
-                      Check the status of your restaurant verification and manage your registered restaurants.
-                    </p>
-                    <Button 
-                      onClick={handleViewRestaurants}
-                      className="bg-foodsnap-teal hover:bg-foodsnap-teal/90"
-                    >
-                      View Restaurants
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Button 
-              variant="outline" 
-              onClick={() => navigate('/signup')}
-              className="w-full"
-            >
-              Back to Sign Up Options
-            </Button>
-          </div>
-        </main>
-        
-        <Footer />
-      </div>
-    );
+  if (!isAuthenticated) {
+    return null; // Redirect handled in useEffect
   }
 
-  // Regular profile page for authenticated users
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation />

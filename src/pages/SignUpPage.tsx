@@ -46,8 +46,8 @@ const SignUpPage = () => {
   };
 
   const handleRestaurantSignUp = () => {
-    // Navigate to the profile page for restaurant instead
-    navigate('/profile', { state: { isRestaurantSignUp: true } });
+    // Directly navigate to the restaurant sign-up page
+    navigate('/signup/restaurant');
   };
 
   const handleLoginClick = () => {

@@ -44,7 +44,7 @@ const RestaurantVerificationPage = () => {
 
   useEffect(() => {
     if (!isAuthenticated || user?.type !== 'restaurant') {
-      // navigate('/');
+      navigate('/');
     }
   }, [isAuthenticated, user, navigate]);
 
@@ -56,7 +56,7 @@ const RestaurantVerificationPage = () => {
 
   const handleLogout = () => {
     logout();
-    // navigate('/');
+    navigate('/');
   };
 
   return (
