@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Store, Truck } from 'lucide-react';
@@ -24,7 +25,8 @@ const SignUpPage = () => {
     setSelectedType(type);
     
     if (type === 'customer') {
-      setShowCustomerForm(true);
+      // Don't show the form, we'll navigate to home instead
+      setShowCustomerForm(false);
       setShowRestaurantForm(false);
       setShowDriverForm(false);
     } else if (type === 'restaurant') {
@@ -36,6 +38,11 @@ const SignUpPage = () => {
       setShowCustomerForm(false);
       setShowRestaurantForm(false);
     }
+  };
+
+  const handleCustomerSignUp = () => {
+    // Navigate to home page instead of showing the form
+    navigate('/');
   };
 
   const handleRestaurantSignUp = () => {
@@ -56,7 +63,7 @@ const SignUpPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navigation />
+      <Navigation isSignUpPage={true} />
       
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
@@ -94,7 +101,7 @@ const SignUpPage = () => {
                   <CardFooter>
                     <Button 
                       className="w-full bg-foodsnap-orange hover:bg-foodsnap-orange/90" 
-                      onClick={() => handleTypeSelect('customer')}
+                      onClick={handleCustomerSignUp}
                     >
                       Sign Up as Customer
                     </Button>

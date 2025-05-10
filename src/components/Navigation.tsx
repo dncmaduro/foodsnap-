@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Search, ShoppingCart, User, Menu, X, Clock, LogOut, UserPlus } from 'lucide-react';
@@ -7,7 +8,11 @@ import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import LoginDialog from './LoginDialog';
 
-const Navigation = () => {
+interface NavigationProps {
+  isSignUpPage?: boolean;
+}
+
+const Navigation = ({ isSignUpPage = false }: NavigationProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
@@ -20,6 +25,11 @@ const Navigation = () => {
 
   const handleLogoClick = (e: React.MouseEvent) => {
     e.preventDefault();
+    if (isSignUpPage) {
+      // Do nothing if on signup page
+      return;
+    }
+    
     if (isRestaurant) {
       navigate('/profile');
     } else {
@@ -54,13 +64,13 @@ const Navigation = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <a href="#" onClick={handleLogoClick} className="flex items-center">
+            <a href="#" onClick={handleLogoClick} className={`flex items-center ${isSignUpPage ? 'pointer-events-none' : ''}`}>
               <span className="text-2xl font-bold text-foodsnap-orange">Food<span className="text-foodsnap-teal">Snap</span></span>
             </a>
           </div>
 
-          {/* Search Bar - Hide on profile page for restaurant users */}
-          {(!isRestaurant || !isProfilePage) && (
+          {/* Search Bar - Hide on profile page for restaurant users or on signup page */}
+          {(!isRestaurant || !isProfilePage) && !isSignUpPage && (
             <div className="hidden md:flex items-center justify-center flex-1 max-w-md mx-4">
               <form onSubmit={handleSearch} className="relative w-full">
                 <Input 
@@ -80,7 +90,7 @@ const Navigation = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
             {/* Show different links based on user type and page */}
-            {!isProfilePage && !isRestaurant && (
+            {!isProfilePage && !isRestaurant && !isSignUpPage && (
               <>
                 <Link to="/" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Home</Link>
                 <Link to="/restaurants" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Browse Restaurants</Link>
@@ -132,14 +142,16 @@ const Navigation = () => {
                   <User size={22} />
                   <span className="hidden lg:inline">Login</span>
                 </Button>
-                <Button 
-                  variant="outline" 
-                  className="flex items-center space-x-1 text-foodsnap-orange border-foodsnap-orange hover:bg-foodsnap-orange hover:text-white"
-                  onClick={handleSignUpClick}
-                >
-                  <UserPlus size={18} />
-                  <span className="hidden lg:inline">Sign Up</span>
-                </Button>
+                {!isSignUpPage && (
+                  <Button 
+                    variant="outline" 
+                    className="flex items-center space-x-1 text-foodsnap-orange border-foodsnap-orange hover:bg-foodsnap-orange hover:text-white"
+                    onClick={handleSignUpClick}
+                  >
+                    <UserPlus size={18} />
+                    <span className="hidden lg:inline">Sign Up</span>
+                  </Button>
+                )}
               </div>
             )}
           </div>
@@ -152,8 +164,8 @@ const Navigation = () => {
           </div>
         </div>
 
-        {/* Mobile Search - Hide on profile page for restaurant users */}
-        {(!isRestaurant || !isProfilePage) && (
+        {/* Mobile Search - Hide on profile page for restaurant users or on signup page */}
+        {(!isRestaurant || !isProfilePage) && !isSignUpPage && (
           <div className="mt-3 flex md:hidden">
             <form onSubmit={handleSearch} className="relative w-full">
               <Input 
@@ -174,7 +186,7 @@ const Navigation = () => {
         {isMenuOpen && (
           <div className="md:hidden mt-3 pb-3 border-t border-gray-200">
             <div className="flex flex-col space-y-3 pt-3">
-              {!isProfilePage && !isRestaurant && (
+              {!isProfilePage && !isRestaurant && !isSignUpPage && (
                 <>
                   <Link to="/" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Home</Link>
                   <Link to="/restaurants" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Browse Restaurants</Link>
@@ -217,14 +229,16 @@ const Navigation = () => {
                     <User size={20} className="mr-2" />
                     <span>Login</span>
                   </Button>
-                  <Button 
-                    variant="ghost" 
-                    className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center justify-start p-0"
-                    onClick={() => { navigate('/signup/customer'); setIsMenuOpen(false); }}
-                  >
-                    <UserPlus size={20} className="mr-2" />
-                    <span>Sign Up</span>
-                  </Button>
+                  {!isSignUpPage && (
+                    <Button 
+                      variant="ghost" 
+                      className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center justify-start p-0"
+                      onClick={() => { navigate('/signup/customer'); setIsMenuOpen(false); }}
+                    >
+                      <UserPlus size={20} className="mr-2" />
+                      <span>Sign Up</span>
+                    </Button>
+                  )}
                 </>
               )}
             </div>
