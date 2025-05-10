@@ -44,6 +44,7 @@ const RestaurantVerificationPage = () => {
 
   useEffect(() => {
     if (!isAuthenticated || user?.type !== 'restaurant') {
+      console.log(user, isAuthenticated)
       navigate('/');
     }
   }, [isAuthenticated, user, navigate]);
