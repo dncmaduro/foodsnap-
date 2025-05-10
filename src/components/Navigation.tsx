@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Search, ShoppingCart, User, Menu, X, Clock, LogOut, UserPlus } from 'lucide-react';
@@ -42,7 +41,7 @@ const Navigation = () => {
   };
 
   const handleSignUpClick = () => {
-    navigate('/signup');
+    navigate('/signup/customer');
   };
 
   const handleLogout = () => {
@@ -221,7 +220,7 @@ const Navigation = () => {
                   <Button 
                     variant="ghost" 
                     className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center justify-start p-0"
-                    onClick={() => { navigate('/signup'); setIsMenuOpen(false); }}
+                    onClick={() => { navigate('/signup/customer'); setIsMenuOpen(false); }}
                   >
                     <UserPlus size={20} className="mr-2" />
                     <span>Sign Up</span>
@@ -236,7 +235,7 @@ const Navigation = () => {
       <LoginDialog 
         isOpen={loginDialogOpen} 
         onClose={() => setLoginDialogOpen(false)} 
-        onSuccess={() => navigate('/signup')}
+        onSuccess={() => navigate('/signup/customer')}
       />
     </nav>
   );
