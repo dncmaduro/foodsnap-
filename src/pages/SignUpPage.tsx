@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Store, Truck } from 'lucide-react';
@@ -65,9 +66,9 @@ const SignUpPage = () => {
               <h1 className="text-3xl font-bold text-center mb-2">Join FoodSnap</h1>
               <p className="text-gray-600 text-center mb-8">Choose how you want to use FoodSnap</p>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="flex flex-col md:flex-row gap-6 justify-center">
                 {/* Customer Option */}
-                <Card className={`border-2 transition-all ${selectedType === 'customer' ? 'border-foodsnap-orange' : 'border-gray-200'}`}>
+                <Card className={`border-2 transition-all ${selectedType === 'customer' ? 'border-foodsnap-orange' : 'border-gray-200'} md:w-1/3`}>
                   <CardHeader className="text-center">
                     <div className="mx-auto bg-orange-100 p-4 rounded-full w-16 h-16 flex items-center justify-center mb-2">
                       <User size={28} className="text-foodsnap-orange" />
@@ -102,7 +103,7 @@ const SignUpPage = () => {
                 </Card>
 
                 {/* Restaurant Option */}
-                <Card className={`border-2 transition-all ${selectedType === 'restaurant' ? 'border-foodsnap-orange' : 'border-gray-200'}`}>
+                <Card className={`border-2 transition-all ${selectedType === 'restaurant' ? 'border-foodsnap-orange' : 'border-gray-200'} md:w-1/3`}>
                   <CardHeader className="text-center">
                     <div className="mx-auto bg-orange-100 p-4 rounded-full w-16 h-16 flex items-center justify-center mb-2">
                       <Store size={28} className="text-foodsnap-orange" />
@@ -137,7 +138,7 @@ const SignUpPage = () => {
                 </Card>
 
                 {/* Delivery Driver Option */}
-                <Card className={`border-2 transition-all ${selectedType === 'driver' ? 'border-foodsnap-orange' : 'border-gray-200'}`}>
+                <Card className={`border-2 transition-all ${selectedType === 'driver' ? 'border-foodsnap-orange' : 'border-gray-200'} md:w-1/3`}>
                   <CardHeader className="text-center">
                     <div className="mx-auto bg-orange-100 p-4 rounded-full w-16 h-16 flex items-center justify-center mb-2">
                       <Truck size={28} className="text-foodsnap-orange" />
