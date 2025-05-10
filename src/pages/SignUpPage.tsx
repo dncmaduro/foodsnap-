@@ -46,8 +46,8 @@ const SignUpPage = () => {
   };
 
   const handleRestaurantSignUp = () => {
-    // Navigate directly to the restaurant profile page
-    navigate('/profile');
+    // Navigate directly to the restaurant verification page
+    navigate('/restaurant-verification');
   };
 
   const handleLoginClick = () => {
