@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Edit2, MapPin, Plus, Trash2, Save, User, LogOut } from 'lucide-react';
@@ -31,7 +30,7 @@ const ProfilePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, loginAsTestRestaurant } = useAuth();
   
   // Check if this is for restaurant signup from state
   const isRestaurantSignUp = location.state?.isRestaurantSignUp;
@@ -63,8 +62,11 @@ const ProfilePage = () => {
     navigate('/restaurant-details');
   };
 
-  // Handle view restaurants navigation
+  // Handle view restaurants navigation - updated to change user type to restaurant
   const handleViewRestaurants = () => {
+    // First change the user type to restaurant by using the test restaurant account
+    loginAsTestRestaurant();
+    // Then navigate to restaurant verification page
     navigate('/restaurant-verification');
   };
 
