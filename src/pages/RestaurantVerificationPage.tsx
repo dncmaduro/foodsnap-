@@ -56,7 +56,7 @@ const RestaurantVerificationPage = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/');
+    navigate('/'); // Explicitly navigate to home page after logout
   };
 
   return (

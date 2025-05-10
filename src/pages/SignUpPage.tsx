@@ -46,8 +46,8 @@ const SignUpPage = () => {
   };
 
   const handleRestaurantSignUp = () => {
-    // Directly navigate to the restaurant sign-up page
-    navigate('/signup/restaurant');
+    // Navigate directly to the restaurant profile page
+    navigate('/profile');
   };
 
   const handleLoginClick = () => {
