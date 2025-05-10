@@ -41,6 +41,10 @@ const Navigation = () => {
     setLoginDialogOpen(true);
   };
 
+  const handleSignUpClick = () => {
+    navigate('/signup');
+  };
+
   const handleLogout = () => {
     logout();
   };
@@ -132,7 +136,7 @@ const Navigation = () => {
                 <Button 
                   variant="outline" 
                   className="flex items-center space-x-1 text-foodsnap-orange border-foodsnap-orange hover:bg-foodsnap-orange hover:text-white"
-                  onClick={() => navigate('/signup')}
+                  onClick={handleSignUpClick}
                 >
                   <UserPlus size={18} />
                   <span className="hidden lg:inline">Sign Up</span>
@@ -232,6 +236,7 @@ const Navigation = () => {
       <LoginDialog 
         isOpen={loginDialogOpen} 
         onClose={() => setLoginDialogOpen(false)} 
+        onSuccess={() => navigate('/signup')}
       />
     </nav>
   );
