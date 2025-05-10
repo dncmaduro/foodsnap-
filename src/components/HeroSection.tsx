@@ -1,38 +1,9 @@
 
 import { useState } from 'react';
-import { MapPin, Navigation } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 const HeroSection = () => {
-  const [address, setAddress] = useState('');
   const [isLocating, setIsLocating] = useState(false);
-
-  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAddress(e.target.value);
-  };
-
-  const handleGeolocation = () => {
-    setIsLocating(true);
-    
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          // In a real app, you would use a reverse geocoding service
-          // to convert coordinates to an address
-          setAddress("Using your current location");
-          setIsLocating(false);
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-          setIsLocating(false);
-        }
-      );
-    } else {
-      alert("Geolocation is not supported by this browser.");
-      setIsLocating(false);
-    }
-  };
 
   return (
     <section className="relative">
@@ -55,35 +26,6 @@ const HeroSection = () => {
           <p className="text-xl text-white mb-8 max-w-2xl">
             Discover restaurants and get your favorite meals delivered right to your door.
           </p>
-          
-          {/* Location Input Container */}
-          <div className="w-full max-w-xl bg-white rounded-lg shadow-lg p-4 mb-6">
-            <div className="flex flex-col md:flex-row gap-3">
-              <div className="relative flex-1">
-                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-foodsnap-orange" size={20} />
-                <Input
-                  type="text"
-                  placeholder="Enter your delivery address"
-                  className="pl-10 bg-gray-50 border-gray-200"
-                  value={address}
-                  onChange={handleAddressChange}
-                />
-              </div>
-              <Button 
-                variant="outline" 
-                className="flex items-center justify-center gap-2 border-foodsnap-teal text-foodsnap-teal hover:bg-foodsnap-teal hover:text-white"
-                onClick={handleGeolocation}
-                disabled={isLocating}
-              >
-                <Navigation size={18} />
-                {isLocating ? "Locating..." : "Use my location"}
-              </Button>
-            </div>
-          </div>
-          
-          <Button className="bg-foodsnap-orange hover:bg-foodsnap-orange/90 text-white px-6 py-6 rounded-full text-lg">
-            Find Restaurants Near You
-          </Button>
         </div>
       </div>
     </section>
