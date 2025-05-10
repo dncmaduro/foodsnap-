@@ -66,9 +66,36 @@ const SignUpPage = () => {
               <h1 className="text-3xl font-bold text-center mb-2">Join FoodSnap</h1>
               <p className="text-gray-600 text-center mb-8">Choose how you want to use FoodSnap</p>
               
-              <div className="flex flex-col md:flex-row gap-6 justify-center">
+              {/* Three signup option buttons in a flex row */}
+              <div className="flex flex-col md:flex-row justify-center gap-4 mb-8">
+                <Button 
+                  onClick={() => handleTypeSelect('customer')}
+                  className="flex items-center gap-2 bg-foodsnap-orange hover:bg-foodsnap-orange/90 py-6 px-4 flex-1"
+                >
+                  <User size={20} />
+                  Sign up as Customer
+                </Button>
+                
+                <Button 
+                  onClick={handleRestaurantSignUp}
+                  className="flex items-center gap-2 bg-foodsnap-orange hover:bg-foodsnap-orange/90 py-6 px-4 flex-1"
+                >
+                  <Store size={20} />
+                  Sign up as Restaurant
+                </Button>
+                
+                <Button 
+                  onClick={() => handleTypeSelect('driver')}
+                  className="flex items-center gap-2 bg-foodsnap-orange hover:bg-foodsnap-orange/90 py-6 px-4 flex-1"
+                >
+                  <Truck size={20} />
+                  Sign up as Driver
+                </Button>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Customer Option */}
-                <Card className={`border-2 transition-all ${selectedType === 'customer' ? 'border-foodsnap-orange' : 'border-gray-200'} w-full md:w-1/3`}>
+                <Card className={`border-2 transition-all ${selectedType === 'customer' ? 'border-foodsnap-orange' : 'border-gray-200'}`}>
                   <CardHeader className="text-center">
                     <div className="mx-auto bg-orange-100 p-4 rounded-full w-16 h-16 flex items-center justify-center mb-2">
                       <User size={28} className="text-foodsnap-orange" />
@@ -103,7 +130,7 @@ const SignUpPage = () => {
                 </Card>
 
                 {/* Restaurant Option */}
-                <Card className={`border-2 transition-all ${selectedType === 'restaurant' ? 'border-foodsnap-orange' : 'border-gray-200'} w-full md:w-1/3`}>
+                <Card className={`border-2 transition-all ${selectedType === 'restaurant' ? 'border-foodsnap-orange' : 'border-gray-200'}`}>
                   <CardHeader className="text-center">
                     <div className="mx-auto bg-orange-100 p-4 rounded-full w-16 h-16 flex items-center justify-center mb-2">
                       <Store size={28} className="text-foodsnap-orange" />
@@ -138,7 +165,7 @@ const SignUpPage = () => {
                 </Card>
 
                 {/* Delivery Driver Option */}
-                <Card className={`border-2 transition-all ${selectedType === 'driver' ? 'border-foodsnap-orange' : 'border-gray-200'} w-full md:w-1/3`}>
+                <Card className={`border-2 transition-all ${selectedType === 'driver' ? 'border-foodsnap-orange' : 'border-gray-200'}`}>
                   <CardHeader className="text-center">
                     <div className="mx-auto bg-orange-100 p-4 rounded-full w-16 h-16 flex items-center justify-center mb-2">
                       <Truck size={28} className="text-foodsnap-orange" />
