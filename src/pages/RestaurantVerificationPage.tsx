@@ -43,7 +43,6 @@ const RestaurantVerificationPage = () => {
   const [restaurants] = useState<Restaurant[]>(mockRestaurants);
 
   useEffect(() => {
-      console.log(user, isAuthenticated)
     if (!isAuthenticated || user?.type !== 'restaurant') {
       navigate('/');
     }
