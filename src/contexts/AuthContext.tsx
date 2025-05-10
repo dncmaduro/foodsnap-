@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 type UserType = 'customer' | 'restaurant' | 'driver';
@@ -71,16 +72,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Clear the temporary account type after login
     localStorage.removeItem('accountType');
     
-    // Navigate to profile page for restaurant users
-    if (accountType === 'restaurant') {
-      window.location.href = '/profile';
-    }
+    // Navigate to signup page after login
+    window.location.href = '/signup';
   };
 
   // New function to login as the test restaurant account
   const loginAsTestRestaurant = () => {
     setUser(TEST_RESTAURANT_ACCOUNT);
-    window.location.href = '/profile';
+    window.location.href = '/signup';
   };
 
   const logout = () => {

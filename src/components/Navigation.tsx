@@ -235,7 +235,7 @@ const Navigation = () => {
       <LoginDialog 
         isOpen={loginDialogOpen} 
         onClose={() => setLoginDialogOpen(false)} 
-        onSuccess={() => navigate('/signup/customer')}
+        onSuccess={() => navigate('/signup')}
       />
     </nav>
   );
