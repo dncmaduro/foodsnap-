@@ -79,7 +79,11 @@ const Navigation = () => {
             
             {isAuthenticated ? (
               <div className="flex items-center space-x-2">
-                <Button variant="ghost" className="flex items-center space-x-1 text-gray-700 hover:text-foodsnap-orange">
+                <Button 
+                  variant="ghost" 
+                  className="flex items-center space-x-1 text-gray-700 hover:text-foodsnap-orange"
+                  onClick={() => navigate('/profile')}
+                >
                   <User size={22} />
                   <span className="hidden lg:inline">{user?.name}</span>
                 </Button>
@@ -153,10 +157,10 @@ const Navigation = () => {
               
               {isAuthenticated ? (
                 <>
-                  <div className="text-gray-700 flex items-center">
+                  <Link to="/profile" className="text-gray-700 hover:text-foodsnap-orange flex items-center">
                     <User size={20} className="mr-2" />
-                    <span>{user?.name}</span>
-                  </div>
+                    <span>{user?.name || "My Profile"}</span>
+                  </Link>
                   <Button 
                     variant="ghost" 
                     onClick={handleLogout} 
