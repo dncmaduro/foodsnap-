@@ -1,18 +1,35 @@
 
 import { Link } from "react-router-dom";
-import { Store, FileText } from "lucide-react";
+import { Store, FileText, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { toast } from "sonner";
 
 const RestaurantManagementPage = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    toast.success("Đã đăng xuất thành công");
+    navigate("/");
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navigation />
+      <div className="bg-white border-b border-gray-200 py-3 px-4 flex justify-end">
+        <Button 
+          variant="ghost" 
+          onClick={handleLogout} 
+          className="text-gray-700 hover:text-red-500 flex items-center"
+        >
+          <LogOut size={18} className="mr-2" />
+          <span>Đăng xuất</span>
+        </Button>
+      </div>
       
       <main className="flex-grow container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8 text-center md:text-left">Quản lý nhà hàng của bạn</h1>
