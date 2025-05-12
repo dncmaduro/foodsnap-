@@ -9,7 +9,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
 import { 
   Sheet,
   SheetContent,
@@ -22,9 +28,13 @@ import { useToast } from "@/components/ui/use-toast";
 type Address = {
   id: string;
   label: string;
+  district: string;
   address: string;
   isDefault: boolean;
 };
+
+// Available districts
+const DISTRICTS = ["Cầu Giấy", "Đống Đa", "Ba Đình", "Thanh Xuân"];
 
 const ProfilePage = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -36,13 +46,14 @@ const ProfilePage = () => {
   const [phone, setPhone] = useState(user?.phone || "");
   const [currentRole, setCurrentRole] = useState("user");
   
-  // Mock addresses for demonstration
+  // Updated mock addresses to include district
   const [addresses, setAddresses] = useState<Address[]>([
-    { id: "1", label: "Home", address: "123 Main St, Anytown, USA", isDefault: true },
-    { id: "2", label: "Work", address: "456 Office Ave, Business City, USA", isDefault: false },
+    { id: "1", label: "Home", district: "Cầu Giấy", address: "123 Main St, Anytown", isDefault: true },
+    { id: "2", label: "Work", district: "Đống Đa", address: "456 Office Ave, Business City", isDefault: false },
   ]);
   
   const [newAddressLabel, setNewAddressLabel] = useState("");
+  const [newAddressDistrict, setNewAddressDistrict] = useState("");
   const [newAddress, setNewAddress] = useState("");
   
   if (!isAuthenticated) {
@@ -60,16 +71,18 @@ const ProfilePage = () => {
   };
 
   const handleAddAddress = () => {
-    if (newAddressLabel.trim() !== "" && newAddress.trim() !== "") {
+    if (newAddressLabel.trim() !== "" && newAddressDistrict.trim() !== "" && newAddress.trim() !== "") {
       const newAddressObj: Address = {
         id: Date.now().toString(),
         label: newAddressLabel,
+        district: newAddressDistrict,
         address: newAddress,
         isDefault: addresses.length === 0
       };
       
       setAddresses([...addresses, newAddressObj]);
       setNewAddressLabel("");
+      setNewAddressDistrict("");
       setNewAddress("");
       
       toast({
@@ -209,10 +222,28 @@ const ProfilePage = () => {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="address">Full Address</Label>
+                      <Label htmlFor="addressDistrict">Quận</Label>
+                      <Select
+                        value={newAddressDistrict}
+                        onValueChange={setNewAddressDistrict}
+                      >
+                        <SelectTrigger className="mt-1">
+                          <SelectValue placeholder="Chọn quận" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {DISTRICTS.map(district => (
+                            <SelectItem key={district} value={district}>
+                              {district}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="address">Địa chỉ đầy đủ</Label>
                       <Input
                         id="address"
-                        placeholder="Street, City, State, ZIP"
+                        placeholder="số nhà, tên đường"
                         value={newAddress}
                         onChange={(e) => setNewAddress(e.target.value)}
                         className="mt-1"
@@ -221,7 +252,7 @@ const ProfilePage = () => {
                     <Button 
                       onClick={handleAddAddress} 
                       className="w-full mt-4"
-                      disabled={!newAddressLabel.trim() || !newAddress.trim()}
+                      disabled={!newAddressLabel.trim() || !newAddressDistrict || !newAddress.trim()}
                     >
                       Save Address
                     </Button>
@@ -248,7 +279,10 @@ const ProfilePage = () => {
                             </span>
                           )}
                         </div>
-                        <div className="text-gray-600 mt-1">{address.address}</div>
+                        <div className="text-gray-600 mt-1">
+                          <div>{address.district}</div>
+                          <div>{address.address}</div>
+                        </div>
                       </div>
                       <div className="flex space-x-2">
                         {!address.isDefault && (
