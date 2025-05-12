@@ -33,11 +33,10 @@ const RestaurantManagementPage = () => {
                   Tạo hồ sơ nhà hàng mới và bắt đầu nhận đơn hàng trực tuyến
                 </p>
                 <Button 
-                  as={Link} 
-                  to="/restaurant-registration" 
                   className="w-full"
+                  asChild
                 >
-                  Đăng ký ngay
+                  <Link to="/restaurant-registration">Đăng ký ngay</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -52,12 +51,11 @@ const RestaurantManagementPage = () => {
                   Quản lý thông tin và menu của các nhà hàng hiện có
                 </p>
                 <Button 
-                  as={Link} 
-                  to="/my-restaurants" 
                   variant="outline" 
                   className="w-full border-foodsnap-orange text-foodsnap-orange hover:bg-foodsnap-orange hover:text-white"
+                  asChild
                 >
-                  Xem danh sách
+                  <Link to="/my-restaurants">Xem danh sách</Link>
                 </Button>
               </CardContent>
             </Card>
