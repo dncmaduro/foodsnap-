@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PenLine, Plus, Trash2, Check, ChevronDown } from "lucide-react";
@@ -334,6 +333,31 @@ const ProfilePage = () => {
                   </SelectContent>
                 </Select>
               </div>
+              
+              {currentRole === "restaurant" && (
+                <div className="mt-4">
+                  <Button 
+                    onClick={() => navigate('/restaurant-management')} 
+                    className="w-full"
+                  >
+                    Quản lý nhà hàng
+                  </Button>
+                </div>
+              )}
+              
+              {currentRole === "driver" && (
+                <div className="mt-4">
+                  <Button 
+                    variant="outline"
+                    onClick={() => navigate('/delivery-dashboard')} 
+                    className="w-full"
+                    disabled
+                  >
+                    Driver Dashboard (Coming Soon)
+                  </Button>
+                </div>
+              )}
+              
               {currentRole !== "user" && (
                 <div className="bg-amber-50 border border-amber-200 p-4 rounded-md text-amber-700 mt-2">
                   <p>Note: Switching to {currentRole === "restaurant" ? "Restaurant Owner" : "Delivery Driver"} mode is a preview. Additional verification may be required.</p>

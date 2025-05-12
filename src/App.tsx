@@ -18,6 +18,7 @@ import OrderDetailsPage from "./pages/OrderDetailsPage";
 import RatingAndReviewPage from "./pages/RatingAndReviewPage";
 import SignUpPage from "./pages/SignUpPage";
 import ProfilePage from "./pages/ProfilePage";
+import RestaurantManagementPage from "./pages/RestaurantManagementPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -43,6 +44,7 @@ const App = () => (
               <Route path="/rate-order/:id" element={<RatingAndReviewPage />} />
               <Route path="/signup" element={<SignUpPage />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/restaurant-management" element={<RestaurantManagementPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
