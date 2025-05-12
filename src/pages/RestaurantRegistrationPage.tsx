@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Upload } from "lucide-react";
@@ -316,23 +315,15 @@ const RestaurantRegistrationPage = () => {
                   type="submit" 
                   className="w-full py-6 text-lg"
                 >
-                  Gửi Xác Minh
+                  Đăng ký
                 </Button>
               </form>
             </Form>
           </div>
           
-          {/* Help links */}
+          {/* Verification message text */}
           <div className="mt-8 text-center">
-            <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-600">
-              <a href="/help" className="hover:text-foodsnap-teal">Trợ giúp</a>
-              <span>|</span>
-              <a href="/contact" className="hover:text-foodsnap-teal">Liên hệ</a>
-              <span>|</span>
-              <a href="/terms" className="hover:text-foodsnap-teal">Điều khoản</a>
-              <span>|</span>
-              <a href="/privacy" className="hover:text-foodsnap-teal">Chính sách bảo mật</a>
-            </div>
+            <p className="text-gray-600">Chúng tôi sẽ xác minh thông tin của bạn trong vòng 24-48 giờ làm việc.</p>
           </div>
         </div>
       </main>
