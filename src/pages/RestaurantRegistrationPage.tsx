@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Upload } from "lucide-react";
@@ -23,8 +24,8 @@ const formSchema = z.object({
   restaurantName: z.string().min(1, "Vui lòng nhập tên nhà hàng"),
   restaurantAddress: z.string().min(1, "Vui lòng nhập địa chỉ nhà hàng"),
   ownerIdNumber: z.string().length(12, "Số CCCD phải có 12 chữ số").regex(/^\d+$/, "Số CCCD chỉ được chứa chữ số"),
-  frontIdImage: z.instanceof(File, { message: "Vui lòng tải lên ảnh mặt trước CCCD" }).optional(),
-  backIdImage: z.instanceof(File, { message: "Vui lòng tải lên ảnh mặt sau CCCD" }).optional(),
+  frontIdImage: z.instanceof(File, { message: "Vui lòng tải lên ảnh mặt trước CCCD" }),
+  backIdImage: z.instanceof(File, { message: "Vui lòng tải lên ảnh mặt sau CCCD" }),
   bankAccountName: z.string().min(1, "Vui lòng nhập tên hưởng thụ tài khoản"),
   bankName: z.string().min(1, "Vui lòng nhập tên ngân hàng"),
   bankAccountNumber: z.string().min(1, "Vui lòng nhập số tài khoản"),
@@ -334,3 +335,4 @@ const RestaurantRegistrationPage = () => {
 };
 
 export default RestaurantRegistrationPage;
+
