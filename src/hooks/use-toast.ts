@@ -1,7 +1,7 @@
 
-import { toast as sonnerToast, type Toast } from "sonner"
+import { toast as sonnerToast, type ToastT } from "sonner"
 
-type ToastProps = Toast & {
+type ToastProps = ToastT & {
   variant?: "default" | "destructive" | "success"
 }
 
@@ -16,4 +16,5 @@ export function toast({ variant = "default", ...props }: ToastProps) {
   })
 }
 
-export { useToast } from "sonner"
+// Re-export the useToast hook from sonner
+export { Toaster as useToast } from "sonner"
