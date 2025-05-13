@@ -135,7 +135,7 @@ const MyRestaurantsPage = () => {
   );
 };
 
-// Restaurant Card Component - Updated to link to the RestaurantDetailsPage
+// Restaurant Card Component - Updated to conditionally render the "Xem chi tiết" button
 const RestaurantCard = ({ restaurant }: { restaurant: any }) => {
   return (
     <Card className="overflow-hidden">
@@ -161,9 +161,12 @@ const RestaurantCard = ({ restaurant }: { restaurant: any }) => {
             </div>
           </div>
           
-          <Button variant="outline" className="mt-4 md:mt-0 w-full md:w-auto" asChild>
-            <Link to={`/restaurant-details/${restaurant.id}`}>Xem chi tiết</Link>
-          </Button>
+          {/* Only show the "Xem chi tiết" button for approved restaurants */}
+          {restaurant.status === 'approved' && (
+            <Button variant="outline" className="mt-4 md:mt-0 w-full md:w-auto" asChild>
+              <Link to={`/restaurant-details/${restaurant.id}`}>Xem chi tiết</Link>
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>
