@@ -127,7 +127,7 @@ const DeliveryDriverRegistrationForm = () => {
       setIsSubmitting(false);
       toast({
         title: "Đăng ký thành công",
-        description: "Chúng tôi đã nhận được thông tin của bạn và sẽ liên hệ sớm."
+        description: "Hồ sơ của bạn sẽ được xử lý trong vòng 24 giờ."
       });
       navigate("/delivery-registration");
     }, 1500);
