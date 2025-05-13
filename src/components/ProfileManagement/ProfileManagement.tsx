@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Building, Phone, MapPin, Clock, Text, Image, Save, X, Info } from "lucide-react";
+import { Building, Phone, MapPin, Text, Image, Save, X, Info, ToggleLeft, ToggleRight } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -12,16 +12,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "@/components/ui/use-toast";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Toggle } from "@/components/ui/toggle";
 
-// Define the form schema with validation
+// Define the form schema with validation - description is now optional
 const formSchema = z.object({
   name: z.string().min(2, "Tên nhà hàng phải có ít nhất 2 ký tự"),
   phone: z.string().min(10, "Số điện thoại không hợp lệ"),
   district: z.string().min(1, "Vui lòng chọn quận/huyện"),
   address: z.string().min(5, "Địa chỉ cụ thể phải có ít nhất 5 ký tự"),
-  openingTime: z.string().min(1, "Vui lòng chọn giờ mở cửa"),
-  closingTime: z.string().min(1, "Vui lòng chọn giờ đóng cửa"),
-  description: z.string().min(20, "Mô tả nhà hàng phải có ít nhất 20 ký tự"),
+  description: z.string().optional(), // Description is now optional
 });
 
 // Mock data for initial form values
@@ -31,10 +30,9 @@ const mockRestaurantData = {
   phone: "0987654321",
   district: "Cầu Giấy",
   address: "123 Xuân Thủy, Cầu Giấy",
-  openingTime: "07:00",
-  closingTime: "22:00",
   description: "Nhà hàng chuyên phục vụ các món ăn truyền thống Hà Nội với hương vị đậm đà, thơm ngon. Không gian rộng rãi, thoáng mát phù hợp cho gia đình và nhóm bạn.",
   image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901",
+  isOpen: true, // New field to track restaurant open/closed status
 };
 
 // List of districts in Hanoi
@@ -44,6 +42,7 @@ const ProfileManagement = () => {
   const [image, setImage] = useState<string | null>(mockRestaurantData.image);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isOpen, setIsOpen] = useState(mockRestaurantData.isOpen);
 
   // Initialize the form with react-hook-form
   const form = useForm<z.infer<typeof formSchema>>({
@@ -53,8 +52,6 @@ const ProfileManagement = () => {
       phone: mockRestaurantData.phone,
       district: mockRestaurantData.district,
       address: mockRestaurantData.address,
-      openingTime: mockRestaurantData.openingTime,
-      closingTime: mockRestaurantData.closingTime,
       description: mockRestaurantData.description,
     },
   });
@@ -66,6 +63,8 @@ const ProfileManagement = () => {
     try {
       // In a real app, this would be an API call to save the restaurant data
       console.log("Saving restaurant data:", values);
+      console.log("Restaurant status:", isOpen ? "Open" : "Closed");
+      
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
@@ -132,15 +131,25 @@ const ProfileManagement = () => {
       phone: mockRestaurantData.phone,
       district: mockRestaurantData.district,
       address: mockRestaurantData.address,
-      openingTime: mockRestaurantData.openingTime,
-      closingTime: mockRestaurantData.closingTime,
       description: mockRestaurantData.description,
     });
     setImage(mockRestaurantData.image);
+    setIsOpen(mockRestaurantData.isOpen);
     
     toast({
       title: "Đã hủy thay đổi",
       description: "Các thay đổi đã được hoàn tác",
+    });
+  };
+
+  const toggleRestaurantStatus = () => {
+    setIsOpen(!isOpen);
+    
+    toast({
+      title: !isOpen ? "Nhà hàng đã mở cửa" : "Nhà hàng đã đóng cửa",
+      description: !isOpen 
+        ? "Khách hàng có thể đặt món từ nhà hàng của bạn" 
+        : "Nhà hàng sẽ không nhận đơn đặt hàng mới",
     });
   };
 
@@ -158,6 +167,37 @@ const ProfileManagement = () => {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <Card>
             <CardContent className="pt-6">
+              {/* Restaurant Open/Close Status Toggle */}
+              <div className="mb-6 flex justify-between items-center p-3 border border-gray-200 rounded-md">
+                <div>
+                  <h3 className="font-medium">Trạng thái nhà hàng</h3>
+                  <p className="text-sm text-gray-600">
+                    {isOpen 
+                      ? "Nhà hàng đang mở cửa và sẵn sàng nhận đơn" 
+                      : "Nhà hàng đang đóng cửa và không nhận đơn mới"
+                    }
+                  </p>
+                </div>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={toggleRestaurantStatus}
+                  className={`flex items-center gap-2 ${isOpen ? 'text-green-600' : 'text-gray-500'}`}
+                >
+                  {isOpen ? (
+                    <>
+                      <ToggleRight className="h-5 w-5" />
+                      Đang mở cửa
+                    </>
+                  ) : (
+                    <>
+                      <ToggleLeft className="h-5 w-5" />
+                      Đang đóng cửa
+                    </>
+                  )}
+                </Button>
+              </div>
+
               {/* Restaurant Name */}
               <FormField
                 control={form.control}
@@ -242,40 +282,6 @@ const ProfileManagement = () => {
                 />
               </div>
 
-              {/* Opening & Closing Times */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <FormField
-                  control={form.control}
-                  name="openingTime"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center">
-                        <Clock className="mr-2 h-4 w-4" />
-                        Giờ mở cửa
-                      </FormLabel>
-                      <FormControl>
-                        <Input type="time" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="closingTime"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Giờ đóng cửa</FormLabel>
-                      <FormControl>
-                        <Input type="time" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
               {/* Restaurant Description */}
               <FormField
                 control={form.control}
@@ -284,7 +290,7 @@ const ProfileManagement = () => {
                   <FormItem className="mb-6">
                     <FormLabel className="flex items-center">
                       <Text className="mr-2 h-4 w-4" />
-                      Mô tả nhà hàng
+                      Mô tả nhà hàng (tùy chọn)
                     </FormLabel>
                     <FormControl>
                       <Textarea 
