@@ -2,7 +2,6 @@
 import { ArrowLeft, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
@@ -31,8 +30,6 @@ const DeliveryDriverRegistrationLinks = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navigation />
-      
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
           {/* Navigation buttons */}
@@ -43,7 +40,7 @@ const DeliveryDriverRegistrationLinks = () => {
               className="flex items-center"
             >
               <ArrowLeft size={16} className="mr-2" />
-              Quay lại trang cá nhân
+              Quay lại
             </Button>
             
             <Button 
@@ -62,23 +59,6 @@ const DeliveryDriverRegistrationLinks = () => {
             <p className="text-gray-600">
               Trở thành đối tác giao hàng của FoodSnap để bắt đầu kiếm thu nhập ngay hôm nay.
             </p>
-          </div>
-          
-          {/* Illustration */}
-          <div className="flex justify-center mb-10">
-            <div className="w-64 h-64 bg-gray-100 rounded-full flex items-center justify-center">
-              <img 
-                src="/delivery-illustration.svg" 
-                alt="Delivery Driver Illustration" 
-                className="w-48 h-48"
-                onError={(e) => {
-                  // Fallback if image doesn't exist
-                  const target = e.target as HTMLImageElement;
-                  target.onerror = null;
-                  target.src = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='1'%3E%3C/circle%3E%3Ccircle cx='19' cy='12' r='1'%3E%3C/circle%3E%3Ccircle cx='5' cy='12' r='1'%3E%3C/circle%3E%3C/svg%3E";
-                }}
-              />
-            </div>
           </div>
           
           {/* Call-to-Action Section */}
@@ -115,25 +95,17 @@ const DeliveryDriverRegistrationLinks = () => {
             </ul>
           </div>
           
-          {/* Requirements Section */}
+          {/* Requirements Section - Updated */}
           <div className="bg-gray-50 p-6 rounded-lg mb-10">
             <h2 className="text-xl font-semibold mb-4">Yêu cầu đối với tài xế</h2>
             <ul className="space-y-2">
               <li className="flex items-start">
                 <span className="mr-2">•</span>
-                <span>Trên 18 tuổi, có CMND/CCCD</span>
-              </li>
-              <li className="flex items-start">
-                <span className="mr-2">•</span>
-                <span>Có xe máy và giấy tờ xe hợp lệ</span>
+                <span>Trên 18 tuổi, có bằng lái xe</span>
               </li>
               <li className="flex items-start">
                 <span className="mr-2">•</span>
                 <span>Có điện thoại thông minh để sử dụng ứng dụng</span>
-              </li>
-              <li className="flex items-start">
-                <span className="mr-2">•</span>
-                <span>Có kiến thức về đường phố và các khu vực trong thành phố</span>
               </li>
             </ul>
           </div>
