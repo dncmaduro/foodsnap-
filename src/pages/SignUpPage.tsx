@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Mail, Phone, Check } from "lucide-react";
+import { Eye, EyeOff, Mail, Phone, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -16,6 +16,7 @@ const SignUpPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [fullname, setFullname] = useState("");  // Added fullname field
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
@@ -23,10 +24,15 @@ const SignUpPage = () => {
 
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { login } = useAuth();
+  const { signup, isLoading } = useAuth();
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
+
+    // Validate fullname
+    if (!fullname.trim()) {
+      newErrors.fullname = "Full name is required";
+    }
 
     // Validate phone
     if (!phone.trim()) {
@@ -63,23 +69,28 @@ const SignUpPage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (validateForm()) {
-      // Here you would normally call an API to create the user
-      // For now, we'll just simulate success
+      // Create account using Supabase Auth
+      const { success, error } = await signup(fullname, phone, email, password);
       
-      toast({
-        title: "Account created!",
-        description: "Your account has been successfully created.",
-      });
-      
-      // Auto-login the user
-      login(phone, password);
-      
-      // Navigate to home page
-      navigate('/');
+      if (success) {
+        toast({
+          title: "Account created!",
+          description: "Your account has been successfully created.",
+        });
+        
+        // Navigate to home page
+        navigate('/');
+      } else if (error) {
+        toast({
+          title: "Signup failed",
+          description: error,
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -98,6 +109,25 @@ const SignUpPage = () => {
           
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-4">
+              {/* Full Name Input */}
+              <div>
+                <Label htmlFor="fullname" className="block text-sm font-medium text-gray-700">
+                  Full Name
+                </Label>
+                <div className="mt-1">
+                  <Input
+                    id="fullname"
+                    type="text"
+                    placeholder="John Doe"
+                    className={`${errors.fullname ? 'border-red-500' : ''}`}
+                    value={fullname}
+                    onChange={(e) => setFullname(e.target.value)}
+                    disabled={isLoading}
+                  />
+                </div>
+                {errors.fullname && <p className="mt-1 text-sm text-red-600">{errors.fullname}</p>}
+              </div>
+
               {/* Phone Number Input */}
               <div>
                 <Label htmlFor="phone" className="block text-sm font-medium text-gray-700">
@@ -114,6 +144,7 @@ const SignUpPage = () => {
                     className={`pl-10 ${errors.phone ? 'border-red-500' : ''}`}
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
+                    disabled={isLoading}
                   />
                 </div>
                 {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone}</p>}
@@ -135,6 +166,7 @@ const SignUpPage = () => {
                     className={`pl-10 ${errors.email ? 'border-red-500' : ''}`}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    disabled={isLoading}
                   />
                 </div>
                 {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
@@ -153,11 +185,13 @@ const SignUpPage = () => {
                     className={`${errors.password ? 'border-red-500' : ''}`}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    disabled={isLoading}
                   />
                   <button
                     type="button"
                     className="absolute inset-y-0 right-0 pr-3 flex items-center"
                     onClick={() => setShowPassword(!showPassword)}
+                    disabled={isLoading}
                   >
                     {showPassword ? (
                       <EyeOff className="h-5 w-5 text-gray-400" />
@@ -182,11 +216,13 @@ const SignUpPage = () => {
                     className={`${errors.confirmPassword ? 'border-red-500' : ''}`}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
+                    disabled={isLoading}
                   />
                   <button
                     type="button"
                     className="absolute inset-y-0 right-0 pr-3 flex items-center"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    disabled={isLoading}
                   >
                     {showConfirmPassword ? (
                       <EyeOff className="h-5 w-5 text-gray-400" />
@@ -206,6 +242,7 @@ const SignUpPage = () => {
                     checked={agreedToTerms}
                     onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
                     className={errors.terms ? 'border-red-500' : ''}
+                    disabled={isLoading}
                   />
                 </div>
                 <div className="ml-3 text-sm">
@@ -228,8 +265,16 @@ const SignUpPage = () => {
               <Button
                 type="submit"
                 className="w-full bg-foodsnap-orange hover:bg-foodsnap-orange/90 text-white py-2 px-4 rounded-md"
+                disabled={isLoading}
               >
-                Sign Up
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating Account...
+                  </>
+                ) : (
+                  "Sign Up"
+                )}
               </Button>
             </div>
           </form>
@@ -245,6 +290,7 @@ const SignUpPage = () => {
                     (loginDialog as HTMLButtonElement).click();
                   }
                 }}
+                disabled={isLoading}
               >
                 Log in
               </button>
