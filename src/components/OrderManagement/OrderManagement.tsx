@@ -129,15 +129,29 @@ const generateReducedMockOrders = (): OrderType[] => {
     { name: "Bún chả", unitPrice: 65000, notes: ["Nước chấm riêng", "Không mỡ", "Nhiều rau", "Ít nước mắm"] },
     { name: "Bánh mì thịt", unitPrice: 35000, notes: ["Không đồ chua", "Ít ớt", "Thêm pate", "Không rau răm"] },
     { name: "Cơm tấm sườn", unitPrice: 55000, notes: ["Không hành", "Thêm trứng", "Không mỡ hành", "Ít nước mắm"] },
-    { name: "Bún bò Huế", unitPrice: 80000, notes: ["Không giò", "Nhiều thịt", "Ít ớt", "Không huyết"] }
+    { name: "Bún bò Huế", unitPrice: 80000, notes: ["Không giò", "Nhiều thịt", "Ít ớt", "Không huyết"] },
+    { name: "Gỏi cuốn tôm thịt", unitPrice: 45000, notes: ["Không tỏi", "Nhiều rau thơm", "Nước chấm đặc biệt"] },
+    { name: "Chả giò hải sản", unitPrice: 60000, notes: ["Ít dầu", "Không ăn cay", "Thêm rau sống"] },
+    { name: "Cá kho tộ", unitPrice: 85000, notes: ["Ít mặn", "Nhiều hành", "Kèm cơm trắng"] },
+    { name: "Canh chua cá lóc", unitPrice: 70000, notes: ["Không cà chua", "Nhiều đậu bắp", "Ít me chua"] }
   ];
   
   // Helper to generate random dishes with notes
   const generateOrderItems = (count: number): OrderItemType[] => {
     const items: OrderItemType[] = [];
     
+    // Make sure we don't have duplicate items
+    const usedDishIndices = new Set<number>();
+    
     for (let i = 0; i < count; i++) {
-      const randomDish = commonDishes[Math.floor(Math.random() * commonDishes.length)];
+      let randomIndex: number;
+      // Ensure we choose a unique dish
+      do {
+        randomIndex = Math.floor(Math.random() * commonDishes.length);
+      } while (usedDishIndices.has(randomIndex) && usedDishIndices.size < commonDishes.length);
+      
+      usedDishIndices.add(randomIndex);
+      const randomDish = commonDishes[randomIndex];
       const quantity = Math.floor(Math.random() * 2) + 1; // 1 or 2 items
       const shouldHaveNote = Math.random() > 0.3; // 70% chance of having a note
       
@@ -158,7 +172,9 @@ const generateReducedMockOrders = (): OrderType[] => {
     orderDate.setDate(orderDate.getDate() - daysAgo);
     orderDate.setHours(Math.floor(Math.random() * 12) + 8, Math.floor(Math.random() * 50)); // Between 8am-8pm
     
-    const items = generateOrderItems(Math.floor(Math.random() * 2) + 2); // 2-3 items per order
+    // Create more items for some orders (3-5 items)
+    const itemCount = Math.floor(Math.random() * 3) + 3;
+    const items = generateOrderItems(itemCount); 
     const deliveryFee = 15000 + (Math.floor(Math.random() * 3) * 5000); // 15k, 20k, or 25k
     
     return {
