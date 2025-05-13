@@ -83,16 +83,6 @@ const useRestaurantStatus = (id: string | undefined) => {
   return status;
 };
 
-// Placeholder component for Profile tab
-const ProfileManagement = () => (
-  <div className="bg-white rounded-md p-6 shadow-sm">
-    <h2 className="text-xl font-semibold mb-4">Quản lý thông tin nhà hàng</h2>
-    <p className="text-gray-500">
-      Nội dung quản lý thông tin nhà hàng sẽ được thêm vào sau.
-    </p>
-  </div>
-);
-
 // Menu Management component
 const MenuManagement = () => {
   const [dishes, setDishes] = useState(mockDishes);
