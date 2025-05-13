@@ -17,6 +17,7 @@ import {
 import Footer from "@/components/Footer";
 import DishFormDialog from "@/components/DishFormDialog";
 import OrderManagement from "@/components/OrderManagement/OrderManagement";
+import ProfileManagement from "@/components/ProfileManagement/ProfileManagement";
 
 // Mock data for dishes
 const mockDishes = [
