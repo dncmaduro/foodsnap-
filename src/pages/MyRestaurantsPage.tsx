@@ -135,7 +135,7 @@ const MyRestaurantsPage = () => {
   );
 };
 
-// Restaurant Card Component
+// Restaurant Card Component - Updated to link to the RestaurantDetailsPage
 const RestaurantCard = ({ restaurant }: { restaurant: any }) => {
   return (
     <Card className="overflow-hidden">
