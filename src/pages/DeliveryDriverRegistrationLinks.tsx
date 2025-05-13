@@ -21,11 +21,7 @@ const DeliveryDriverRegistrationLinks = () => {
   };
 
   const handleRegistration = () => {
-    // In a real app, this would redirect to a registration form
-    toast({
-      title: "Đăng ký làm tài xế",
-      description: "Chức năng đang được phát triển. Vui lòng thử lại sau."
-    });
+    navigate("/delivery-registration/form");
   };
 
   return (
