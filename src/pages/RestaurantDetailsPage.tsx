@@ -16,6 +16,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import Footer from "@/components/Footer";
+import DishFormDialog from "@/components/DishFormDialog";
 
 // Mock data for dishes
 const mockDishes = [
@@ -105,6 +106,9 @@ const MenuManagement = () => {
   const [dishes, setDishes] = useState(mockDishes);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [editingDish, setEditingDish] = useState<null | typeof mockDishes[0]>(null);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const itemsPerPage = 3;
 
   // Filter dishes by search term
@@ -142,19 +146,40 @@ const MenuManagement = () => {
     }
   };
   
-  const handleEdit = (id: string) => {
-    // In a real app, this would open an edit modal
-    toast({
-      title: "Chức năng đang phát triển",
-      description: "Tính năng chỉnh sửa món ăn sẽ được thêm vào sau",
-    });
+  const handleEdit = (dish: typeof mockDishes[0]) => {
+    setEditingDish(dish);
+    setIsEditDialogOpen(true);
   };
   
   const handleAddNew = () => {
-    // In a real app, this would open an add modal
+    setIsAddDialogOpen(true);
+  };
+
+  const handleSaveNewDish = (values: any) => {
+    const newDish = {
+      ...values,
+      id: `new-${Date.now()}`,
+      available: true
+    };
+    
+    setDishes([...dishes, newDish]);
+    
     toast({
-      title: "Chức năng đang phát triển",
-      description: "Tính năng thêm món ăn mới sẽ được thêm vào sau",
+      title: "Thêm món mới thành công",
+      description: `${values.name} đã được thêm vào thực đơn`,
+    });
+  };
+
+  const handleUpdateDish = (values: any) => {
+    if (!editingDish) return;
+    
+    setDishes(dishes.map(dish => 
+      dish.id === editingDish.id ? { ...values, available: dish.available } : dish
+    ));
+    
+    toast({
+      title: "Cập nhật thành công",
+      description: `${values.name} đã được cập nhật`,
     });
   };
 
@@ -182,6 +207,13 @@ const MenuManagement = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
+      
+      {/* Dish count information */}
+      {filteredDishes.length > 0 && (
+        <div className="text-sm text-gray-500">
+          Hiển thị {indexOfFirstDish + 1}-{Math.min(indexOfLastDish, filteredDishes.length)} trong tổng số {filteredDishes.length} món ăn
+        </div>
+      )}
       
       {/* Dish list */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -226,7 +258,7 @@ const MenuManagement = () => {
                           variant="ghost" 
                           size="sm" 
                           className="h-8 w-8 p-0"
-                          onClick={() => handleEdit(dish.id)}
+                          onClick={() => handleEdit(dish)}
                         >
                           <Edit size={16} className="text-blue-600" />
                         </Button>
@@ -282,6 +314,25 @@ const MenuManagement = () => {
             </PaginationItem>
           </PaginationContent>
         </Pagination>
+      )}
+      
+      {/* Add New Dish Dialog */}
+      <DishFormDialog
+        open={isAddDialogOpen}
+        onOpenChange={setIsAddDialogOpen}
+        onSave={handleSaveNewDish}
+        mode="add"
+      />
+      
+      {/* Edit Dish Dialog */}
+      {editingDish && (
+        <DishFormDialog
+          open={isEditDialogOpen}
+          onOpenChange={setIsEditDialogOpen}
+          onSave={handleUpdateDish}
+          initialValues={editingDish}
+          mode="edit"
+        />
       )}
     </div>
   );
