@@ -73,7 +73,7 @@ const MyRestaurantsPage = () => {
           className="mb-6 text-gray-700 hover:text-foodsnap-teal"
         >
           <ArrowLeft size={18} className="mr-2" />
-          <span>Quay lại trang quản lý</span>
+          <span>Quay lại</span>
         </Button>
         
         <h1 className="text-3xl font-bold mb-8 text-center md:text-left">Danh sách nhà hàng đã đăng ký</h1>

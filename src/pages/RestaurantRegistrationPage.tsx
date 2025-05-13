@@ -16,6 +16,13 @@ import {
   FormLabel, 
   FormMessage 
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,6 +30,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 const formSchema = z.object({
   restaurantName: z.string().min(1, "Vui lòng nhập tên nhà hàng"),
   restaurantAddress: z.string().min(1, "Vui lòng nhập địa chỉ nhà hàng"),
+  district: z.string().min(1, "Vui lòng chọn quận"),
   ownerIdNumber: z.string().length(12, "Số CCCD phải có 12 chữ số").regex(/^\d+$/, "Số CCCD chỉ được chứa chữ số"),
   frontIdImage: z.instanceof(File, { message: "Vui lòng tải lên ảnh mặt trước CCCD" }),
   backIdImage: z.instanceof(File, { message: "Vui lòng tải lên ảnh mặt sau CCCD" }),
@@ -46,6 +54,7 @@ const RestaurantRegistrationPage = () => {
     defaultValues: {
       restaurantName: "",
       restaurantAddress: "",
+      district: "",
       ownerIdNumber: "",
       bankAccountName: "",
       bankName: "",
@@ -94,7 +103,7 @@ const RestaurantRegistrationPage = () => {
           className="text-gray-700 hover:text-foodsnap-teal flex items-center"
         >
           <ArrowLeft size={18} className="mr-2" />
-          <span>Quay lại quản lý nhà hàng</span>
+          <span>Quay lại</span>
         </Button>
       </div>
       
@@ -123,19 +132,51 @@ const RestaurantRegistrationPage = () => {
                     )}
                   />
                   
-                  <FormField
-                    control={form.control}
-                    name="restaurantAddress"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Địa chỉ nhà hàng</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Nhập địa chỉ đầy đủ của nhà hàng" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="md:col-span-2">
+                      <FormField
+                        control={form.control}
+                        name="restaurantAddress"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Địa chỉ nhà hàng</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Nhập địa chỉ đầy đủ của nhà hàng" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div>
+                      <FormField
+                        control={form.control}
+                        name="district"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Quận</FormLabel>
+                            <Select 
+                              onValueChange={field.onChange} 
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Chọn quận" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="Cầu Giấy">Cầu Giấy</SelectItem>
+                                <SelectItem value="Đống Đa">Đống Đa</SelectItem>
+                                <SelectItem value="Ba Đình">Ba Đình</SelectItem>
+                                <SelectItem value="Thanh Xuân">Thanh Xuân</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
                 </div>
                 
                 {/* Owner Verification Section */}
@@ -335,4 +376,3 @@ const RestaurantRegistrationPage = () => {
 };
 
 export default RestaurantRegistrationPage;
-
