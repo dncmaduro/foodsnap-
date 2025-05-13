@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
-import { Loader2 } from "lucide-react";
 
 type LoginDialogProps = {
   isOpen: boolean;
@@ -14,12 +13,12 @@ type LoginDialogProps = {
 };
 
 const LoginDialog = ({ isOpen, onClose, onSuccess }: LoginDialogProps) => {
-  const { login, isLoading } = useAuth();
+  const { login } = useAuth();
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     
@@ -35,16 +34,12 @@ const LoginDialog = ({ isOpen, onClose, onSuccess }: LoginDialogProps) => {
       return;
     }
     
-    // Perform login using Supabase
-    const { success, error: loginError } = await login(phone, password);
+    // Perform login
+    login(phone, password);
+    onClose();
     
-    if (success) {
-      onClose();
-      if (onSuccess) {
-        onSuccess();
-      }
-    } else if (loginError) {
-      setError(loginError);
+    if (onSuccess) {
+      onSuccess();
     }
   };
 
@@ -67,7 +62,6 @@ const LoginDialog = ({ isOpen, onClose, onSuccess }: LoginDialogProps) => {
               placeholder="(123) 456-7890"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              disabled={isLoading}
             />
           </div>
           
@@ -78,29 +72,17 @@ const LoginDialog = ({ isOpen, onClose, onSuccess }: LoginDialogProps) => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              disabled={isLoading}
             />
           </div>
           
           {error && <p className="text-sm text-red-500">{error}</p>}
           
           <DialogFooter className="pt-4">
-            <Button variant="outline" type="button" onClick={onClose} disabled={isLoading}>
+            <Button variant="outline" type="button" onClick={onClose}>
               Cancel
             </Button>
-            <Button 
-              type="submit" 
-              className="bg-foodsnap-orange hover:bg-foodsnap-orange/90"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Logging in...
-                </>
-              ) : (
-                "Log In"
-              )}
+            <Button type="submit" className="bg-foodsnap-orange hover:bg-foodsnap-orange/90">
+              Log In
             </Button>
           </DialogFooter>
         </form>

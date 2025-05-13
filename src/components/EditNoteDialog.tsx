@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { PencilIcon } from "lucide-react";
-import { toast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 interface EditNoteDialogProps {
   itemName: string;
@@ -27,6 +27,7 @@ const EditNoteDialog: React.FC<EditNoteDialogProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [note, setNote] = useState(currentNote);
+  const { toast } = useToast();
   
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
