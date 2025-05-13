@@ -122,6 +122,15 @@ const DeliveryDriverRegistrationForm = () => {
       backLicense: backLicensePreview
     });
 
+    // Save application status in localStorage for demo purposes
+    // In a real app, this would be stored in a database
+    localStorage.setItem("driverApplicationSubmitted", new Date().toISOString());
+    
+    // For demo purposes, let's simulate that 30% of applications get immediately approved
+    if (Math.random() < 0.3) {
+      localStorage.setItem("driverApplicationApproved", "true");
+    }
+
     // Simulate API call delay
     setTimeout(() => {
       setIsSubmitting(false);
