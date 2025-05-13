@@ -59,92 +59,42 @@ export interface OrderType {
   statusHistory: StatusHistoryItem[];
 }
 
-// Mock data for orders
-const generateMockOrders = (): OrderType[] => {
-  const statusOptions: OrderStatus[] = ["new", "processing", "in_delivery", "completed", "canceled"];
-  const paymentOptions = ["Tiền mặt khi nhận hàng", "Thanh toán online"];
-  
+// Reduced mock data for orders - only 3-4 per category
+const generateReducedMockOrders = (): OrderType[] => {
   const orders: OrderType[] = [];
   const now = new Date();
   
-  for (let i = 1; i <= 50; i++) {
-    // Generate a random date within the last 30 days
-    const randomDays = Math.floor(Math.random() * 30);
-    const randomHours = Math.floor(Math.random() * 24);
-    const randomMinutes = Math.floor(Math.random() * 60);
+  // Helper to create status history based on current status
+  const createStatusHistory = (status: OrderStatus, orderTime: Date): StatusHistoryItem[] => {
+    const history: StatusHistoryItem[] = [];
     
-    const orderDate = new Date(now);
-    orderDate.setDate(orderDate.getDate() - randomDays);
-    orderDate.setHours(randomHours, randomMinutes);
-    
-    // Randomly select a status
-    const status = statusOptions[Math.floor(Math.random() * statusOptions.length)];
-    
-    // Generate between 1 and 5 items
-    const itemCount = Math.floor(Math.random() * 5) + 1;
-    const items: OrderItemType[] = [];
-    
-    const dishNames = [
-      "Phở bò",
-      "Bún chả",
-      "Bánh mì thịt",
-      "Cơm tấm sườn",
-      "Bún bò Huế",
-      "Gỏi cuốn",
-      "Bánh xèo",
-      "Chả giò",
-      "Cà ri gà",
-      "Lẩu hải sản"
-    ];
-    
-    for (let j = 0; j < itemCount; j++) {
-      const randomDishIndex = Math.floor(Math.random() * dishNames.length);
-      const price = (Math.floor(Math.random() * 20) + 5) * 10000; // 50k-200k VND
-      const quantity = Math.floor(Math.random() * 3) + 1;
-      
-      items.push({
-        name: dishNames[randomDishIndex],
-        quantity,
-        unitPrice: price,
-        note: Math.random() > 0.7 ? "Không hành, ít ớt" : undefined
-      });
-    }
-    
-    // Generate a random delivery fee
-    const deliveryFee = (Math.floor(Math.random() * 3) + 1) * 10000; // 10k-30k VND
-    
-    // Generate status history
-    const statusHistory: StatusHistoryItem[] = [];
-    
-    // Always add the order creation status
-    statusHistory.push({
+    // Always add order creation
+    history.push({
       status: "Đơn hàng được tạo",
-      timestamp: orderDate.toISOString(),
+      timestamp: new Date(orderTime).toISOString(),
     });
     
-    // Add status updates based on current status
-    if (status !== "new") {
-      const confirmDate = new Date(orderDate);
+    // Add progression based on status
+    if (status === "processing" || status === "in_delivery" || status === "completed") {
+      const confirmDate = new Date(orderTime);
       confirmDate.setMinutes(confirmDate.getMinutes() + 5);
-      statusHistory.push({
+      history.push({
         status: "Nhà hàng xác nhận",
         timestamp: confirmDate.toISOString(),
       });
     }
     
-    if (status === "processing" || status === "in_delivery" || status === "completed") {
-      const processDate = new Date(orderDate);
-      processDate.setMinutes(processDate.getMinutes() + 20);
-      statusHistory.push({
+    if (status === "in_delivery" || status === "completed") {
+      const processDate = new Date(orderTime);
+      processDate.setMinutes(processDate.getMinutes() + 15);
+      history.push({
         status: "Đang chuẩn bị món",
         timestamp: processDate.toISOString(),
       });
-    }
-    
-    if (status === "in_delivery" || status === "completed") {
-      const deliveryDate = new Date(orderDate);
-      deliveryDate.setMinutes(deliveryDate.getMinutes() + 40);
-      statusHistory.push({
+      
+      const deliveryDate = new Date(orderTime);
+      deliveryDate.setMinutes(deliveryDate.getMinutes() + 30);
+      history.push({
         status: "Đang giao hàng",
         timestamp: deliveryDate.toISOString(),
         note: "Shipper: Nguyễn Văn A - 090xxx"
@@ -152,41 +102,109 @@ const generateMockOrders = (): OrderType[] => {
     }
     
     if (status === "completed") {
-      const completeDate = new Date(orderDate);
-      completeDate.setMinutes(completeDate.getMinutes() + 60);
-      statusHistory.push({
+      const completeDate = new Date(orderTime);
+      completeDate.setMinutes(completeDate.getMinutes() + 45);
+      history.push({
         status: "Giao hàng thành công",
         timestamp: completeDate.toISOString(),
       });
     }
     
     if (status === "canceled") {
-      const cancelDate = new Date(orderDate);
-      cancelDate.setMinutes(cancelDate.getMinutes() + Math.floor(Math.random() * 30));
-      statusHistory.push({
+      const cancelDate = new Date(orderTime);
+      cancelDate.setMinutes(cancelDate.getMinutes() + 10);
+      history.push({
         status: "Đơn hàng bị hủy",
         timestamp: cancelDate.toISOString(),
-        note: Math.random() > 0.5 ? "Khách hàng yêu cầu hủy" : "Nhà hàng hết nguyên liệu"
+        note: "Nhà hàng hết nguyên liệu"
       });
     }
     
-    // Create the order object
-    orders.push({
-      id: `ORD${100000 + i}`,
-      restaurantId: "1", // Fixed for this example
+    return history;
+  };
+  
+  // Common dishes with notes for demonstration
+  const commonDishes = [
+    { name: "Phở bò", unitPrice: 75000, notes: ["Không hành", "Ít ớt", "Thêm giá", "Không dùng hành ngò"] },
+    { name: "Bún chả", unitPrice: 65000, notes: ["Nước chấm riêng", "Không mỡ", "Nhiều rau", "Ít nước mắm"] },
+    { name: "Bánh mì thịt", unitPrice: 35000, notes: ["Không đồ chua", "Ít ớt", "Thêm pate", "Không rau răm"] },
+    { name: "Cơm tấm sườn", unitPrice: 55000, notes: ["Không hành", "Thêm trứng", "Không mỡ hành", "Ít nước mắm"] },
+    { name: "Bún bò Huế", unitPrice: 80000, notes: ["Không giò", "Nhiều thịt", "Ít ớt", "Không huyết"] }
+  ];
+  
+  // Helper to generate random dishes with notes
+  const generateOrderItems = (count: number): OrderItemType[] => {
+    const items: OrderItemType[] = [];
+    
+    for (let i = 0; i < count; i++) {
+      const randomDish = commonDishes[Math.floor(Math.random() * commonDishes.length)];
+      const quantity = Math.floor(Math.random() * 2) + 1; // 1 or 2 items
+      const shouldHaveNote = Math.random() > 0.3; // 70% chance of having a note
+      
+      items.push({
+        name: randomDish.name,
+        quantity,
+        unitPrice: randomDish.unitPrice,
+        note: shouldHaveNote ? randomDish.notes[Math.floor(Math.random() * randomDish.notes.length)] : undefined
+      });
+    }
+    
+    return items;
+  };
+  
+  // Helper to create an order with specific status
+  const createOrder = (id: number, status: OrderStatus, daysAgo: number): OrderType => {
+    const orderDate = new Date(now);
+    orderDate.setDate(orderDate.getDate() - daysAgo);
+    orderDate.setHours(Math.floor(Math.random() * 12) + 8, Math.floor(Math.random() * 50)); // Between 8am-8pm
+    
+    const items = generateOrderItems(Math.floor(Math.random() * 2) + 2); // 2-3 items per order
+    const deliveryFee = 15000 + (Math.floor(Math.random() * 3) * 5000); // 15k, 20k, or 25k
+    
+    return {
+      id: `ORD${100000 + id}`,
+      restaurantId: "1", // Fixed for the example
       orderTime: orderDate.toISOString(),
       customer: {
-        name: `Khách hàng ${i}`,
-        phone: `09${Math.floor(Math.random() * 100000000)}`,
+        name: `Khách hàng ${id}`,
+        phone: `09${Math.floor(Math.random() * 90000000 + 10000000)}`,
         address: `${Math.floor(Math.random() * 100) + 1} Đường ${Math.floor(Math.random() * 20) + 1}, Quận ${Math.floor(Math.random() * 12) + 1}, TP.HCM`,
-        notes: Math.random() > 0.7 ? "Gọi trước khi giao 10 phút" : undefined
+        notes: Math.random() > 0.5 ? "Gọi trước khi giao 10 phút" : undefined
       },
       items,
       deliveryFee,
       status,
-      paymentMethod: paymentOptions[Math.floor(Math.random() * paymentOptions.length)],
-      statusHistory,
-    });
+      paymentMethod: Math.random() > 0.5 ? "Tiền mặt khi nhận hàng" : "Thanh toán online",
+      statusHistory: createStatusHistory(status, orderDate),
+    };
+  };
+  
+  // Generate 3-4 orders for each status category
+  let idCounter = 1;
+  
+  // New orders - 3 orders
+  for (let i = 0; i < 3; i++) {
+    orders.push(createOrder(idCounter++, "new", i));
+  }
+  
+  // Processing orders - 3 orders
+  for (let i = 0; i < 3; i++) {
+    orders.push(createOrder(idCounter++, "processing", i + 1));
+  }
+  
+  // In delivery orders - 4 orders
+  for (let i = 0; i < 4; i++) {
+    orders.push(createOrder(idCounter++, "in_delivery", i + 2));
+  }
+  
+  // Completed orders - 4 orders
+  for (let i = 0; i < 4; i++) {
+    orders.push(createOrder(idCounter++, "completed", i + 3));
+  }
+  
+  // Canceled orders - 3 orders
+  for (let i = 0; i < 3; i++) {
+    orders.push(createOrder(idCounter++, "canceled", i + 2));
   }
   
   // Sort by most recent first
@@ -195,7 +213,8 @@ const generateMockOrders = (): OrderType[] => {
   );
 };
 
-const mockOrders = generateMockOrders();
+// Use the reduced mock orders
+const mockOrders = generateReducedMockOrders();
 
 // Main component
 const OrderManagement = () => {
@@ -207,6 +226,16 @@ const OrderManagement = () => {
   const [orders, setOrders] = useState<OrderType[]>(mockOrders);
   
   const itemsPerPage = 10;
+
+  // Get the next logical status based on current status
+  const getNextStatus = (currentStatus: OrderStatus): OrderStatus | null => {
+    switch (currentStatus) {
+      case "new": return "processing";
+      case "processing": return "in_delivery";
+      case "in_delivery": return "completed";
+      default: return null; // No next status for completed or canceled
+    }
+  };
 
   // Filter orders based on active tab
   const getFilteredOrders = () => {
@@ -402,6 +431,7 @@ const OrderManagement = () => {
                   {currentOrders.length > 0 ? (
                     currentOrders.map((order) => {
                       const orderTotal = calculateOrderTotal(order);
+                      const nextStatus = getNextStatus(order.status);
                       
                       return (
                         <TableRow key={order.id}>

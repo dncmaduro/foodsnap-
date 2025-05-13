@@ -11,6 +11,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { OrderStatusBadge, OrderStatus } from "./OrderStatusBadge";
 import { StatusUpdateDialog } from "./StatusUpdateDialog";
 import { OrderType } from "./OrderManagement"; 
+import { MessageSquare, AlertTriangle } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
 
 interface OrderDetailDialogProps {
   order: OrderType | null;
@@ -34,6 +36,78 @@ export function OrderDetailDialog({
     (sum, item) => sum + item.quantity * item.unitPrice,
     0
   );
+  
+  // Get next logical status based on current status
+  const getNextStatus = (currentStatus: OrderStatus): OrderStatus | null => {
+    switch (currentStatus) {
+      case "new": return "processing";
+      case "processing": return "in_delivery";
+      case "in_delivery": return "completed";
+      default: return null; // No next status for completed or canceled
+    }
+  };
+  
+  // Handle direct status update to next logical status
+  const handleNextStatus = () => {
+    const nextStatus = getNextStatus(order.status);
+    if (nextStatus) {
+      onStatusUpdate(order.id, nextStatus);
+      toast({
+        title: "Trạng thái đơn hàng đã được cập nhật",
+        description: `Đơn hàng #${order.id} đã được chuyển sang trạng thái ${getStatusLabel(nextStatus)}.`
+      });
+    }
+  };
+  
+  // Handle cancel order
+  const handleCancelOrder = () => {
+    if (order.status === "new") {
+      onStatusUpdate(order.id, "canceled");
+      toast({
+        title: "Đơn hàng đã bị hủy",
+        description: `Đơn hàng #${order.id} đã được hủy.`
+      });
+    }
+  };
+  
+  // Get status label
+  const getStatusLabel = (status: OrderStatus): string => {
+    switch (status) {
+      case 'new': return 'Tiếp nhận';
+      case 'processing': return 'Chuẩn bị món';
+      case 'in_delivery': return 'Giao hàng';
+      case 'completed': return 'Hoàn thành';
+      case 'canceled': return 'Hủy đơn';
+      default: return '';
+    }
+  };
+  
+  // Get next status button info
+  const getNextStatusButton = () => {
+    const nextStatus = getNextStatus(order.status);
+    
+    if (!nextStatus) {
+      return null; // No next status button for completed or canceled orders
+    }
+    
+    // For new orders, we show a different button style
+    if (order.status === "new") {
+      return (
+        <Button 
+          className="bg-green-600 hover:bg-green-700"
+          onClick={handleNextStatus}
+        >
+          {getStatusLabel(nextStatus)}
+        </Button>
+      );
+    }
+    
+    return (
+      <Button onClick={handleNextStatus}>
+        Chuyển sang {getStatusLabel(nextStatus)}
+      </Button>
+    );
+  };
 
   return (
     <>
@@ -54,11 +128,32 @@ export function OrderDetailDialog({
                       {format(new Date(order.orderTime), "dd/MM/yyyy HH:mm")}
                     </p>
                   </div>
-                  <div className="flex gap-2 items-center">
+                  <div className="flex flex-wrap gap-2 items-center">
                     <OrderStatusBadge status={order.status} />
-                    <Button onClick={() => setIsStatusDialogOpen(true)}>
-                      Cập nhật trạng thái
-                    </Button>
+                    
+                    {/* Show appropriate action buttons based on status */}
+                    {order.status !== "completed" && order.status !== "canceled" && (
+                      <div className="flex gap-2">
+                        {getNextStatusButton()}
+                        
+                        {order.status === "new" && (
+                          <Button 
+                            variant="destructive" 
+                            onClick={handleCancelOrder}
+                          >
+                            <AlertTriangle className="h-4 w-4 mr-1" />
+                            Hủy đơn
+                          </Button>
+                        )}
+                        
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setIsStatusDialogOpen(true)}
+                        >
+                          Tùy chỉnh trạng thái
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -108,8 +203,17 @@ export function OrderDetailDialog({
                     <div key={index} className="grid grid-cols-12 gap-4 py-2 border-b text-sm">
                       <div className="col-span-5 font-medium">{item.name}</div>
                       <div className="col-span-1 text-center">{item.quantity}</div>
-                      <div className="col-span-3 text-muted-foreground truncate">
-                        {item.note || "—"}
+                      <div className="col-span-3">
+                        {item.note ? (
+                          <div className="flex items-start">
+                            <MessageSquare className="h-4 w-4 mr-1 mt-0.5 text-gray-400 flex-shrink-0" />
+                            <span className="text-muted-foreground text-xs line-clamp-2">
+                              {item.note}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-gray-400">—</span>
+                        )}
                       </div>
                       <div className="col-span-1 text-right">
                         {(item.unitPrice / 1000).toFixed(0)}K
