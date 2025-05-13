@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Plus, Search, Edit, Trash, ToggleLeft, ToggleRight } from "lucide-react";
@@ -17,6 +16,7 @@ import {
 } from "@/components/ui/pagination";
 import Footer from "@/components/Footer";
 import DishFormDialog from "@/components/DishFormDialog";
+import OrderManagement from "@/components/OrderManagement/OrderManagement";
 
 // Mock data for dishes
 const mockDishes = [
@@ -82,16 +82,7 @@ const useRestaurantStatus = (id: string | undefined) => {
   return status;
 };
 
-// Placeholder components for each tab content
-const OrderManagement = () => (
-  <div className="bg-white rounded-md p-6 shadow-sm">
-    <h2 className="text-xl font-semibold mb-4">Quản lý đơn hàng</h2>
-    <p className="text-gray-500">
-      Nội dung quản lý đơn hàng sẽ được thêm vào sau.
-    </p>
-  </div>
-);
-
+// Placeholder component for Profile tab
 const ProfileManagement = () => (
   <div className="bg-white rounded-md p-6 shadow-sm">
     <h2 className="text-xl font-semibold mb-4">Quản lý thông tin nhà hàng</h2>
