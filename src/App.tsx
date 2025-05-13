@@ -24,41 +24,44 @@ import MyRestaurantsPage from "./pages/MyRestaurantsPage";
 import RestaurantDetailsPage from "./pages/RestaurantDetailsPage";
 import NotFound from "./pages/NotFound";
 
+// Create a new QueryClient instance
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <CartProvider>
-        <TooltipProvider>
-          {/* Use only one toaster to avoid conflicts */}
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/search" element={<SearchResults />} />
-              <Route path="/restaurant/:id" element={<RestaurantProfile />} />
-              <Route path="/cart" element={<CartPage />} />
-              <Route path="/checkout" element={<CheckoutPage />} />
-              <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
-              <Route path="/track-order/:id?" element={<OrderTrackingPage />} />
-              <Route path="/order-history" element={<OrderHistoryPage />} />
-              <Route path="/order/:id" element={<OrderDetailsPage />} />
-              <Route path="/rate-order/:id" element={<RatingAndReviewPage />} />
-              <Route path="/signup" element={<SignUpPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/restaurant-management" element={<RestaurantManagementPage />} />
-              <Route path="/restaurant-registration" element={<RestaurantRegistrationPage />} />
-              <Route path="/my-restaurants" element={<MyRestaurantsPage />} />
-              <Route path="/restaurant-details/:id" element={<RestaurantDetailsPage />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </CartProvider>
-    </AuthProvider>
-  </QueryClientProvider>
-);
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <CartProvider>
+          <TooltipProvider>
+            {/* Use only one toaster to avoid conflicts */}
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/search" element={<SearchResults />} />
+                <Route path="/restaurant/:id" element={<RestaurantProfile />} />
+                <Route path="/cart" element={<CartPage />} />
+                <Route path="/checkout" element={<CheckoutPage />} />
+                <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
+                <Route path="/track-order/:id?" element={<OrderTrackingPage />} />
+                <Route path="/order-history" element={<OrderHistoryPage />} />
+                <Route path="/order/:id" element={<OrderDetailsPage />} />
+                <Route path="/rate-order/:id" element={<RatingAndReviewPage />} />
+                <Route path="/signup" element={<SignUpPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/restaurant-management" element={<RestaurantManagementPage />} />
+                <Route path="/restaurant-registration" element={<RestaurantRegistrationPage />} />
+                <Route path="/my-restaurants" element={<MyRestaurantsPage />} />
+                <Route path="/restaurant-details/:id" element={<RestaurantDetailsPage />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </CartProvider>
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+}
 
 export default App;
