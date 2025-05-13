@@ -30,7 +30,7 @@ const App = () => (
     <AuthProvider>
       <CartProvider>
         <TooltipProvider>
-          <Toaster />
+          {/* Use only one toaster to avoid conflicts */}
           <Sonner />
           <BrowserRouter>
             <Routes>
