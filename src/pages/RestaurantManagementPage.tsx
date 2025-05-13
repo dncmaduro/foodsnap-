@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 
 const RestaurantManagementPage = () => {
   const { isAuthenticated, logout } = useAuth();
@@ -14,7 +14,9 @@ const RestaurantManagementPage = () => {
 
   const handleLogout = () => {
     logout();
-    toast.success("Đã đăng xuất thành công");
+    toast({
+      title: "Đã đăng xuất thành công"
+    });
     navigate("/");
   };
 
