@@ -16,5 +16,7 @@ export function toast({ variant = "default", ...props }: ToastProps) {
   })
 }
 
-// Re-export the useToast hook from sonner
-export { Toaster as useToast } from "sonner"
+// Create a custom hook for toast that doesn't use the Toaster component
+export function useToast() {
+  return { toast }
+}

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Phone, Loader2 } from "lucide-react";
@@ -8,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 
 const SignUpPage = () => {
@@ -23,7 +22,6 @@ const SignUpPage = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const navigate = useNavigate();
-  const { toast } = useToast();
   const { signup, isLoading } = useAuth();
 
   const validateForm = () => {
