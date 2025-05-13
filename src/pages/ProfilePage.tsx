@@ -346,14 +346,12 @@ const ProfilePage = () => {
               )}
               
               {currentRole === "driver" && (
-                <div className="mt-4">
+                <div className="mt-4 space-y-2">
                   <Button 
-                    variant="outline"
-                    onClick={() => navigate('/delivery-dashboard')} 
-                    className="w-full"
-                    disabled
+                    onClick={() => navigate('/delivery-registration')} 
+                    className="w-full bg-foodsnap-teal hover:bg-foodsnap-teal/90"
                   >
-                    Driver Dashboard (Coming Soon)
+                    Đăng ký làm tài xế giao hàng
                   </Button>
                 </div>
               )}

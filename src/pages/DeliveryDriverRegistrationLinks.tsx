@@ -1,0 +1,148 @@
+
+import { ArrowLeft, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/components/ui/use-toast";
+
+const DeliveryDriverRegistrationLinks = () => {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+  const { toast } = useToast();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+    toast({
+      title: "Đã đăng xuất",
+      description: "Bạn đã đăng xuất thành công khỏi tài khoản."
+    });
+  };
+
+  const handleRegistration = () => {
+    // In a real app, this would redirect to a registration form
+    toast({
+      title: "Đăng ký làm tài xế",
+      description: "Chức năng đang được phát triển. Vui lòng thử lại sau."
+    });
+  };
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Navigation />
+      
+      <main className="flex-grow container mx-auto px-4 py-8">
+        <div className="max-w-3xl mx-auto">
+          {/* Navigation buttons */}
+          <div className="flex justify-between mb-8">
+            <Button 
+              variant="outline" 
+              onClick={() => navigate("/profile")}
+              className="flex items-center"
+            >
+              <ArrowLeft size={16} className="mr-2" />
+              Quay lại trang cá nhân
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              onClick={handleLogout}
+              className="flex items-center text-red-500 hover:text-red-600 hover:bg-red-50"
+            >
+              <LogOut size={16} className="mr-2" />
+              Đăng xuất
+            </Button>
+          </div>
+          
+          {/* Page Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold mb-3">Đăng ký làm tài xế giao hàng</h1>
+            <p className="text-gray-600">
+              Trở thành đối tác giao hàng của FoodSnap để bắt đầu kiếm thu nhập ngay hôm nay.
+            </p>
+          </div>
+          
+          {/* Illustration */}
+          <div className="flex justify-center mb-10">
+            <div className="w-64 h-64 bg-gray-100 rounded-full flex items-center justify-center">
+              <img 
+                src="/delivery-illustration.svg" 
+                alt="Delivery Driver Illustration" 
+                className="w-48 h-48"
+                onError={(e) => {
+                  // Fallback if image doesn't exist
+                  const target = e.target as HTMLImageElement;
+                  target.onerror = null;
+                  target.src = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='1'%3E%3C/circle%3E%3Ccircle cx='19' cy='12' r='1'%3E%3C/circle%3E%3Ccircle cx='5' cy='12' r='1'%3E%3C/circle%3E%3C/svg%3E";
+                }}
+              />
+            </div>
+          </div>
+          
+          {/* Call-to-Action Section */}
+          <div className="text-center mb-12">
+            <Button 
+              onClick={handleRegistration}
+              size="lg" 
+              className="bg-foodsnap-teal hover:bg-foodsnap-teal/90 text-lg py-6 px-8"
+            >
+              Đăng ký làm tài xế giao hàng
+            </Button>
+          </div>
+          
+          {/* Benefits Section */}
+          <div className="bg-gray-50 p-6 rounded-lg mb-12">
+            <h2 className="text-xl font-semibold mb-4">Lợi ích khi trở thành tài xế FoodSnap</h2>
+            <ul className="space-y-2">
+              <li className="flex items-start">
+                <span className="bg-foodsnap-teal rounded-full text-white font-bold h-6 w-6 flex items-center justify-center mr-2 mt-1">✓</span>
+                <span>Thu nhập hấp dẫn và linh hoạt</span>
+              </li>
+              <li className="flex items-start">
+                <span className="bg-foodsnap-teal rounded-full text-white font-bold h-6 w-6 flex items-center justify-center mr-2 mt-1">✓</span>
+                <span>Thời gian làm việc tự do - bạn là người làm chủ thời gian của mình</span>
+              </li>
+              <li className="flex items-start">
+                <span className="bg-foodsnap-teal rounded-full text-white font-bold h-6 w-6 flex items-center justify-center mr-2 mt-1">✓</span>
+                <span>Thanh toán nhanh chóng, minh bạch</span>
+              </li>
+              <li className="flex items-start">
+                <span className="bg-foodsnap-teal rounded-full text-white font-bold h-6 w-6 flex items-center justify-center mr-2 mt-1">✓</span>
+                <span>Hỗ trợ kỹ thuật 24/7</span>
+              </li>
+            </ul>
+          </div>
+          
+          {/* Requirements Section */}
+          <div className="bg-gray-50 p-6 rounded-lg mb-10">
+            <h2 className="text-xl font-semibold mb-4">Yêu cầu đối với tài xế</h2>
+            <ul className="space-y-2">
+              <li className="flex items-start">
+                <span className="mr-2">•</span>
+                <span>Trên 18 tuổi, có CMND/CCCD</span>
+              </li>
+              <li className="flex items-start">
+                <span className="mr-2">•</span>
+                <span>Có xe máy và giấy tờ xe hợp lệ</span>
+              </li>
+              <li className="flex items-start">
+                <span className="mr-2">•</span>
+                <span>Có điện thoại thông minh để sử dụng ứng dụng</span>
+              </li>
+              <li className="flex items-start">
+                <span className="mr-2">•</span>
+                <span>Có kiến thức về đường phố và các khu vực trong thành phố</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default DeliveryDriverRegistrationLinks;

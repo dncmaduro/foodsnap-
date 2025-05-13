@@ -22,6 +22,7 @@ import RestaurantManagementPage from "./pages/RestaurantManagementPage";
 import RestaurantRegistrationPage from "./pages/RestaurantRegistrationPage";
 import MyRestaurantsPage from "./pages/MyRestaurantsPage";
 import RestaurantDetailsPage from "./pages/RestaurantDetailsPage";
+import DeliveryDriverRegistrationLinks from "./pages/DeliveryDriverRegistrationLinks";
 import NotFound from "./pages/NotFound";
 
 // Create a new QueryClient instance
@@ -49,6 +50,7 @@ function App() {
                 <Route path="/rate-order/:id" element={<RatingAndReviewPage />} />
                 <Route path="/signup" element={<SignUpPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/delivery-registration" element={<DeliveryDriverRegistrationLinks />} />
                 <Route path="/restaurant-management" element={<RestaurantManagementPage />} />
                 <Route path="/restaurant-registration" element={<RestaurantRegistrationPage />} />
                 <Route path="/my-restaurants" element={<MyRestaurantsPage />} />
