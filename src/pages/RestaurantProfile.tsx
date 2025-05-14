@@ -24,11 +24,11 @@ const RestaurantProfile = () => {
   } = useRestaurantData({ id });
 
   if (loading) {
-    return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+    return <div className="flex justify-center items-center min-h-screen">Đang tải...</div>;
   }
 
   if (!restaurant) {
-    return <div className="flex justify-center items-center min-h-screen">Restaurant not found</div>;
+    return <div className="flex justify-center items-center min-h-screen">Không tìm thấy nhà hàng</div>;
   }
 
   return (
@@ -45,9 +45,9 @@ const RestaurantProfile = () => {
         <div className="container mx-auto px-4 py-6">
           <Tabs defaultValue="menu" value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="w-full sm:w-auto mb-6 bg-white border">
-              <TabsTrigger value="menu" className="flex-1 sm:flex-none">Menu</TabsTrigger>
-              <TabsTrigger value="reviews" className="flex-1 sm:flex-none">Reviews</TabsTrigger>
-              <TabsTrigger value="info" className="flex-1 sm:flex-none">Info</TabsTrigger>
+              <TabsTrigger value="menu" className="flex-1 sm:flex-none">Thực đơn</TabsTrigger>
+              <TabsTrigger value="reviews" className="flex-1 sm:flex-none">Đánh giá</TabsTrigger>
+              <TabsTrigger value="info" className="flex-1 sm:flex-none">Thông tin</TabsTrigger>
             </TabsList>
             
             <TabsContent value="menu" className="mt-0">

@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Check, MapPin, Wallet, MessageSquare } from 'lucide-react';
@@ -33,10 +34,10 @@ const CheckoutPage = () => {
   });
   
   const savedAddress = {
-    name: 'John Doe',
-    phone: '(123) 456-7890',
-    address: '123 Main Street, Apt 4B, New York, NY 10001',
-    notes: 'Doorbell not working, please call when arriving'
+    name: 'Nguyễn Văn A',
+    phone: '0901234567',
+    address: '123 Đường Lê Lợi, Phường Bến Nghé, Quận 1, TP.HCM',
+    notes: 'Chuông cửa hỏng, vui lòng gọi khi đến'
   };
   
   const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
@@ -51,19 +52,19 @@ const CheckoutPage = () => {
   
   const handlePlaceOrder = () => {
     toast({
-      title: "Order placed successfully!",
-      description: "Your order has been received and is being processed.",
+      title: "Đặt hàng thành công!",
+      description: "Đơn hàng của bạn đã được tiếp nhận và đang được xử lý.",
     });
     
     const orderDetails = {
       orderId: `ORD-${Math.floor(Math.random() * 9000) + 1000}`,
-      restaurantName: cartItems[0]?.restaurantName || "Restaurant",
-      estimatedDelivery: "30-45 minutes",
+      restaurantName: cartItems[0]?.restaurantName || "Nhà hàng",
+      estimatedDelivery: "30-45 phút",
       items: cartItems,
       subtotal: subtotal,
       deliveryFee: deliveryFee,
       total: total,
-      paymentMethod: 'Cash on Delivery',
+      paymentMethod: 'Thanh toán khi nhận hàng',
       deliveryAddress: deliveryAddress === 'saved' ? savedAddress : addressForm,
       driverNote: driverNote
     };
@@ -82,13 +83,13 @@ const CheckoutPage = () => {
         <Navigation />
         <main className="flex-grow container mx-auto px-4 py-12 max-w-4xl">
           <div className="text-center py-12">
-            <h1 className="text-2xl font-bold mb-4">Your cart is empty</h1>
-            <p className="mb-6">You cannot proceed to checkout without any items in your cart.</p>
+            <h1 className="text-2xl font-bold mb-4">Giỏ hàng của bạn đang trống</h1>
+            <p className="mb-6">Bạn không thể tiến hành thanh toán khi không có món ăn nào trong giỏ hàng.</p>
             <Button 
               onClick={() => navigate('/')}
               className="bg-foodsnap-orange hover:bg-foodsnap-orange/90"
             >
-              Browse Restaurants
+              Khám phá nhà hàng
             </Button>
           </div>
         </main>
@@ -103,13 +104,13 @@ const CheckoutPage = () => {
       
       <main className="flex-grow container mx-auto px-4 py-6 max-w-4xl">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">Checkout</h1>
+          <h1 className="text-3xl font-bold">Thanh toán</h1>
           <div className="flex items-center mt-2 text-sm">
-            <span className="text-gray-500">Cart</span>
+            <span className="text-gray-500">Giỏ hàng</span>
             <span className="mx-2 text-gray-400">›</span>
-            <span className="font-medium text-foodsnap-orange">Checkout</span>
+            <span className="font-medium text-foodsnap-orange">Thanh toán</span>
             <span className="mx-2 text-gray-400">›</span>
-            <span className="text-gray-500">Confirmation</span>
+            <span className="text-gray-500">Xác nhận</span>
           </div>
         </div>
         
@@ -119,7 +120,7 @@ const CheckoutPage = () => {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <MapPin className="mr-2 h-5 w-5 text-foodsnap-orange" />
-                  Delivery Information
+                  Thông tin giao hàng
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -132,7 +133,7 @@ const CheckoutPage = () => {
                     <RadioGroupItem value="saved" id="saved-address" />
                     <div className="grid gap-1">
                       <Label htmlFor="saved-address" className="font-medium">
-                        Use saved address
+                        Sử dụng địa chỉ đã lưu
                       </Label>
                       {deliveryAddress === "saved" && (
                         <div className="mt-2 text-sm bg-gray-50 p-3 rounded-md">
@@ -141,7 +142,7 @@ const CheckoutPage = () => {
                           <p className="mt-1">{savedAddress.address}</p>
                           {savedAddress.notes && (
                             <p className="mt-1 text-gray-500">
-                              <span className="font-medium">Notes:</span> {savedAddress.notes}
+                              <span className="font-medium">Ghi chú:</span> {savedAddress.notes}
                             </p>
                           )}
                         </div>
@@ -152,49 +153,49 @@ const CheckoutPage = () => {
                     <RadioGroupItem value="new" id="new-address" />
                     <div className="grid gap-1 w-full">
                       <Label htmlFor="new-address" className="font-medium">
-                        Add new address
+                        Thêm địa chỉ mới
                       </Label>
                       {deliveryAddress === "new" && (
                         <div className="mt-2 grid gap-4">
                           <div className="grid gap-2">
-                            <Label htmlFor="name">Full Name</Label>
+                            <Label htmlFor="name">Họ tên</Label>
                             <Input 
                               id="name" 
                               name="name" 
                               value={addressForm.name} 
                               onChange={handleAddressChange} 
-                              placeholder="Enter your full name"
+                              placeholder="Nhập họ tên của bạn"
                             />
                           </div>
                           <div className="grid gap-2">
-                            <Label htmlFor="phone">Phone Number</Label>
+                            <Label htmlFor="phone">Số điện thoại</Label>
                             <Input 
                               id="phone" 
                               name="phone" 
                               value={addressForm.phone} 
                               onChange={handleAddressChange} 
-                              placeholder="Enter your phone number"
+                              placeholder="Nhập số điện thoại của bạn"
                             />
                           </div>
                           <div className="grid gap-2">
-                            <Label htmlFor="address">Address</Label>
+                            <Label htmlFor="address">Địa chỉ</Label>
                             <Textarea 
                               id="address" 
                               name="address" 
                               value={addressForm.address} 
                               onChange={handleAddressChange} 
-                              placeholder="Enter your full address"
+                              placeholder="Nhập địa chỉ đầy đủ của bạn"
                               rows={2}
                             />
                           </div>
                           <div className="grid gap-2">
-                            <Label htmlFor="notes">Delivery Notes (Optional)</Label>
+                            <Label htmlFor="notes">Ghi chú giao hàng (Không bắt buộc)</Label>
                             <Textarea 
                               id="notes" 
                               name="notes" 
                               value={addressForm.notes} 
                               onChange={handleAddressChange} 
-                              placeholder="Add any special instructions for delivery"
+                              placeholder="Thêm hướng dẫn đặc biệt cho việc giao hàng"
                               rows={2}
                             />
                           </div>
@@ -210,15 +211,15 @@ const CheckoutPage = () => {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <MessageSquare className="mr-2 h-5 w-5 text-foodsnap-orange" />
-                  Note for Driver
+                  Ghi chú cho tài xế
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-2">
-                  <Label htmlFor="driverNote">Add instructions for the delivery driver</Label>
+                  <Label htmlFor="driverNote">Thêm hướng dẫn cho tài xế giao hàng</Label>
                   <Textarea 
                     id="driverNote" 
-                    placeholder="E.g., 'Please knock on the door instead of ringing the bell.' or 'The gate code is 1234.'"
+                    placeholder="Ví dụ: 'Vui lòng gọi khi đến nơi thay vì bấm chuông.' hoặc 'Mã cổng chung cư là 1234.'"
                     value={driverNote}
                     onChange={(e) => setDriverNote(e.target.value)}
                     className="min-h-[100px]"
@@ -231,7 +232,7 @@ const CheckoutPage = () => {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Wallet className="mr-2 h-5 w-5 text-foodsnap-orange" />
-                  Payment Method
+                  Phương thức thanh toán
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -240,11 +241,11 @@ const CheckoutPage = () => {
                     <RadioGroupItem value="cash" id="cash" />
                   </RadioGroup>
                   <Label htmlFor="cash" className="flex items-center">
-                    Cash on Delivery
+                    Thanh toán khi nhận hàng
                   </Label>
                 </div>
                 <p className="mt-4 text-sm text-gray-500">
-                  You will pay with cash upon delivery of your order.
+                  Bạn sẽ thanh toán bằng tiền mặt khi nhận hàng.
                 </p>
               </CardContent>
             </Card>
@@ -253,7 +254,7 @@ const CheckoutPage = () => {
           <div className="md:col-span-1">
             <Card className="sticky top-20">
               <CardHeader>
-                <CardTitle>Order Summary</CardTitle>
+                <CardTitle>Tóm tắt đơn hàng</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3 mb-4">
@@ -263,7 +264,7 @@ const CheckoutPage = () => {
                         <span className="font-medium">{item.quantity}×</span>
                         <span className="ml-2">{item.name}</span>
                       </div>
-                      <span>${(item.price * item.quantity).toFixed(2)}</span>
+                      <span>{(item.price * item.quantity).toFixed(2)}đ</span>
                     </div>
                   ))}
                 </div>
@@ -272,26 +273,26 @@ const CheckoutPage = () => {
                 
                 <div className="space-y-3 mb-4">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Subtotal</span>
-                    <span>${subtotal.toFixed(2)}</span>
+                    <span className="text-gray-600">Tổng phụ</span>
+                    <span>{subtotal.toFixed(2)}đ</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Delivery Fee</span>
-                    <span>${deliveryFee.toFixed(2)}</span>
+                    <span className="text-gray-600">Phí giao hàng</span>
+                    <span>{deliveryFee.toFixed(2)}đ</span>
                   </div>
                   
                   {discount > 0 && (
                     <div className="flex justify-between text-green-600">
-                      <span>Discount</span>
-                      <span>-${discount.toFixed(2)}</span>
+                      <span>Giảm giá</span>
+                      <span>-{discount.toFixed(2)}đ</span>
                     </div>
                   )}
                   
                   <Separator className="my-2" />
                   
                   <div className="flex justify-between font-bold text-lg">
-                    <span>Total</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span>Tổng cộng</span>
+                    <span>{total.toFixed(2)}đ</span>
                   </div>
                 </div>
                 
@@ -299,15 +300,15 @@ const CheckoutPage = () => {
                   className="w-full mt-4 py-6 text-base bg-foodsnap-orange hover:bg-foodsnap-orange/90 flex items-center justify-center"
                   onClick={handlePlaceOrder}
                 >
-                  Place Order
+                  Đặt hàng
                   <Check className="ml-2 h-5 w-5" />
                 </Button>
                 
                 <p className="mt-4 text-sm text-gray-500 text-center">
-                  By placing your order, you agree to our 
-                  <a href="#" className="text-foodsnap-teal mx-1 hover:underline">Terms of Service</a>
-                  and
-                  <a href="#" className="text-foodsnap-teal ml-1 hover:underline">Privacy Policy</a>
+                  Khi đặt hàng, bạn đồng ý với 
+                  <a href="#" className="text-foodsnap-teal mx-1 hover:underline">Điều khoản dịch vụ</a>
+                  và
+                  <a href="#" className="text-foodsnap-teal ml-1 hover:underline">Chính sách bảo mật</a>
                 </p>
               </CardContent>
             </Card>

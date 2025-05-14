@@ -35,7 +35,7 @@ const CartPage = () => {
     if (!acc[restId]) {
       acc[restId] = {
         restaurantId: restId,
-        restaurantName: item.restaurantName || 'Unknown Restaurant',
+        restaurantName: item.restaurantName || 'Nhà hàng không xác định',
         items: []
       };
     }
@@ -65,13 +65,13 @@ const CartPage = () => {
         discount: promoDetails.type === 'shipping' ? deliveryFee : promoDetails.discount 
       });
       toast({
-        title: "Promo code applied!",
-        description: `${code} has been applied to your order.`,
+        title: "Đã áp dụng mã khuyến mãi!",
+        description: `${code} đã được áp dụng cho đơn hàng của bạn.`,
       });
     } else {
       toast({
-        title: "Invalid promo code",
-        description: "Please check your code and try again.",
+        title: "Mã khuyến mãi không hợp lệ",
+        description: "Vui lòng kiểm tra lại mã và thử lại.",
         variant: "destructive"
       });
     }
@@ -93,8 +93,8 @@ const CartPage = () => {
   const handleRemoveItem = (id: string, name: string) => {
     removeFromCart(id);
     toast({
-      title: "Item removed",
-      description: `${name} has been removed from your cart.`,
+      title: "Đã xóa món",
+      description: `${name} đã được xóa khỏi giỏ hàng của bạn.`,
     });
   };
 
@@ -112,13 +112,13 @@ const CartPage = () => {
       <main className="flex-grow container mx-auto px-4 py-6 max-w-4xl">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">Your Cart</h1>
+          <h1 className="text-3xl font-bold">Giỏ hàng của bạn</h1>
           {cartItems.length > 0 ? (
             <div className="flex justify-between items-center mt-2">
               <p className="text-gray-600">
                 {Object.keys(itemsByRestaurant).length > 1 
-                  ? `Items from ${Object.keys(itemsByRestaurant).length} restaurants` 
-                  : `Items from ${Object.values(itemsByRestaurant)[0]?.restaurantName || 'restaurant'}`}
+                  ? `Món ăn từ ${Object.keys(itemsByRestaurant).length} nhà hàng` 
+                  : `Món ăn từ ${Object.values(itemsByRestaurant)[0]?.restaurantName || 'nhà hàng'}`}
               </p>
               <Button 
                 variant="outline" 
@@ -126,16 +126,16 @@ const CartPage = () => {
                 onClick={() => {
                   clearCart();
                   toast({
-                    title: "Cart cleared",
-                    description: "All items have been removed from your cart.",
+                    title: "Đã xóa giỏ hàng",
+                    description: "Tất cả món ăn đã được xóa khỏi giỏ hàng của bạn.",
                   });
                 }}
               >
-                Clear Cart
+                Xóa giỏ hàng
               </Button>
             </div>
           ) : (
-            <p className="text-gray-600 mt-2">Your cart is empty</p>
+            <p className="text-gray-600 mt-2">Giỏ hàng của bạn đang trống</p>
           )}
         </div>
         
@@ -186,7 +186,7 @@ const CartPage = () => {
                             
                             {/* Price */}
                             <div className="w-16 text-right">
-                              ${(item.price * item.quantity).toFixed(2)}
+                              {(item.price * item.quantity).toFixed(2)}đ
                             </div>
                             
                             {/* Remove Button */}
@@ -209,17 +209,17 @@ const CartPage = () => {
               {/* Promotions Section */}
               <Card className="mt-6">
                 <CardContent className="p-6">
-                  <h3 className="text-lg font-medium mb-3">Promotions</h3>
+                  <h3 className="text-lg font-medium mb-3">Khuyến mãi</h3>
                   <div className="flex space-x-2">
                     <Input 
-                      placeholder="Enter promo code" 
+                      placeholder="Nhập mã khuyến mãi" 
                       value={promoCode} 
                       onChange={(e) => setPromoCode(e.target.value)}
                       className="max-w-xs"
                     />
                     <Button onClick={applyPromoCode} className="flex items-center">
                       <Tag size={16} className="mr-2" />
-                      Apply
+                      Áp dụng
                     </Button>
                   </div>
                   
@@ -227,14 +227,14 @@ const CartPage = () => {
                     <div className="mt-4 p-3 bg-green-50 text-green-700 rounded-md flex justify-between items-center">
                       <div>
                         <span className="font-medium">{appliedPromo.code}</span>
-                        <p className="text-sm">Promo code applied</p>
+                        <p className="text-sm">Đã áp dụng mã khuyến mãi</p>
                       </div>
-                      <span className="font-medium">-${appliedPromo.discount.toFixed(2)}</span>
+                      <span className="font-medium">-{appliedPromo.discount.toFixed(2)}đ</span>
                     </div>
                   )}
                   
                   <div className="mt-4 text-sm text-gray-500">
-                    <p>Available promos: WELCOME10, FREESHIP</p>
+                    <p>Các mã hiện có: WELCOME10, FREESHIP</p>
                   </div>
                 </CardContent>
               </Card>
@@ -244,30 +244,30 @@ const CartPage = () => {
             <div className="md:col-span-1">
               <Card className="sticky top-20">
                 <CardContent className="p-6">
-                  <h3 className="text-lg font-medium mb-4">Order Summary</h3>
+                  <h3 className="text-lg font-medium mb-4">Tóm tắt đơn hàng</h3>
                   
                   <div className="space-y-3 mb-4">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Subtotal</span>
-                      <span>${subtotal.toFixed(2)}</span>
+                      <span className="text-gray-600">Tổng phụ</span>
+                      <span>{subtotal.toFixed(2)}đ</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Delivery Fee</span>
-                      <span>${deliveryFee.toFixed(2)}</span>
+                      <span className="text-gray-600">Phí giao hàng</span>
+                      <span>{deliveryFee.toFixed(2)}đ</span>
                     </div>
                     
                     {appliedPromo && (
                       <div className="flex justify-between text-green-600">
-                        <span>Discount</span>
-                        <span>-${appliedPromo.discount.toFixed(2)}</span>
+                        <span>Giảm giá</span>
+                        <span>-{appliedPromo.discount.toFixed(2)}đ</span>
                       </div>
                     )}
                     
                     <Separator className="my-2" />
                     
                     <div className="flex justify-between font-bold text-lg">
-                      <span>Total</span>
-                      <span>${total.toFixed(2)}</span>
+                      <span>Tổng cộng</span>
+                      <span>{total.toFixed(2)}đ</span>
                     </div>
                   </div>
                   
@@ -280,18 +280,18 @@ const CartPage = () => {
                     onClick={proceedToCheckout}
                   >
                     {isAuthenticated ? (
-                      "Proceed to Checkout"
+                      "Tiến hành thanh toán"
                     ) : (
                       <>
                         <LogIn className="mr-2 h-5 w-5" />
-                        Login to Checkout
+                        Đăng nhập để thanh toán
                       </>
                     )}
                   </Button>
                   
                   {!isAuthenticated && (
                     <p className="mt-3 text-sm text-gray-500 text-center">
-                      You need to be logged in to complete your order
+                      Bạn cần đăng nhập để hoàn tất đơn hàng
                     </p>
                   )}
                 </CardContent>
@@ -306,13 +306,13 @@ const CartPage = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
             </div>
-            <h2 className="text-xl font-medium mb-2">Your cart is empty</h2>
-            <p className="text-gray-600 mb-6">Looks like you haven't added any items to your cart yet.</p>
+            <h2 className="text-xl font-medium mb-2">Giỏ hàng của bạn đang trống</h2>
+            <p className="text-gray-600 mb-6">Có vẻ như bạn chưa thêm bất kỳ món ăn nào vào giỏ hàng.</p>
             <Button 
               onClick={() => navigate('/')}
               className="bg-foodsnap-orange hover:bg-foodsnap-orange/90"
             >
-              Browse Restaurants
+              Khám phá nhà hàng
             </Button>
           </div>
         )}
