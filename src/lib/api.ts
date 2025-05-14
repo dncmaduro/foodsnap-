@@ -1,4 +1,5 @@
 import { toast } from '@/hooks/use-toast'
+import { getAuthHeaders } from './authUtils'
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
@@ -27,8 +28,11 @@ export async function callApi<T>({
     // Đảm bảo path bắt đầu với dấu /
     const apiPath = path.startsWith('/') ? path : `/${path}`
 
+    // Use environment variable for backend URL
+    const baseUrl = import.meta.env.VITE_BACKEND_URL
+
     // Construct URL with query parameters
-    const url = new URL(`${import.meta.env.VITE_BACKEND_URL}${apiPath}`)
+    const url = new URL(`${baseUrl}${apiPath}`)
 
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
@@ -38,11 +42,15 @@ export async function callApi<T>({
       })
     }
 
+    // Add authentication headers if available
+    const authHeaders = getAuthHeaders()
+
     // Prepare request options
     const options: RequestInit = {
       method,
       headers: {
         'Content-Type': 'application/json',
+        ...authHeaders,
         ...headers,
       },
       credentials: 'include', // Include cookies for authentication

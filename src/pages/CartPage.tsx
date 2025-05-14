@@ -1,79 +1,78 @@
-
-import { useState } from 'react';
-import { Minus, Plus, Trash2, LogIn } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Card, CardContent } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import { useCart } from '@/contexts/CartContext';
-import { useAuth } from '@/contexts/AuthContext';
-import EditNoteDialog from '@/components/EditNoteDialog';
-import LoginDialog from '@/components/LoginDialog';
+import { useState } from 'react'
+import { Minus, Plus, Trash2, LogIn } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
+import { Card, CardContent } from '@/components/ui/card'
+import { useToast } from '@/hooks/use-toast'
+import Navigation from '@/components/Navigation'
+import Footer from '@/components/Footer'
+import { useCart } from '@/contexts/CartContext'
+import { useAuthStore } from '@/store/authStore'
+import EditNoteDialog from '@/components/EditNoteDialog'
+import LoginDialog from '@/components/LoginDialog'
 
 const CartPage = () => {
-  const { items: cartItems, updateQuantity, updateNotes, removeFromCart, clearCart } = useCart();
-  const { isAuthenticated } = useAuth();
-  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-  const navigate = useNavigate();
-  const { toast } = useToast();
+  const { items: cartItems, updateQuantity, updateNotes, removeFromCart, clearCart } = useCart()
+  const { isAuthenticated } = useAuthStore()
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false)
+  const navigate = useNavigate()
+  const { toast } = useToast()
 
   // Group items by restaurant
   const itemsByRestaurant = cartItems.reduce((acc, item) => {
-    const restId = item.restaurantId;
+    const restId = item.restaurantId
     if (!acc[restId]) {
       acc[restId] = {
         restaurantId: restId,
         restaurantName: item.restaurantName || 'Nhà hàng không xác định',
-        items: []
-      };
+        items: [],
+      }
     }
-    acc[restId].items.push(item);
-    return acc;
-  }, {} as Record<string, { restaurantId: string, restaurantName: string, items: typeof cartItems }>);
+    acc[restId].items.push(item)
+    return acc
+  }, {} as Record<string, { restaurantId: string; restaurantName: string; items: typeof cartItems }>)
 
   // Calculate subtotal
-  const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-  
+  const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
+
   // Fixed delivery fee for now
-  const deliveryFee = cartItems.length > 0 ? 2.99 : 0;
-  
+  const deliveryFee = cartItems.length > 0 ? 2.99 : 0
+
   // Calculate total (removed discount calculation)
-  const total = subtotal + deliveryFee;
+  const total = subtotal + deliveryFee
 
   // Proceed to checkout
   const proceedToCheckout = () => {
     if (isAuthenticated) {
       // In a real app, this would navigate to the checkout page
-      navigate('/checkout');
+      navigate('/checkout')
     } else {
       // Open login dialog if not authenticated
-      setLoginDialogOpen(true);
+      setLoginDialogOpen(true)
     }
-  };
+  }
 
   // Handle removing item with confirmation toast
   const handleRemoveItem = (id: string, name: string) => {
-    removeFromCart(id);
+    removeFromCart(id)
     toast({
-      title: "Đã xóa món",
+      title: 'Đã xóa món',
       description: `${name} đã được xóa khỏi giỏ hàng của bạn.`,
-    });
-  };
+    })
+  }
 
   // Handle successful login
   const handleLoginSuccess = () => {
     // Navigate to checkout after successful login
-    navigate('/checkout');
-  };
+    navigate('/checkout')
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
       {/* Navigation Bar */}
       <Navigation />
-      
+
       <main className="flex-grow container mx-auto px-4 py-6 max-w-4xl">
         {/* Page Header */}
         <div className="mb-8">
@@ -81,19 +80,21 @@ const CartPage = () => {
           {cartItems.length > 0 ? (
             <div className="flex justify-between items-center mt-2">
               <p className="text-gray-600">
-                {Object.keys(itemsByRestaurant).length > 1 
-                  ? `Món ăn từ ${Object.keys(itemsByRestaurant).length} nhà hàng` 
-                  : `Món ăn từ ${Object.values(itemsByRestaurant)[0]?.restaurantName || 'nhà hàng'}`}
+                {Object.keys(itemsByRestaurant).length > 1
+                  ? `Món ăn từ ${Object.keys(itemsByRestaurant).length} nhà hàng`
+                  : `Món ăn từ ${
+                      Object.values(itemsByRestaurant)[0]?.restaurantName || 'nhà hàng'
+                    }`}
               </p>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="text-gray-500 border-gray-300"
                 onClick={() => {
-                  clearCart();
+                  clearCart()
                   toast({
-                    title: "Đã xóa giỏ hàng",
-                    description: "Tất cả món ăn đã được xóa khỏi giỏ hàng của bạn.",
-                  });
+                    title: 'Đã xóa giỏ hàng',
+                    description: 'Tất cả món ăn đã được xóa khỏi giỏ hàng của bạn.',
+                  })
                 }}
               >
                 Xóa giỏ hàng
@@ -103,7 +104,7 @@ const CartPage = () => {
             <p className="text-gray-600 mt-2">Giỏ hàng của bạn đang trống</p>
           )}
         </div>
-        
+
         {cartItems.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Cart Items List */}
@@ -113,8 +114,11 @@ const CartPage = () => {
                   <CardContent className="p-6">
                     <h3 className="font-medium text-lg mb-4">{restaurant.restaurantName}</h3>
                     <div className="space-y-4">
-                      {restaurant.items.map(item => (
-                        <div key={item.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-3 border-b border-gray-100">
+                      {restaurant.items.map((item) => (
+                        <div
+                          key={item.id}
+                          className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-3 border-b border-gray-100"
+                        >
                           <div className="flex-grow mb-2 sm:mb-0">
                             <div className="flex items-center gap-2">
                               <h3 className="font-medium">{item.name}</h3>
@@ -124,40 +128,42 @@ const CartPage = () => {
                                 onSaveNote={(note) => updateNotes(item.id, note)}
                               />
                             </div>
-                            {item.notes && <p className="text-sm text-gray-500 mt-1">{item.notes}</p>}
+                            {item.notes && (
+                              <p className="text-sm text-gray-500 mt-1">{item.notes}</p>
+                            )}
                           </div>
-                          
+
                           <div className="flex items-center space-x-6 w-full sm:w-auto">
                             {/* Quantity Selector */}
                             <div className="flex items-center border rounded-md">
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
+                              <Button
+                                variant="ghost"
+                                size="sm"
                                 className="h-8 px-2"
                                 onClick={() => updateQuantity(item.id, item.quantity - 1)}
                               >
                                 <Minus size={16} />
                               </Button>
                               <span className="px-2">{item.quantity}</span>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
+                              <Button
+                                variant="ghost"
+                                size="sm"
                                 className="h-8 px-2"
                                 onClick={() => updateQuantity(item.id, item.quantity + 1)}
                               >
                                 <Plus size={16} />
                               </Button>
                             </div>
-                            
+
                             {/* Price */}
                             <div className="w-16 text-right">
                               {(item.price * item.quantity).toFixed(2)}đ
                             </div>
-                            
+
                             {/* Remove Button */}
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               className="text-gray-400 hover:text-red-500"
                               onClick={() => handleRemoveItem(item.id, item.name)}
                             >
@@ -170,16 +176,16 @@ const CartPage = () => {
                   </CardContent>
                 </Card>
               ))}
-              
+
               {/* Removed the Promotions Section */}
             </div>
-            
+
             {/* Order Summary */}
             <div className="md:col-span-1">
               <Card className="sticky top-20">
                 <CardContent className="p-6">
                   <h3 className="text-lg font-medium mb-4">Tóm tắt đơn hàng</h3>
-                  
+
                   <div className="space-y-3 mb-4">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Tổng phụ</span>
@@ -189,25 +195,25 @@ const CartPage = () => {
                       <span className="text-gray-600">Phí giao hàng</span>
                       <span>{deliveryFee.toFixed(2)}đ</span>
                     </div>
-                    
+
                     <Separator className="my-2" />
-                    
+
                     <div className="flex justify-between font-bold text-lg">
                       <span>Tổng cộng</span>
                       <span>{total.toFixed(2)}đ</span>
                     </div>
                   </div>
-                  
-                  <Button 
+
+                  <Button
                     className={`w-full mt-2 py-6 text-base flex items-center justify-center ${
-                      isAuthenticated 
-                        ? "bg-foodsnap-orange hover:bg-foodsnap-orange/90" 
-                        : "bg-gray-700 hover:bg-gray-600"
+                      isAuthenticated
+                        ? 'bg-foodsnap-orange hover:bg-foodsnap-orange/90'
+                        : 'bg-gray-700 hover:bg-gray-600'
                     }`}
                     onClick={proceedToCheckout}
                   >
                     {isAuthenticated ? (
-                      "Tiến hành thanh toán"
+                      'Tiến hành thanh toán'
                     ) : (
                       <>
                         <LogIn className="mr-2 h-5 w-5" />
@@ -215,7 +221,7 @@ const CartPage = () => {
                       </>
                     )}
                   </Button>
-                  
+
                   {!isAuthenticated && (
                     <p className="mt-3 text-sm text-gray-500 text-center">
                       Bạn cần đăng nhập để hoàn tất đơn hàng
@@ -229,13 +235,25 @@ const CartPage = () => {
           // Empty cart state
           <div className="text-center py-12">
             <div className="mb-6">
-              <svg className="mx-auto h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              <svg
+                className="mx-auto h-16 w-16 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1}
+                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                />
               </svg>
             </div>
             <h2 className="text-xl font-medium mb-2">Giỏ hàng của bạn đang trống</h2>
-            <p className="text-gray-600 mb-6">Có vẻ như bạn chưa thêm bất kỳ món ăn nào vào giỏ hàng.</p>
-            <Button 
+            <p className="text-gray-600 mb-6">
+              Có vẻ như bạn chưa thêm bất kỳ món ăn nào vào giỏ hàng.
+            </p>
+            <Button
               onClick={() => navigate('/')}
               className="bg-foodsnap-orange hover:bg-foodsnap-orange/90"
             >
@@ -244,18 +262,18 @@ const CartPage = () => {
           </div>
         )}
       </main>
-      
+
       {/* Footer */}
       <Footer />
-      
+
       {/* Login Dialog */}
-      <LoginDialog 
-        isOpen={loginDialogOpen} 
+      <LoginDialog
+        isOpen={loginDialogOpen}
         onClose={() => setLoginDialogOpen(false)}
         onSuccess={handleLoginSuccess}
       />
     </div>
-  );
-};
+  )
+}
 
-export default CartPage;
+export default CartPage

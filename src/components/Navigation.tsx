@@ -1,37 +1,36 @@
-
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShoppingCart, User, Menu, X, Clock, LogOut, UserPlus } from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useCart } from '@/contexts/CartContext';
-import { useAuth } from '@/contexts/AuthContext';
-import LoginDialog from './LoginDialog';
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Search, ShoppingCart, User, Menu, X, Clock, LogOut, UserPlus } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { useCart } from '@/contexts/CartContext'
+import { useAuthStore } from '@/store/authStore'
+import LoginDialog from './LoginDialog'
 
 const Navigation = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-  const navigate = useNavigate();
-  const { totalItems } = useCart();
-  const { user, isAuthenticated, logout } = useAuth();
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false)
+  const navigate = useNavigate()
+  const { totalItems } = useCart()
+  const { user, isAuthenticated, logout } = useAuthStore()
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
 
   const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
     }
-  };
+  }
 
   const handleLoginClick = () => {
-    setLoginDialogOpen(true);
-  };
+    setLoginDialogOpen(true)
+  }
 
   const handleLogout = () => {
-    logout();
-  };
+    logout()
+  }
 
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
@@ -39,34 +38,47 @@ const Navigation = () => {
         <div className="flex items-center justify-between">
           <div className="flex-shrink-0">
             <Link to="/" className="flex items-center">
-              <span className="text-2xl font-bold text-foodsnap-orange">Food<span className="text-foodsnap-teal">Snap</span></span>
+              <span className="text-2xl font-bold text-foodsnap-orange">
+                Food<span className="text-foodsnap-teal">Snap</span>
+              </span>
             </Link>
           </div>
 
           <div className="hidden md:flex items-center justify-center flex-1 max-w-md mx-4">
             <form onSubmit={handleSearch} className="relative w-full">
-              <Input 
-                type="text" 
-                placeholder="Tìm kiếm món ăn hoặc nhà hàng" 
+              <Input
+                type="text"
+                placeholder="Tìm kiếm món ăn hoặc nhà hàng"
                 className="pr-10 border-gray-300 focus:border-foodsnap-teal"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <button type="submit" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-foodsnap-orange">
+              <button
+                type="submit"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-foodsnap-orange"
+              >
                 <Search size={18} />
               </button>
             </form>
           </div>
 
           <div className="hidden md:flex items-center space-x-6">
-            <Link to="/" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Trang chủ</Link>
-            <Link to="/order-history" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
+            <Link to="/" className="text-gray-700 hover:text-foodsnap-orange transition-colors">
+              Trang chủ
+            </Link>
+            <Link
+              to="/order-history"
+              className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center"
+            >
               <Clock size={18} className="mr-1" />
               Lịch sử đơn hàng
             </Link>
-            
+
             <div className="relative">
-              <Link to="/cart" className="text-gray-700 hover:text-foodsnap-orange transition-colors">
+              <Link
+                to="/cart"
+                className="text-gray-700 hover:text-foodsnap-orange transition-colors"
+              >
                 <ShoppingCart size={22} />
                 {totalItems > 0 && (
                   <span className="absolute -top-2 -right-2 bg-foodsnap-orange text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
@@ -75,20 +87,20 @@ const Navigation = () => {
                 )}
               </Link>
             </div>
-            
-            {isAuthenticated ? (
+
+            {isAuthenticated() ? (
               <div className="flex items-center space-x-2">
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   className="flex items-center space-x-1 text-gray-700 hover:text-foodsnap-orange"
                   onClick={() => navigate('/profile')}
                 >
                   <User size={22} />
-                  <span className="hidden lg:inline">{user?.name}</span>
+                  <span className="hidden lg:inline">{user?.fullname}</span>
                 </Button>
-                <Button 
-                  variant="ghost" 
-                  onClick={handleLogout} 
+                <Button
+                  variant="ghost"
+                  onClick={handleLogout}
                   className="text-gray-700 hover:text-red-500"
                 >
                   <LogOut size={20} />
@@ -96,8 +108,8 @@ const Navigation = () => {
               </div>
             ) : (
               <div className="flex items-center space-x-2">
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   className="flex items-center space-x-1 text-gray-700 hover:text-foodsnap-orange"
                   onClick={handleLoginClick}
                   id="login-button"
@@ -105,8 +117,8 @@ const Navigation = () => {
                   <User size={22} />
                   <span className="hidden lg:inline">Đăng nhập</span>
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="flex items-center space-x-1 text-foodsnap-orange border-foodsnap-orange hover:bg-foodsnap-orange hover:text-white"
                   onClick={() => navigate('/signup')}
                 >
@@ -126,14 +138,17 @@ const Navigation = () => {
 
         <div className="mt-3 flex md:hidden">
           <form onSubmit={handleSearch} className="relative w-full">
-            <Input 
-              type="text" 
-              placeholder="Tìm kiếm món ăn hoặc nhà hàng" 
+            <Input
+              type="text"
+              placeholder="Tìm kiếm món ăn hoặc nhà hàng"
               className="pr-10 border-gray-300"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <button type="submit" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-foodsnap-orange">
+            <button
+              type="submit"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-foodsnap-orange"
+            >
               <Search size={18} />
             </button>
           </form>
@@ -142,26 +157,37 @@ const Navigation = () => {
         {isMenuOpen && (
           <div className="md:hidden mt-3 pb-3 border-t border-gray-200">
             <div className="flex flex-col space-y-3 pt-3">
-              <Link to="/" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Trang chủ</Link>
-              <Link to="/order-history" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
+              <Link to="/" className="text-gray-700 hover:text-foodsnap-orange transition-colors">
+                Trang chủ
+              </Link>
+              <Link
+                to="/order-history"
+                className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center"
+              >
                 <Clock size={20} className="mr-2" />
                 <span>Lịch sử đơn hàng</span>
               </Link>
-              
-              <Link to="/cart" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
+
+              <Link
+                to="/cart"
+                className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center"
+              >
                 <ShoppingCart size={20} className="mr-2" />
                 <span>Giỏ hàng {totalItems > 0 && `(${totalItems})`}</span>
               </Link>
-              
-              {isAuthenticated ? (
+
+              {isAuthenticated() ? (
                 <>
-                  <Link to="/profile" className="text-gray-700 hover:text-foodsnap-orange flex items-center">
+                  <Link
+                    to="/profile"
+                    className="text-gray-700 hover:text-foodsnap-orange flex items-center"
+                  >
                     <User size={20} className="mr-2" />
-                    <span>{user?.name || "Tài khoản của tôi"}</span>
+                    <span>{user?.fullname || 'Tài khoản của tôi'}</span>
                   </Link>
-                  <Button 
-                    variant="ghost" 
-                    onClick={handleLogout} 
+                  <Button
+                    variant="ghost"
+                    onClick={handleLogout}
                     className="text-gray-700 hover:text-red-500 flex items-center justify-start p-0"
                   >
                     <LogOut size={20} className="mr-2" />
@@ -170,18 +196,24 @@ const Navigation = () => {
                 </>
               ) : (
                 <>
-                  <Button 
-                    variant="ghost" 
+                  <Button
+                    variant="ghost"
                     className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center justify-start p-0"
-                    onClick={() => { handleLoginClick(); setIsMenuOpen(false); }}
+                    onClick={() => {
+                      handleLoginClick()
+                      setIsMenuOpen(false)
+                    }}
                   >
                     <User size={20} className="mr-2" />
                     <span>Đăng nhập</span>
                   </Button>
-                  <Button 
-                    variant="ghost" 
+                  <Button
+                    variant="ghost"
                     className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center justify-start p-0"
-                    onClick={() => { navigate('/signup'); setIsMenuOpen(false); }}
+                    onClick={() => {
+                      navigate('/signup')
+                      setIsMenuOpen(false)
+                    }}
                   >
                     <UserPlus size={20} className="mr-2" />
                     <span>Đăng ký</span>
@@ -192,13 +224,10 @@ const Navigation = () => {
           </div>
         )}
       </div>
-      
-      <LoginDialog 
-        isOpen={loginDialogOpen} 
-        onClose={() => setLoginDialogOpen(false)} 
-      />
-    </nav>
-  );
-};
 
-export default Navigation;
+      <LoginDialog isOpen={loginDialogOpen} onClose={() => setLoginDialogOpen(false)} />
+    </nav>
+  )
+}
+
+export default Navigation
