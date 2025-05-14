@@ -4,10 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { toast } from "@/hooks/use-toast";
 import { MapPin } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Mock data for available orders
 const MOCK_ORDERS = [
@@ -16,10 +16,10 @@ const MOCK_ORDERS = [
     time: "14:30 - 14/05/2025",
     restaurant: {
       name: "Nhà hàng Phở Hà Nội",
-      address: "123 Lê Lợi, Quận 1, TP. Hồ Chí Minh"
+      address: "123 Lê Lợi, Đống Đa, Hà Nội"
     },
     customer: {
-      address: "456 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh"
+      address: "456 Nguyễn Huệ, Cầu Giấy, Hà Nội"
     },
     totalPrice: "185,000đ",
     distance: "1.5km"
@@ -29,10 +29,10 @@ const MOCK_ORDERS = [
     time: "14:45 - 14/05/2025",
     restaurant: {
       name: "Sushi Tokyo",
-      address: "56 Lê Thánh Tôn, Quận 1, TP. Hồ Chí Minh"
+      address: "56 Lê Thánh Tôn, Ba Đình, Hà Nội"
     },
     customer: {
-      address: "78 Đồng Khởi, Quận 1, TP. Hồ Chí Minh"
+      address: "78 Đồng Khởi, Thanh Xuân, Hà Nội"
     },
     totalPrice: "320,000đ",
     distance: "2.1km"
@@ -42,10 +42,10 @@ const MOCK_ORDERS = [
     time: "15:00 - 14/05/2025",
     restaurant: {
       name: "Bún Chả Hà Nội",
-      address: "34 Lý Tự Trọng, Quận 1, TP. Hồ Chí Minh"
+      address: "34 Lý Tự Trọng, Thanh Xuân, Hà Nội"
     },
     customer: {
-      address: "90 Nam Kỳ Khởi Nghĩa, Quận 3, TP. Hồ Chí Minh"
+      address: "90 Nam Kỳ Khởi Nghĩa, Cầu Giấy, Hà Nội"
     },
     totalPrice: "145,000đ",
     distance: "3.2km"
@@ -55,10 +55,10 @@ const MOCK_ORDERS = [
     time: "15:15 - 14/05/2025",
     restaurant: {
       name: "Pizza Express",
-      address: "22 Hai Bà Trưng, Quận 1, TP. Hồ Chí Minh"
+      address: "22 Hai Bà Trưng, Đống Đa, Hà Nội"
     },
     customer: {
-      address: "45 Lê Duẩn, Quận 1, TP. Hồ Chí Minh"
+      address: "45 Lê Duẩn, Ba Đình, Hà Nội"
     },
     totalPrice: "250,000đ",
     distance: "1.8km"
@@ -68,62 +68,37 @@ const MOCK_ORDERS = [
     time: "15:30 - 14/05/2025",
     restaurant: {
       name: "Bánh Mì Saigon",
-      address: "12 Nguyễn Du, Quận 1, TP. Hồ Chí Minh"
+      address: "12 Nguyễn Du, Cầu Giấy, Hà Nội"
     },
     customer: {
-      address: "67 Pasteur, Quận 3, TP. Hồ Chí Minh"
+      address: "67 Pasteur, Đống Đa, Hà Nội"
     },
     totalPrice: "85,000đ",
     distance: "2.5km"
   }
 ];
 
-// List of districts in Ho Chi Minh City
+// List of available districts
 const DISTRICTS = [
   "Tất cả",
-  "Quận 1",
-  "Quận 2",
-  "Quận 3",
-  "Quận 4",
-  "Quận 5",
-  "Quận 6",
-  "Quận 7",
-  "Quận 8",
-  "Quận 9",
-  "Quận 10",
-  "Quận 11",
-  "Quận 12",
-  "Quận Bình Tân",
-  "Quận Bình Thạnh",
-  "Quận Gò Vấp",
-  "Quận Phú Nhuận",
-  "Quận Tân Bình",
-  "Quận Tân Phú",
-  "Quận Thủ Đức",
-  "Huyện Bình Chánh",
-  "Huyện Cần Giờ",
-  "Huyện Củ Chi",
-  "Huyện Hóc Môn",
-  "Huyện Nhà Bè"
+  "Cầu Giấy",
+  "Đống Đa",
+  "Ba Đình",
+  "Thanh Xuân"
 ];
 
 export default function DeliveryOrdersPage() {
   const navigate = useNavigate();
   const [district, setDistrict] = useState<string>("Tất cả");
-  const [searchQuery, setSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const isMobile = useIsMobile();
   const ordersPerPage = 10;
   
-  // Filter orders based on district and search query
+  // Filter orders based on district
   const filteredOrders = MOCK_ORDERS.filter(order => {
-    const matchesDistrict = district === "Tất cả" || 
-      order.restaurant.address.includes(district);
-    
-    const matchesSearch = searchQuery === "" || 
-      order.restaurant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.id.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    return matchesDistrict && matchesSearch;
+    return district === "Tất cả" || 
+      order.restaurant.address.includes(district) || 
+      order.customer.address.includes(district);
   });
   
   // Calculate pagination
@@ -145,80 +120,78 @@ export default function DeliveryOrdersPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="container mx-auto px-2 py-4 max-w-6xl">
       {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Danh sách đơn hàng có thể nhận</h1>
-        <p className="text-muted-foreground mt-2">Chọn đơn hàng bạn muốn nhận để bắt đầu giao.</p>
+      <div className="mb-4">
+        <h1 className={`${isMobile ? "text-xl" : "text-3xl"} font-bold`}>Danh sách đơn hàng có thể nhận</h1>
+        <p className={`${isMobile ? "text-xs" : "text-sm"} text-muted-foreground mt-1`}>Chọn đơn hàng bạn muốn nhận để bắt đầu giao.</p>
       </div>
       
-      {/* Filter and Search Section */}
-      <div className="flex flex-col md:flex-row gap-4 mb-8">
-        <div className="w-full md:w-1/3">
-          <Select value={district} onValueChange={setDistrict}>
-            <SelectTrigger>
-              <SelectValue placeholder="Chọn quận" />
-            </SelectTrigger>
-            <SelectContent>
-              {DISTRICTS.map((district) => (
-                <SelectItem key={district} value={district}>{district}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="w-full md:w-2/3">
-          <Input
-            placeholder="Tìm kiếm theo tên nhà hàng hoặc mã đơn hàng..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
+      {/* Filter Section */}
+      <div className="mb-4">
+        <Select value={district} onValueChange={setDistrict}>
+          <SelectTrigger className={`${isMobile ? "h-8 text-xs" : ""}`}>
+            <SelectValue placeholder="Chọn quận" />
+          </SelectTrigger>
+          <SelectContent>
+            {DISTRICTS.map((district) => (
+              <SelectItem key={district} value={district} className={isMobile ? "text-xs" : ""}>
+                {district}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       
       {/* Order List Section */}
-      <div className="space-y-6 mb-8">
+      <div className="space-y-3 mb-4">
         {currentOrders.length === 0 ? (
-          <div className="text-center py-12 bg-muted rounded-lg">
+          <div className="text-center py-8 bg-muted rounded-lg">
             <p className="text-muted-foreground">Không tìm thấy đơn hàng nào phù hợp.</p>
           </div>
         ) : (
           currentOrders.map((order) => (
-            <Card key={order.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
+            <Card key={order.id} className="hover:shadow-md transition-shadow">
+              <CardHeader className={`${isMobile ? "p-3" : "p-4"}`}>
                 <div className="flex justify-between items-start">
-                  <CardTitle className="text-xl">{order.id}</CardTitle>
+                  <CardTitle className={`${isMobile ? "text-sm" : "text-lg"}`}>{order.id}</CardTitle>
                   <div className="text-right">
-                    <div className="font-bold">{order.totalPrice}</div>
-                    <div className="text-sm text-muted-foreground">{order.time}</div>
+                    <div className={`font-bold ${isMobile ? "text-sm" : ""}`}>{order.totalPrice}</div>
+                    <div className={`${isMobile ? "text-xs" : "text-sm"} text-muted-foreground`}>{order.time}</div>
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
+              <CardContent className={`${isMobile ? "p-3 pt-0 text-xs" : "p-4 pt-0 text-sm"}`}>
+                <div className="space-y-2">
                   <div>
                     <h3 className="font-semibold">Nhà hàng:</h3>
-                    <div className="flex items-start gap-2">
-                      <MapPin className="h-4 w-4 mt-1" />
+                    <div className="flex items-start gap-1">
+                      <MapPin className={`${isMobile ? "h-3 w-3" : "h-4 w-4"} mt-0.5`} />
                       <div>
-                        <p>{order.restaurant.name}</p>
-                        <p className="text-sm text-muted-foreground">{order.restaurant.address}</p>
+                        <p className={isMobile ? "text-xs" : ""}>{order.restaurant.name}</p>
+                        <p className={`${isMobile ? "text-xs" : "text-sm"} text-muted-foreground`}>{order.restaurant.address}</p>
                       </div>
                     </div>
                   </div>
                   <div>
                     <h3 className="font-semibold">Địa chỉ giao hàng:</h3>
-                    <div className="flex items-start gap-2">
-                      <MapPin className="h-4 w-4 mt-1" />
-                      <p className="text-muted-foreground">{order.customer.address}</p>
+                    <div className="flex items-start gap-1">
+                      <MapPin className={`${isMobile ? "h-3 w-3" : "h-4 w-4"} mt-0.5`} />
+                      <p className={`${isMobile ? "text-xs" : "text-sm"} text-muted-foreground`}>{order.customer.address}</p>
                     </div>
                   </div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className={`${isMobile ? "text-xs" : "text-sm"} text-muted-foreground`}>
                     Khoảng cách: {order.distance}
                   </div>
                 </div>
               </CardContent>
-              <CardFooter className="flex justify-end">
-                <Button onClick={() => handleAcceptOrder(order.id)}>Nhận đơn</Button>
+              <CardFooter className={`flex justify-end ${isMobile ? "p-3 pt-0" : "p-4 pt-0"}`}>
+                <Button 
+                  onClick={() => handleAcceptOrder(order.id)} 
+                  className={isMobile ? "h-8 text-xs px-2 py-1" : ""}
+                >
+                  Nhận đơn
+                </Button>
               </CardFooter>
             </Card>
           ))
@@ -227,20 +200,21 @@ export default function DeliveryOrdersPage() {
       
       {/* Pagination */}
       {totalPages > 1 && (
-        <Pagination>
-          <PaginationContent>
+        <Pagination className="my-2">
+          <PaginationContent className={isMobile ? "gap-0.5" : "gap-1"}>
             <PaginationItem>
               <PaginationPrevious 
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                className={currentPage === 1 ? "cursor-not-allowed opacity-50" : "cursor-pointer"}
+                className={`${currentPage === 1 ? "cursor-not-allowed opacity-50" : "cursor-pointer"} ${isMobile ? "h-8 text-xs" : ""}`}
               />
             </PaginationItem>
             
             {Array.from({ length: totalPages }).map((_, index) => (
-              <PaginationItem key={index}>
+              <PaginationItem key={index} className={isMobile ? "hidden md:block" : ""}>
                 <PaginationLink 
                   isActive={currentPage === index + 1}
                   onClick={() => setCurrentPage(index + 1)}
+                  className={isMobile ? "h-8 w-8 p-0 text-xs" : ""}
                 >
                   {index + 1}
                 </PaginationLink>
@@ -250,7 +224,7 @@ export default function DeliveryOrdersPage() {
             <PaginationItem>
               <PaginationNext 
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                className={currentPage === totalPages ? "cursor-not-allowed opacity-50" : "cursor-pointer"}
+                className={`${currentPage === totalPages ? "cursor-not-allowed opacity-50" : "cursor-pointer"} ${isMobile ? "h-8 text-xs" : ""}`}
               />
             </PaginationItem>
           </PaginationContent>
@@ -258,11 +232,19 @@ export default function DeliveryOrdersPage() {
       )}
       
       {/* Navigation Links */}
-      <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
-        <Button variant="outline" onClick={() => navigate("/order-history")}>
+      <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+        <Button 
+          variant="outline" 
+          onClick={() => navigate("/order-history")}
+          className={isMobile ? "h-8 text-xs" : ""}
+        >
           Lịch sử giao hàng
         </Button>
-        <Button variant="outline" onClick={() => navigate("/profile")}>
+        <Button 
+          variant="outline" 
+          onClick={() => navigate("/profile")}
+          className={isMobile ? "h-8 text-xs" : ""}
+        >
           Hồ sơ tài xế
         </Button>
       </div>
