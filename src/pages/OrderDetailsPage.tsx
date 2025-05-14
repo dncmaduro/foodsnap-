@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
@@ -152,15 +153,15 @@ const OrderDetailsPage = () => {
   const getStatusBadge = (status: OrderStatus) => {
     switch (status) {
       case 'preparing':
-        return <Badge className="bg-blue-500">Preparing</Badge>;
+        return <Badge className="bg-blue-500">Đang chuẩn bị</Badge>;
       case 'out_for_delivery':
-        return <Badge className="bg-amber-500">Out for Delivery</Badge>;
+        return <Badge className="bg-amber-500">Đang giao hàng</Badge>;
       case 'delivered':
-        return <Badge className="bg-green-500">Delivered</Badge>;
+        return <Badge className="bg-green-500">Đã giao hàng</Badge>;
       case 'cancelled':
-        return <Badge className="bg-red-500">Cancelled</Badge>;
+        return <Badge className="bg-red-500">Đã hủy</Badge>;
       default:
-        return <Badge>Unknown</Badge>;
+        return <Badge>Không xác định</Badge>;
     }
   };
 
@@ -175,7 +176,7 @@ const OrderDetailsPage = () => {
         <main className="flex-grow container mx-auto px-4 py-12 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin h-12 w-12 border-4 border-foodsnap-orange border-t-transparent rounded-full mx-auto mb-4"></div>
-            <h2 className="text-xl font-medium">Loading order details...</h2>
+            <h2 className="text-xl font-medium">Đang tải thông tin đơn hàng...</h2>
           </div>
         </main>
         <Footer />
@@ -189,12 +190,12 @@ const OrderDetailsPage = () => {
         <Navigation />
         <main className="flex-grow container mx-auto px-4 py-12 flex items-center justify-center">
           <div className="text-center">
-            <h2 className="text-xl font-medium">Order not found</h2>
+            <h2 className="text-xl font-medium">Không tìm thấy đơn hàng</h2>
             <Button 
               className="mt-4 bg-foodsnap-orange hover:bg-foodsnap-orange/90"
               onClick={() => navigate('/order-history')}
             >
-              Back to Order History
+              Quay lại Lịch sử đơn hàng
             </Button>
           </div>
         </main>
@@ -230,13 +231,13 @@ const OrderDetailsPage = () => {
             onClick={() => navigate('/order-history')}
           >
             <ChevronLeft className="h-4 w-4 mr-1" />
-            Back to Order History
+            Quay lại Lịch sử đơn hàng
           </Button>
           
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <h1 className="text-3xl font-bold text-gray-900">Order Details</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Chi tiết đơn hàng</h1>
             <div className="flex items-center">
-              <span className="mr-2">Status:</span>
+              <span className="mr-2">Trạng thái:</span>
               {orderDetails && getStatusBadge(orderDetails.status)}
             </div>
           </div>
@@ -248,28 +249,21 @@ const OrderDetailsPage = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Package className="h-5 w-5 text-foodsnap-orange" />
-                Order Summary
+                Tổng quan đơn hàng
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-gray-500">Order ID</p>
+                  <p className="text-sm text-gray-500">Mã đơn hàng</p>
                   <p className="font-medium">{orderDetails?.orderId}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Order Date</p>
+                  <p className="text-sm text-gray-500">Ngày đặt</p>
                   <p className="font-medium">{orderDetails?.orderDate && formatDate(orderDetails.orderDate)}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Payment Method</p>
-                  <p className="font-medium flex items-center">
-                    <CreditCard className="h-4 w-4 mr-1 text-gray-400" />
-                    {orderDetails?.paymentMethod}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Total Amount</p>
+                  <p className="text-sm text-gray-500">Tổng tiền</p>
                   <p className="font-medium text-foodsnap-orange">${orderDetails?.total.toFixed(2)}</p>
                 </div>
               </div>
@@ -279,7 +273,7 @@ const OrderDetailsPage = () => {
           {/* Restaurant Card */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Restaurant</CardTitle>
+              <CardTitle className="text-lg">Nhà hàng</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div>
@@ -292,7 +286,7 @@ const OrderDetailsPage = () => {
                 onClick={() => navigate(`/restaurant/${orderDetails?.restaurantId}`)}
               >
                 <ExternalLink className="h-4 w-4 mr-2" />
-                View Restaurant Profile
+                Xem trang nhà hàng
               </Button>
             </CardContent>
           </Card>
@@ -303,7 +297,7 @@ const OrderDetailsPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Package className="h-5 w-5 text-foodsnap-orange" />
-              Items Ordered
+              Các món đã đặt
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -312,7 +306,7 @@ const OrderDetailsPage = () => {
                 <div key={item.id} className="flex justify-between items-center pb-3 border-b border-gray-100 last:border-0 last:pb-0">
                   <div>
                     <p className="font-medium">{item.name}</p>
-                    <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                    <p className="text-sm text-gray-500">Số lượng: {item.quantity}</p>
                   </div>
                   <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
                 </div>
@@ -322,15 +316,15 @@ const OrderDetailsPage = () => {
               
               <div className="space-y-2">
                 <div className="flex justify-between text-gray-600">
-                  <span>Subtotal</span>
+                  <span>Tạm tính</span>
                   <span>${orderDetails?.subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
-                  <span>Delivery Fee</span>
+                  <span>Phí giao hàng</span>
                   <span>${orderDetails?.deliveryFee.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between font-bold text-lg pt-2">
-                  <span>Total</span>
+                  <span>Tổng cộng</span>
                   <span>${orderDetails?.total.toFixed(2)}</span>
                 </div>
               </div>
@@ -344,7 +338,7 @@ const OrderDetailsPage = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MapPin className="h-5 w-5 text-foodsnap-orange" />
-                Delivery Details
+                Chi tiết giao hàng
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -357,7 +351,7 @@ const OrderDetailsPage = () => {
               {orderDetails?.deliveryAddress.notes && (
                 <div className="bg-gray-50 p-3 rounded-md mt-3">
                   <p className="text-sm">
-                    <span className="font-medium">Delivery Instructions:</span> {orderDetails?.deliveryAddress.notes}
+                    <span className="font-medium">Hướng dẫn giao hàng:</span> {orderDetails?.deliveryAddress.notes}
                   </p>
                 </div>
               )}
@@ -370,11 +364,11 @@ const OrderDetailsPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Star className="h-5 w-5 text-foodsnap-orange" />
-              Your Rating & Review
+              Đánh giá của bạn
               {orderDetails?.userRating && (
                 <span className="text-sm text-gray-500 flex items-center ml-2">
                   <Lock className="h-4 w-4 mr-1" />
-                  Submitted
+                  Đã gửi
                 </span>
               )}
             </CardTitle>
@@ -385,7 +379,7 @@ const OrderDetailsPage = () => {
                 <div className="flex items-center space-x-2">
                   <RatingStars rating={orderDetails.userRating.rating} />
                   <span className="text-sm text-gray-500">
-                    Submitted on {formatDate(orderDetails.userRating.date)}
+                    Đã gửi ngày {formatDate(orderDetails.userRating.date)}
                   </span>
                 </div>
                 
@@ -397,13 +391,13 @@ const OrderDetailsPage = () => {
               </div>
             ) : (
               <div className="text-center py-6">
-                <p className="text-gray-600 mb-4">You haven't rated this order yet.</p>
+                <p className="text-gray-600 mb-4">Bạn chưa đánh giá đơn hàng này.</p>
                 <Button 
                   className="bg-foodsnap-teal hover:bg-foodsnap-teal/90"
                   onClick={() => navigate(`/rate-order/${orderDetails?.orderId}`, { state: { orderDetails } })}
                 >
                   <Star className="h-4 w-4 mr-1" />
-                  Rate This Order
+                  Đánh giá đơn hàng
                 </Button>
               </div>
             )}
@@ -416,7 +410,7 @@ const OrderDetailsPage = () => {
             className="px-8 py-6 bg-foodsnap-orange hover:bg-foodsnap-orange/90"
             onClick={() => navigate(`/restaurant/${orderDetails?.restaurantId}`)}
           >
-            Order Again from {orderDetails?.restaurantName}
+            Đặt lại từ {orderDetails?.restaurantName}
           </Button>
         </div>
       </main>
