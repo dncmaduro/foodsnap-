@@ -47,7 +47,7 @@ const Navigation = () => {
             <form onSubmit={handleSearch} className="relative w-full">
               <Input 
                 type="text" 
-                placeholder="Search for restaurants or dishes" 
+                placeholder="Tìm kiếm món ăn hoặc nhà hàng" 
                 className="pr-10 border-gray-300 focus:border-foodsnap-teal"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -59,11 +59,10 @@ const Navigation = () => {
           </div>
 
           <div className="hidden md:flex items-center space-x-6">
-            <Link to="/" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Home</Link>
-            <Link to="/restaurants" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Browse Restaurants</Link>
+            <Link to="/" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Trang chủ</Link>
             <Link to="/order-history" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
               <Clock size={18} className="mr-1" />
-              Order History
+              Lịch sử đơn hàng
             </Link>
             
             <div className="relative">
@@ -104,7 +103,7 @@ const Navigation = () => {
                   id="login-button"
                 >
                   <User size={22} />
-                  <span className="hidden lg:inline">Login</span>
+                  <span className="hidden lg:inline">Đăng nhập</span>
                 </Button>
                 <Button 
                   variant="outline" 
@@ -112,7 +111,7 @@ const Navigation = () => {
                   onClick={() => navigate('/signup')}
                 >
                   <UserPlus size={18} />
-                  <span className="hidden lg:inline">Sign Up</span>
+                  <span className="hidden lg:inline">Đăng ký</span>
                 </Button>
               </div>
             )}
@@ -129,7 +128,7 @@ const Navigation = () => {
           <form onSubmit={handleSearch} className="relative w-full">
             <Input 
               type="text" 
-              placeholder="Search for food or restaurants" 
+              placeholder="Tìm kiếm món ăn hoặc nhà hàng" 
               className="pr-10 border-gray-300"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -143,23 +142,22 @@ const Navigation = () => {
         {isMenuOpen && (
           <div className="md:hidden mt-3 pb-3 border-t border-gray-200">
             <div className="flex flex-col space-y-3 pt-3">
-              <Link to="/" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Home</Link>
-              <Link to="/restaurants" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Browse Restaurants</Link>
+              <Link to="/" className="text-gray-700 hover:text-foodsnap-orange transition-colors">Trang chủ</Link>
               <Link to="/order-history" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
                 <Clock size={20} className="mr-2" />
-                <span>Order History</span>
+                <span>Lịch sử đơn hàng</span>
               </Link>
               
               <Link to="/cart" className="text-gray-700 hover:text-foodsnap-orange transition-colors flex items-center">
                 <ShoppingCart size={20} className="mr-2" />
-                <span>Cart {totalItems > 0 && `(${totalItems})`}</span>
+                <span>Giỏ hàng {totalItems > 0 && `(${totalItems})`}</span>
               </Link>
               
               {isAuthenticated ? (
                 <>
                   <Link to="/profile" className="text-gray-700 hover:text-foodsnap-orange flex items-center">
                     <User size={20} className="mr-2" />
-                    <span>{user?.name || "My Profile"}</span>
+                    <span>{user?.name || "Tài khoản của tôi"}</span>
                   </Link>
                   <Button 
                     variant="ghost" 
@@ -167,7 +165,7 @@ const Navigation = () => {
                     className="text-gray-700 hover:text-red-500 flex items-center justify-start p-0"
                   >
                     <LogOut size={20} className="mr-2" />
-                    <span>Logout</span>
+                    <span>Đăng xuất</span>
                   </Button>
                 </>
               ) : (
@@ -178,7 +176,7 @@ const Navigation = () => {
                     onClick={() => { handleLoginClick(); setIsMenuOpen(false); }}
                   >
                     <User size={20} className="mr-2" />
-                    <span>Login</span>
+                    <span>Đăng nhập</span>
                   </Button>
                   <Button 
                     variant="ghost" 
@@ -186,7 +184,7 @@ const Navigation = () => {
                     onClick={() => { navigate('/signup'); setIsMenuOpen(false); }}
                   >
                     <UserPlus size={20} className="mr-2" />
-                    <span>Sign Up</span>
+                    <span>Đăng ký</span>
                   </Button>
                 </>
               )}
