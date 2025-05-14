@@ -27,6 +27,7 @@ import DeliveryDriverRegistrationForm from "./pages/DeliveryDriverRegistrationFo
 import DeliveryOrdersPage from "./pages/DeliveryOrdersPage";
 import DeliveryStatusUpdatePage from "./pages/DeliveryStatusUpdatePage";
 import DeliveryHistoryPage from "./pages/DeliveryHistoryPage";
+import DriverProfilePage from "./pages/DriverProfilePage";
 import NotFound from "./pages/NotFound";
 
 // Create a new QueryClient instance
@@ -59,6 +60,7 @@ function App() {
                 <Route path="/delivery-orders" element={<DeliveryOrdersPage />} />
                 <Route path="/delivery-status/:id" element={<DeliveryStatusUpdatePage />} />
                 <Route path="/delivery-history" element={<DeliveryHistoryPage />} />
+                <Route path="/driver-profile" element={<DriverProfilePage />} />
                 <Route path="/restaurant-management" element={<RestaurantManagementPage />} />
                 <Route path="/restaurant-registration" element={<RestaurantRegistrationPage />} />
                 <Route path="/my-restaurants" element={<MyRestaurantsPage />} />

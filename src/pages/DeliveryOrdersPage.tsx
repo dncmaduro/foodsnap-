@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { toast } from "@/hooks/use-toast";
-import { MapPin } from "lucide-react";
+import { MapPin, ChevronLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 // Mock data for available orders
@@ -114,6 +114,16 @@ export default function DeliveryOrdersPage() {
 
   return (
     <div className="container mx-auto px-2 py-4 max-w-6xl">
+      {/* Back Button */}
+      <Button 
+        variant="ghost" 
+        size="sm"
+        onClick={() => navigate("/delivery-registration")}
+        className="mb-2 -ml-2 gap-1"
+      >
+        <ChevronLeft className="h-4 w-4" /> Quay lại
+      </Button>
+      
       {/* Page Header */}
       <div className="mb-4">
         <h1 className={`${isMobile ? "text-xl" : "text-3xl"} font-bold`}>Danh sách đơn hàng có thể nhận</h1>
@@ -232,7 +242,7 @@ export default function DeliveryOrdersPage() {
         </Button>
         <Button 
           variant="outline" 
-          onClick={() => navigate("/profile")}
+          onClick={() => navigate("/driver-profile")}
           className={isMobile ? "h-8 text-xs" : ""}
         >
           Hồ sơ tài xế
