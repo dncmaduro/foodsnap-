@@ -11,73 +11,106 @@ import { useCart } from '@/contexts/CartContext'
 import { useAuthStore } from '@/store/authStore'
 import EditNoteDialog from '@/components/EditNoteDialog'
 import LoginDialog from '@/components/LoginDialog'
+import { useApiDeleteMutation, useApiQuery } from '@/hooks/useApi'
+import CartItem from '@/components/CartItem'
+
+interface ServerCartItem {
+  cart_item_id: number
+  quantity: number
+  note: string
+  menuitem: {
+    menuitem_id: number
+    name: string
+    price: number
+    description: string
+    image_url: string
+    restaurant: {
+      restaurant_id: number
+      name: string
+    }
+  }
+}
 
 const CartPage = () => {
-  const { items: cartItems, updateQuantity, updateNotes, removeFromCart, clearCart } = useCart()
   const { isAuthenticated } = useAuthStore()
   const [loginDialogOpen, setLoginDialogOpen] = useState(false)
   const navigate = useNavigate()
   const { toast } = useToast()
 
-  // Group items by restaurant
-  const itemsByRestaurant = cartItems.reduce((acc, item) => {
-    const restId = item.restaurantId
-    if (!acc[restId]) {
-      acc[restId] = {
-        restaurantId: restId,
-        restaurantName: item.restaurantName || 'Nhà hàng không xác định',
-        items: [],
+  const { data: cartData, isLoading, refetch } = useApiQuery<ServerCartItem[]>(['cart'], '/cart')
+  const { mutate: clearCart, isPending } = useApiDeleteMutation('/cart', {
+    onSuccess: () => {
+      toast({ title: 'Đã xóa giỏ hàng' })
+      refetch()
+    },
+    onError: () => {
+      toast({ title: 'Xóa thất bại', variant: 'destructive' })
+    },
+  })
+
+  const itemsByRestaurant = (cartData?.data ?? []).reduce(
+    (acc, item) => {
+      const r = item.menuitem.restaurant
+      const key = r.restaurant_id
+
+      if (!acc[key]) {
+        acc[key] = {
+          restaurantId: key,
+          restaurantName: r.name,
+          items: [],
+        }
       }
-    }
-    acc[restId].items.push(item)
-    return acc
-  }, {} as Record<string, { restaurantId: string; restaurantName: string; items: typeof cartItems }>)
 
-  // Calculate subtotal
-  const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
+      acc[key].items.push({
+        id: item.cart_item_id.toString(),
+        name: item.menuitem.name,
+        quantity: item.quantity,
+        price: item.menuitem.price,
+        notes: item.note,
+      })
 
-  // Fixed delivery fee for now
-  const deliveryFee = cartItems.length > 0 ? 2.99 : 0
+      return acc
+    },
+    {} as Record<
+      number,
+      {
+        restaurantId: number
+        restaurantName: string
+        items: {
+          id: string
+          name: string
+          quantity: number
+          price: number
+          notes: string
+        }[]
+      }
+    >,
+  )
 
-  // Calculate total (removed discount calculation)
+  const flatItems = Object.values(itemsByRestaurant).flatMap((r) => r.items)
+  const subtotal = flatItems.reduce((sum, item) => sum + item.quantity * item.price, 0)
+  const deliveryFee = flatItems.length > 0 ? 2.99 : 0
   const total = subtotal + deliveryFee
 
-  // Proceed to checkout
   const proceedToCheckout = () => {
     if (isAuthenticated) {
-      // In a real app, this would navigate to the checkout page
       navigate('/checkout')
     } else {
-      // Open login dialog if not authenticated
       setLoginDialogOpen(true)
     }
   }
 
-  // Handle removing item with confirmation toast
-  const handleRemoveItem = (id: string, name: string) => {
-    removeFromCart(id)
-    toast({
-      title: 'Đã xóa món',
-      description: `${name} đã được xóa khỏi giỏ hàng của bạn.`,
-    })
-  }
-
-  // Handle successful login
-  const handleLoginSuccess = () => {
-    // Navigate to checkout after successful login
-    navigate('/checkout')
-  }
-
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Navigation Bar */}
       <Navigation />
 
       <main className="flex-grow container mx-auto px-4 py-6 max-w-4xl">
-        {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Giỏ hàng của bạn</h1>
-          {cartItems.length > 0 ? (
+
+          {isLoading ? (
+            <p className="mt-2 text-gray-600">Đang tải giỏ hàng...</p>
+          ) : flatItems.length > 0 ? (
             <div className="flex justify-between items-center mt-2">
               <p className="text-gray-600">
                 {Object.keys(itemsByRestaurant).length > 1
@@ -89,13 +122,7 @@ const CartPage = () => {
               <Button
                 variant="outline"
                 className="text-gray-500 border-gray-300"
-                onClick={() => {
-                  clearCart()
-                  toast({
-                    title: 'Đã xóa giỏ hàng',
-                    description: 'Tất cả món ăn đã được xóa khỏi giỏ hàng của bạn.',
-                  })
-                }}
+                onClick={() => clearCart()}
               >
                 Xóa giỏ hàng
               </Button>
@@ -105,9 +132,8 @@ const CartPage = () => {
           )}
         </div>
 
-        {cartItems.length > 0 ? (
+        {flatItems.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Cart Items List */}
             <div className="md:col-span-2">
               {Object.values(itemsByRestaurant).map((restaurant) => (
                 <Card key={restaurant.restaurantId} className="mb-6">
@@ -115,72 +141,14 @@ const CartPage = () => {
                     <h3 className="font-medium text-lg mb-4">{restaurant.restaurantName}</h3>
                     <div className="space-y-4">
                       {restaurant.items.map((item) => (
-                        <div
-                          key={item.id}
-                          className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-3 border-b border-gray-100"
-                        >
-                          <div className="flex-grow mb-2 sm:mb-0">
-                            <div className="flex items-center gap-2">
-                              <h3 className="font-medium">{item.name}</h3>
-                              <EditNoteDialog
-                                itemName={item.name}
-                                currentNote={item.notes}
-                                onSaveNote={(note) => updateNotes(item.id, note)}
-                              />
-                            </div>
-                            {item.notes && (
-                              <p className="text-sm text-gray-500 mt-1">{item.notes}</p>
-                            )}
-                          </div>
-
-                          <div className="flex items-center space-x-6 w-full sm:w-auto">
-                            {/* Quantity Selector */}
-                            <div className="flex items-center border rounded-md">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 px-2"
-                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                              >
-                                <Minus size={16} />
-                              </Button>
-                              <span className="px-2">{item.quantity}</span>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 px-2"
-                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                              >
-                                <Plus size={16} />
-                              </Button>
-                            </div>
-
-                            {/* Price */}
-                            <div className="w-16 text-right">
-                              {(item.price * item.quantity).toFixed(2)}đ
-                            </div>
-
-                            {/* Remove Button */}
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-gray-400 hover:text-red-500"
-                              onClick={() => handleRemoveItem(item.id, item.name)}
-                            >
-                              <Trash2 size={18} />
-                            </Button>
-                          </div>
-                        </div>
+                        <CartItem item={item} key={item.id} refetch={() => refetch()} />
                       ))}
                     </div>
                   </CardContent>
                 </Card>
               ))}
-
-              {/* Removed the Promotions Section */}
             </div>
 
-            {/* Order Summary */}
             <div className="md:col-span-1">
               <Card className="sticky top-20">
                 <CardContent className="p-6">
@@ -189,18 +157,18 @@ const CartPage = () => {
                   <div className="space-y-3 mb-4">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Tổng phụ</span>
-                      <span>{subtotal.toFixed(2)}đ</span>
+                      <span>{subtotal.toFixed(0)}đ</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Phí giao hàng</span>
-                      <span>{deliveryFee.toFixed(2)}đ</span>
+                      <span>{deliveryFee.toFixed(0)}đ</span>
                     </div>
 
                     <Separator className="my-2" />
 
                     <div className="flex justify-between font-bold text-lg">
                       <span>Tổng cộng</span>
-                      <span>{total.toFixed(2)}đ</span>
+                      <span>{total.toFixed(0)}đ</span>
                     </div>
                   </div>
 
@@ -231,46 +199,15 @@ const CartPage = () => {
               </Card>
             </div>
           </div>
-        ) : (
-          // Empty cart state
-          <div className="text-center py-12">
-            <div className="mb-6">
-              <svg
-                className="mx-auto h-16 w-16 text-gray-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1}
-                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                />
-              </svg>
-            </div>
-            <h2 className="text-xl font-medium mb-2">Giỏ hàng của bạn đang trống</h2>
-            <p className="text-gray-600 mb-6">
-              Có vẻ như bạn chưa thêm bất kỳ món ăn nào vào giỏ hàng.
-            </p>
-            <Button
-              onClick={() => navigate('/')}
-              className="bg-foodsnap-orange hover:bg-foodsnap-orange/90"
-            >
-              Khám phá nhà hàng
-            </Button>
-          </div>
         )}
       </main>
 
-      {/* Footer */}
       <Footer />
 
-      {/* Login Dialog */}
       <LoginDialog
         isOpen={loginDialogOpen}
         onClose={() => setLoginDialogOpen(false)}
-        onSuccess={handleLoginSuccess}
+        // onSuccess={handleLoginSuccess}
       />
     </div>
   )

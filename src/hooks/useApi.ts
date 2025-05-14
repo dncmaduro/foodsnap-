@@ -91,3 +91,24 @@ export function useApiDeleteMutation<T>(
     ...options,
   })
 }
+
+// Hook for PATCH requests
+export function useApiPatchMutation<T, V>(
+  path: string,
+  options?: UseMutationOptions<ApiResponse<T>, Error, V>,
+) {
+  const queryClient = useQueryClient()
+
+  const token = useAuthStore.getState().accessToken
+
+  return useMutation({
+    mutationFn: async (variables: V) =>
+      callApi<T>({
+        path,
+        method: 'PATCH',
+        body: variables,
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      }),
+    ...options,
+  })
+}
