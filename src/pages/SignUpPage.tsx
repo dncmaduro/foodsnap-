@@ -8,7 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import { useToast } from '@/hooks/use-toast'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuthStore } from '@/store/authStore'
 import { useApiMutation } from '@/hooks/useApi'
 
 // Define the registration request and response types
@@ -43,7 +43,7 @@ const SignUpPage = () => {
 
   const navigate = useNavigate()
   const { toast } = useToast()
-  const { login } = useAuth()
+  const { login } = useAuthStore()
 
   // Set up the registration mutation
   const registerMutation = useApiMutation<RegisterResponse, RegisterRequest>('/auth/register', {
