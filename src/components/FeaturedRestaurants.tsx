@@ -9,8 +9,6 @@ const restaurants = [
     name: "Burger Heaven",
     image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
     rating: 4.7,
-    deliveryTime: "15-25",
-    minOrder: 10,
     featured: true
   },
   {
@@ -18,8 +16,6 @@ const restaurants = [
     name: "Pasta Palace",
     image: "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
     rating: 4.5,
-    deliveryTime: "20-30",
-    minOrder: 15,
     featured: true
   },
   {
@@ -27,8 +23,6 @@ const restaurants = [
     name: "Sushi Express",
     image: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
     rating: 4.8,
-    deliveryTime: "25-35",
-    minOrder: 20,
     featured: true
   },
   {
@@ -36,8 +30,6 @@ const restaurants = [
     name: "Taco Fiesta",
     image: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1080&q=80",
     rating: 4.6,
-    deliveryTime: "15-25",
-    minOrder: 12,
     featured: true
   },
   {
@@ -45,8 +37,6 @@ const restaurants = [
     name: "Curry House",
     image: "https://images.unsplash.com/photo-1585937421612-70a008356c36?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1136&q=80",
     rating: 4.4,
-    deliveryTime: "30-40",
-    minOrder: 18,
     featured: true
   },
   {
@@ -54,8 +44,6 @@ const restaurants = [
     name: "Thai Delight",
     image: "https://images.unsplash.com/photo-1559847844-5315695dadae?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1158&q=80",
     rating: 4.3,
-    deliveryTime: "25-35",
-    minOrder: 15,
     featured: true
   }
 ];
@@ -89,16 +77,7 @@ const FeaturedRestaurants = () => {
                   </div>
                 </div>
                 
-                <div className="flex flex-wrap gap-2 text-sm text-gray-600 mb-4">
-                  <span className="flex items-center">
-                    <span className="font-medium mr-1">Giao hàng:</span> {restaurant.deliveryTime} phút
-                  </span>
-                  <span className="flex items-center">
-                    <span className="font-medium mr-1">Đơn tối thiểu:</span> ${restaurant.minOrder}
-                  </span>
-                </div>
-                
-                <div className="w-full text-center">
+                <div className="w-full text-center mt-4">
                   <span className="inline-block w-full py-2 text-foodsnap-teal border border-foodsnap-teal hover:bg-foodsnap-teal hover:text-white transition-colors rounded">
                     Xem Thực Đơn
                   </span>
