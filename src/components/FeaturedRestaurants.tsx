@@ -1,6 +1,5 @@
 
 import { Star } from 'lucide-react';
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 
@@ -10,7 +9,7 @@ const restaurants = [
     id: 1,
     name: "Burger Heaven",
     image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-    cuisine: "American",
+    cuisine: "Mỹ",
     rating: 4.7,
     deliveryTime: "15-25",
     minOrder: 10,
@@ -20,7 +19,7 @@ const restaurants = [
     id: 2,
     name: "Pasta Palace",
     image: "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-    cuisine: "Italian",
+    cuisine: "Ý",
     rating: 4.5,
     deliveryTime: "20-30",
     minOrder: 15,
@@ -30,7 +29,7 @@ const restaurants = [
     id: 3,
     name: "Sushi Express",
     image: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-    cuisine: "Japanese",
+    cuisine: "Nhật",
     rating: 4.8,
     deliveryTime: "25-35",
     minOrder: 20,
@@ -40,7 +39,7 @@ const restaurants = [
     id: 4,
     name: "Taco Fiesta",
     image: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1080&q=80",
-    cuisine: "Mexican",
+    cuisine: "Mexico",
     rating: 4.6,
     deliveryTime: "15-25",
     minOrder: 12,
@@ -50,7 +49,7 @@ const restaurants = [
     id: 5,
     name: "Curry House",
     image: "https://images.unsplash.com/photo-1585937421612-70a008356c36?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1136&q=80",
-    cuisine: "Indian",
+    cuisine: "Ấn Độ",
     rating: 4.4,
     deliveryTime: "30-40",
     minOrder: 18,
@@ -60,7 +59,7 @@ const restaurants = [
     id: 6,
     name: "Thai Delight",
     image: "https://images.unsplash.com/photo-1559847844-5315695dadae?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1158&q=80",
-    cuisine: "Thai",
+    cuisine: "Thái",
     rating: 4.3,
     deliveryTime: "25-35",
     minOrder: 15,
@@ -73,8 +72,8 @@ const FeaturedRestaurants = () => {
     <section className="py-12 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="mb-8 text-center">
-          <h2 className="text-3xl font-bold mb-2">Featured Restaurants</h2>
-          <p className="text-foodsnap-lightText">Discover the best restaurants in your area</p>
+          <h2 className="text-3xl font-bold mb-2">Nhà Hàng Nổi Bật</h2>
+          <p className="text-foodsnap-lightText">Khám phá các nhà hàng tốt nhất trong khu vực của bạn</p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -102,27 +101,21 @@ const FeaturedRestaurants = () => {
                 
                 <div className="flex flex-wrap gap-2 text-sm text-gray-600 mb-4">
                   <span className="flex items-center">
-                    <span className="font-medium mr-1">Delivery:</span> {restaurant.deliveryTime} min
+                    <span className="font-medium mr-1">Giao hàng:</span> {restaurant.deliveryTime} phút
                   </span>
                   <span className="flex items-center">
-                    <span className="font-medium mr-1">Min order:</span> ${restaurant.minOrder}
+                    <span className="font-medium mr-1">Đơn tối thiểu:</span> ${restaurant.minOrder}
                   </span>
                 </div>
                 
                 <div className="w-full text-center">
                   <span className="inline-block w-full py-2 text-foodsnap-teal border border-foodsnap-teal hover:bg-foodsnap-teal hover:text-white transition-colors rounded">
-                    View Menu
+                    Xem Thực Đơn
                   </span>
                 </div>
               </div>
             </Link>
           ))}
-        </div>
-        
-        <div className="mt-8 text-center">
-          <Button variant="outline" className="text-foodsnap-orange border-foodsnap-orange hover:bg-foodsnap-orange hover:text-white">
-            View All Restaurants
-          </Button>
         </div>
       </div>
     </section>

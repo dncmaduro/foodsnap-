@@ -21,10 +21,10 @@ const HeroSection = () => {
         
         <div className="relative container mx-auto px-4 h-full flex flex-col justify-center items-center text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 animate-fade-in">
-            Delicious Food, <span className="text-foodsnap-orange">Delivered Fast</span>
+            Món Ăn Ngon, <span className="text-foodsnap-orange">Giao Hàng Nhanh</span>
           </h1>
           <p className="text-xl text-white mb-8 max-w-2xl">
-            Discover restaurants and get your favorite meals delivered right to your door.
+            Khám phá nhà hàng và đặt món ăn yêu thích của bạn được giao đến tận nơi.
           </p>
         </div>
       </div>
