@@ -1,209 +1,99 @@
 
-import { ArrowLeft, LogOut, Play } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import Footer from "@/components/Footer";
-import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/use-toast";
-import { useState, useEffect } from "react";
 
-// Define driver status types
-type DriverStatus = "pending" | "approved" | "not_applied";
+// Driver application status
+export type DriverStatus = "not_applied" | "pending" | "approved" | "rejected";
 
-const DeliveryDriverRegistrationLinks = () => {
+export default function DeliveryDriverRegistrationLinks() {
   const navigate = useNavigate();
-  const { logout } = useAuth();
-  const { toast } = useToast();
   const [driverStatus, setDriverStatus] = useState<DriverStatus>("not_applied");
-  const [isStartingDelivery, setIsStartingDelivery] = useState(false);
 
-  // Fetch driver status from localStorage when the component mounts
   useEffect(() => {
-    // In a real app, this would be an API call to get the current driver status
-    const hasApplied = localStorage.getItem("driverApplicationSubmitted");
-    
-    if (hasApplied) {
-      const isApproved = localStorage.getItem("driverApplicationApproved");
-      if (isApproved) {
-        setDriverStatus("approved");
-      } else {
-        setDriverStatus("pending");
-      }
-    } else {
-      setDriverStatus("not_applied");
+    // Check if user has applied to be a driver
+    const applicationStatus = localStorage.getItem("driverApplicationStatus");
+    if (applicationStatus) {
+      setDriverStatus(applicationStatus as DriverStatus);
     }
   }, []);
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-    toast({
-      title: "Đã đăng xuất",
-      description: "Bạn đã đăng xuất thành công khỏi tài khoản."
-    });
+  const handleStartAcceptingOrders = () => {
+    navigate("/delivery-orders");
   };
 
-  const handleRegistration = () => {
+  const handleApplyAsDriver = () => {
     navigate("/delivery-registration/form");
   };
 
-  const handleStartDelivery = () => {
-    setIsStartingDelivery(true);
-    
-    // Simulate connection to delivery system
-    setTimeout(() => {
-      setIsStartingDelivery(false);
-      toast({
-        title: "Bắt đầu nhận đơn",
-        description: "Bạn đã sẵn sàng nhận đơn giao hàng."
-      });
-      // In a real app, this would navigate to a driver dashboard or change status
-    }, 1500);
-  };
-
-  // Render content based on driver status
-  const renderStatusContent = () => {
-    switch (driverStatus) {
-      case "approved":
-        return (
-          <div className="text-center mb-12">
-            <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
-              <p className="text-green-700 font-medium">
-                Hồ sơ của bạn đã được phê duyệt. Bạn có thể bắt đầu nhận đơn giao hàng ngay bây giờ.
-              </p>
-            </div>
-            <Button 
-              onClick={handleStartDelivery}
-              size="lg" 
-              className="bg-foodsnap-teal hover:bg-foodsnap-teal/90 text-lg py-6 px-8"
-              disabled={isStartingDelivery}
-            >
-              {isStartingDelivery ? (
-                "Đang kết nối..."
-              ) : (
-                <>
-                  <Play size={20} />
-                  Bắt đầu nhận đơn
-                </>
-              )}
-            </Button>
-          </div>
-        );
-      
-      case "pending":
-        return (
-          <div className="text-center mb-12">
-            <div className="mb-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-              <p className="text-yellow-700 font-medium">
-                Hồ sơ của bạn đang được xem xét. Chúng tôi sẽ thông báo khi có kết quả.
-              </p>
-            </div>
-            <p className="text-gray-600">
-              Thời gian xét duyệt thông thường là trong vòng 24 giờ.
-            </p>
-          </div>
-        );
-      
-      case "not_applied":
-      default:
-        return (
-          <div className="text-center mb-12">
-            <Button 
-              onClick={handleRegistration}
-              size="lg" 
-              className="bg-foodsnap-teal hover:bg-foodsnap-teal/90 text-lg py-6 px-8"
-            >
-              Đăng ký làm tài xế giao hàng
-            </Button>
-          </div>
-        );
-    }
-  };
-
   return (
-    <div className="flex flex-col min-h-screen">
-      <main className="flex-grow container mx-auto px-4 py-8">
-        <div className="max-w-3xl mx-auto">
-          {/* Navigation buttons */}
-          <div className="flex justify-between mb-8">
-            <Button 
-              variant="outline" 
-              onClick={() => navigate("/profile")}
-              className="flex items-center"
-            >
-              <ArrowLeft size={16} className="mr-2" />
-              Quay lại
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              onClick={handleLogout}
-              className="flex items-center text-red-500 hover:text-red-600 hover:bg-red-50"
-            >
-              <LogOut size={16} className="mr-2" />
-              Đăng xuất
-            </Button>
-          </div>
-          
-          {/* Page Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold mb-3">Đăng ký làm tài xế giao hàng</h1>
-            <p className="text-gray-600">
-              Trở thành đối tác giao hàng của FoodSnap để bắt đầu kiếm thu nhập ngay hôm nay.
-            </p>
-          </div>
-          
-          {/* Status-based content */}
-          {renderStatusContent()}
-          
-          {/* Only show these sections if not approved yet */}
-          {driverStatus !== "approved" && (
-            <>
-              {/* Benefits Section */}
-              <div className="bg-gray-50 p-6 rounded-lg mb-12">
-                <h2 className="text-xl font-semibold mb-4">Lợi ích khi trở thành tài xế FoodSnap</h2>
-                <ul className="space-y-2">
-                  <li className="flex items-start">
-                    <span className="bg-foodsnap-teal rounded-full text-white font-bold h-6 w-6 flex items-center justify-center mr-2 mt-1">✓</span>
-                    <span>Thu nhập hấp dẫn và linh hoạt</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="bg-foodsnap-teal rounded-full text-white font-bold h-6 w-6 flex items-center justify-center mr-2 mt-1">✓</span>
-                    <span>Thời gian làm việc tự do - bạn là người làm chủ thời gian của mình</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="bg-foodsnap-teal rounded-full text-white font-bold h-6 w-6 flex items-center justify-center mr-2 mt-1">✓</span>
-                    <span>Thanh toán nhanh chóng, minh bạch</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="bg-foodsnap-teal rounded-full text-white font-bold h-6 w-6 flex items-center justify-center mr-2 mt-1">✓</span>
-                    <span>Hỗ trợ kỹ thuật 24/7</span>
-                  </li>
-                </ul>
-              </div>
-              
-              {/* Requirements Section */}
-              <div className="bg-gray-50 p-6 rounded-lg mb-10">
-                <h2 className="text-xl font-semibold mb-4">Yêu cầu đối với tài xế</h2>
-                <ul className="space-y-2">
-                  <li className="flex items-start">
-                    <span className="mr-2">•</span>
-                    <span>Trên 18 tuổi, có bằng lái xe</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="mr-2">•</span>
-                    <span>Có điện thoại thông minh để sử dụng ứng dụng</span>
-                  </li>
-                </ul>
-              </div>
-            </>
-          )}
-        </div>
-      </main>
+    <div className="container mx-auto py-10 px-4 max-w-4xl">
+      <h1 className="text-3xl font-bold mb-8 text-center">Đăng ký làm Tài xế giao hàng</h1>
 
-      <Footer />
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>Thông tin đăng ký</CardTitle>
+          <CardDescription>
+            Đăng ký làm tài xế giao hàng và bắt đầu kiếm thu nhập linh hoạt.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {driverStatus === "not_applied" && (
+            <div className="space-y-4">
+              <p>Bạn chưa đăng ký làm tài xế giao hàng. Hãy hoàn thành đơn đăng ký để bắt đầu.</p>
+              <Button onClick={handleApplyAsDriver}>Đăng ký ngay</Button>
+            </div>
+          )}
+
+          {driverStatus === "pending" && (
+            <div className="space-y-4">
+              <p className="text-amber-600 font-medium">Hồ sơ của bạn đang được phê duyệt</p>
+              <p>
+                Chúng tôi đang xem xét hồ sơ của bạn. Quá trình này thường mất 1-2 ngày làm việc.
+                Bạn sẽ nhận được thông báo qua email khi hồ sơ được phê duyệt.
+              </p>
+            </div>
+          )}
+
+          {driverStatus === "approved" && (
+            <div className="space-y-4">
+              <p className="text-green-600 font-medium">Hồ sơ của bạn đã được phê duyệt!</p>
+              <p>
+                Chúc mừng! Bạn đã có thể bắt đầu nhận đơn hàng và giao hàng ngay bây giờ.
+                Hãy nhấn nút bên dưới để xem các đơn hàng có thể nhận.
+              </p>
+              <Button onClick={handleStartAcceptingOrders}>Bắt đầu nhận đơn</Button>
+            </div>
+          )}
+
+          {driverStatus === "rejected" && (
+            <div className="space-y-4">
+              <p className="text-red-600 font-medium">Hồ sơ của bạn đã bị từ chối</p>
+              <p>
+                Rất tiếc, hồ sơ của bạn không được phê duyệt. Vui lòng liên hệ bộ phận hỗ trợ
+                để biết thêm chi tiết và cách thức nộp lại hồ sơ.
+              </p>
+              <Button variant="outline" onClick={handleApplyAsDriver}>Nộp lại hồ sơ</Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Quyền lợi của Tài xế</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="space-y-2 list-disc pl-5">
+            <li>Thu nhập hấp dẫn, thanh toán hàng tuần</li>
+            <li>Thời gian làm việc linh hoạt</li>
+            <li>Hỗ trợ kỹ thuật 24/7</li>
+            <li>Cơ hội nhận thưởng và ưu đãi đặc biệt</li>
+            <li>Không tính phí đăng ký, bắt đầu ngay không cần đầu tư</li>
+          </ul>
+        </CardContent>
+      </Card>
     </div>
   );
-};
-
-export default DeliveryDriverRegistrationLinks;
+}

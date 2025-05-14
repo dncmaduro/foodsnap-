@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -23,6 +24,7 @@ import MyRestaurantsPage from "./pages/MyRestaurantsPage";
 import RestaurantDetailsPage from "./pages/RestaurantDetailsPage";
 import DeliveryDriverRegistrationLinks from "./pages/DeliveryDriverRegistrationLinks";
 import DeliveryDriverRegistrationForm from "./pages/DeliveryDriverRegistrationForm";
+import DeliveryOrdersPage from "./pages/DeliveryOrdersPage";
 import NotFound from "./pages/NotFound";
 
 // Create a new QueryClient instance
@@ -52,6 +54,7 @@ function App() {
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/delivery-registration" element={<DeliveryDriverRegistrationLinks />} />
                 <Route path="/delivery-registration/form" element={<DeliveryDriverRegistrationForm />} />
+                <Route path="/delivery-orders" element={<DeliveryOrdersPage />} />
                 <Route path="/restaurant-management" element={<RestaurantManagementPage />} />
                 <Route path="/restaurant-registration" element={<RestaurantRegistrationPage />} />
                 <Route path="/my-restaurants" element={<MyRestaurantsPage />} />
