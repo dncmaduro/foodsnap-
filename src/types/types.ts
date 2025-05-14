@@ -69,3 +69,20 @@ export interface DetailRestaurant {
   menuItems: MenuItem[]
   reviews: Review[]
 }
+
+export interface ServerCartItem {
+  cart_item_id: number
+  quantity: number
+  note: string
+  menuitem: {
+    menuitem_id: number
+    name: string
+    price: number
+    description: string
+    image_url: string
+    restaurant: {
+      restaurant_id: number
+      name: string
+    }
+  }
+}

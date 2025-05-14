@@ -1,100 +1,103 @@
-
-import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Minus, Plus } from 'lucide-react';
-import { useCart, CartItem } from '@/contexts/CartContext';
-import { useToast } from "@/hooks/use-toast";
+import React, { useState } from 'react'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { Minus, Plus } from 'lucide-react'
+import { useCart, CartItem } from '@/contexts/CartContext'
+import { useToast } from '@/hooks/use-toast'
 
 interface MenuItem {
-  id: string;
-  name: string;
-  price: number;
-  description: string | null;
-  image: string | null;
+  id: string
+  name: string
+  price: number
+  description: string | null
+  image: string | null
 }
 
 interface AddToCartDialogProps {
-  item: MenuItem;
-  restaurantId: string;
-  restaurantName: string;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  item: MenuItem
+  restaurantId: string
+  restaurantName: string
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onConfirm: (quantity: number, note?: string) => void
 }
 
-const AddToCartDialog = ({ item, restaurantId, restaurantName, open, onOpenChange }: AddToCartDialogProps) => {
-  const [quantity, setQuantity] = useState(1);
-  const [notes, setNotes] = useState('');
-  const { addToCart, getCartRestaurantId, clearCart } = useCart();
-  const { toast } = useToast();
-  const [showClearCartConfirmation, setShowClearCartConfirmation] = useState(false);
+const AddToCartDialog = ({
+  item,
+  restaurantId,
+  restaurantName,
+  open,
+  onOpenChange,
+  onConfirm,
+}: AddToCartDialogProps) => {
+  const [quantity, setQuantity] = useState(1)
+  const [notes, setNotes] = useState('')
+  const { addToCart, getCartRestaurantId, clearCart } = useCart()
+  const { toast } = useToast()
+  const [showClearCartConfirmation, setShowClearCartConfirmation] = useState(false)
 
   const handleQuantityChange = (amount: number) => {
-    const newQuantity = quantity + amount;
+    const newQuantity = quantity + amount
     if (newQuantity >= 1) {
-      setQuantity(newQuantity);
+      setQuantity(newQuantity)
     }
-  };
+  }
 
   const handleAddToCart = () => {
-    const cartRestaurantId = getCartRestaurantId();
-    
+    const cartRestaurantId = getCartRestaurantId()
+
     // Check if adding from a different restaurant
     if (cartRestaurantId && cartRestaurantId !== restaurantId) {
       // Show confirmation dialog instead of error
-      setShowClearCartConfirmation(true);
-      return;
+      setShowClearCartConfirmation(true)
+      return
     }
-    
-    addItemToCart();
-  };
+
+    addItemToCart()
+  }
 
   const addItemToCart = () => {
-    const cartItem: CartItem = {
-      id: item.id,
-      name: item.name,
-      price: item.price,
-      quantity,
-      notes,
-      restaurantId,
-      restaurantName
-    };
-    
-    const success = addToCart(cartItem);
-    
-    if (success) {
-      toast({
-        title: "Added to cart!",
-        description: `${quantity} × ${item.name} added to your cart.`,
-      });
-      
-      // Reset and close
-      resetAndClose();
-    }
-  };
+    onConfirm(quantity, notes)
+    resetAndClose()
+  }
 
   const handleClearCartAndAdd = () => {
-    clearCart();
-    addItemToCart();
-    setShowClearCartConfirmation(false);
-  };
+    clearCart()
+    addItemToCart()
+    setShowClearCartConfirmation(false)
+  }
 
   const handleCancelClearCart = () => {
-    setShowClearCartConfirmation(false);
-  };
+    setShowClearCartConfirmation(false)
+  }
 
   const resetAndClose = () => {
     // Reset state when dialog is closed
-    setQuantity(1);
-    setNotes('');
-    onOpenChange(false);
-  };
+    setQuantity(1)
+    setNotes('')
+    onOpenChange(false)
+  }
 
   const handleClose = () => {
-    resetAndClose();
-  };
+    resetAndClose()
+  }
 
   return (
     <>
@@ -103,27 +106,25 @@ const AddToCartDialog = ({ item, restaurantId, restaurantName, open, onOpenChang
           <DialogHeader>
             <DialogTitle>{item.name}</DialogTitle>
           </DialogHeader>
-          
+
           <div className="py-4">
-            {item.description && (
-              <p className="text-sm text-gray-600 mb-4">{item.description}</p>
-            )}
-            
+            {item.description && <p className="text-sm text-gray-600 mb-4">{item.description}</p>}
+
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
               <div className="flex items-center border rounded-md w-fit">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   className="h-9 px-3"
                   onClick={() => handleQuantityChange(-1)}
                 >
                   <Minus size={16} />
                 </Button>
                 <span className="px-4">{quantity}</span>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   className="h-9 px-3"
                   onClick={() => handleQuantityChange(1)}
                 >
@@ -131,7 +132,7 @@ const AddToCartDialog = ({ item, restaurantId, restaurantName, open, onOpenChang
                 </Button>
               </div>
             </div>
-            
+
             <div className="mb-4">
               <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
                 Special instructions
@@ -150,7 +151,7 @@ const AddToCartDialog = ({ item, restaurantId, restaurantName, open, onOpenChang
               <span className="text-foodsnap-orange">${(item.price * quantity).toFixed(2)}</span>
             </div>
           </div>
-          
+
           <DialogFooter>
             <Button
               onClick={handleAddToCart}
@@ -173,7 +174,7 @@ const AddToCartDialog = ({ item, restaurantId, restaurantName, open, onOpenChang
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={handleCancelClearCart}>Keep current cart</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={handleClearCartAndAdd}
               className="bg-foodsnap-orange hover:bg-foodsnap-orange/90"
             >
@@ -183,7 +184,7 @@ const AddToCartDialog = ({ item, restaurantId, restaurantName, open, onOpenChang
         </AlertDialogContent>
       </AlertDialog>
     </>
-  );
-};
+  )
+}
 
-export default AddToCartDialog;
+export default AddToCartDialog
