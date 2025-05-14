@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
@@ -11,7 +10,6 @@ import {
   PackageOpen
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Progress } from '@/components/ui/progress';
@@ -108,7 +106,6 @@ const pastOrders = [
 ];
 
 const OrderHistoryPage = () => {
-  const [filter, setFilter] = useState<string>('all');
   const [sortOrder, setSortOrder] = useState<string>('recent');
   const [hasActiveOrder, setHasActiveOrder] = useState<boolean>(true);
   const [filteredOrders, setFilteredOrders] = useState(pastOrders);
@@ -116,15 +113,8 @@ const OrderHistoryPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Filter orders based on selected filter
-    if (filter === 'all') {
-      setFilteredOrders(pastOrders);
-    } else {
-      setFilteredOrders(pastOrders.filter(order => order.status === filter));
-    }
-
     // Sort orders based on selected sort order
-    const sortedOrders = [...filteredOrders].sort((a, b) => {
+    const sortedOrders = [...pastOrders].sort((a, b) => {
       if (sortOrder === 'recent') {
         return b.orderDate.getTime() - a.orderDate.getTime();
       } else {
@@ -133,7 +123,7 @@ const OrderHistoryPage = () => {
     });
 
     setFilteredOrders(sortedOrders);
-  }, [filter, sortOrder]);
+  }, [sortOrder]);
 
   // Calculate the order status step
   const getOrderStatusStep = (status: string) => {
@@ -198,9 +188,9 @@ const OrderHistoryPage = () => {
               </div>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1">
               {/* Order Info */}
-              <div className="col-span-1 md:col-span-2">
+              <div>
                 <h3 className="font-medium mb-2">{currentOrder.restaurantName}</h3>
                 <div className="flex items-center mb-2">
                   <Clock className="h-4 w-4 text-foodsnap-orange mr-2" />
@@ -212,23 +202,6 @@ const OrderHistoryPage = () => {
                       <span>{item.quantity}× {item.name}</span>
                     </div>
                   ))}
-                </div>
-              </div>
-              
-              {/* Driver Info */}
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-medium mb-3">Tài Xế Của Bạn</h3>
-                <div className="flex items-center mb-3">
-                  <div className="h-12 w-12 rounded-full overflow-hidden mr-3">
-                    <img src={currentOrder.driver.photo} alt="Driver" className="h-full w-full object-cover" />
-                  </div>
-                  <div>
-                    <div className="font-medium">{currentOrder.driver.name}</div>
-                    <div className="flex items-center text-sm text-gray-500">
-                      <Phone className="h-3 w-3 mr-1" />
-                      {currentOrder.driver.phone}
-                    </div>
-                  </div>
                 </div>
                 
                 <Button 
@@ -244,15 +217,7 @@ const OrderHistoryPage = () => {
         )}
         
         {/* Filter and Sort Options */}
-        <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
-          <Tabs defaultValue="all" className="w-full md:w-auto" onValueChange={setFilter}>
-            <TabsList>
-              <TabsTrigger value="all">Tất Cả Đơn Hàng</TabsTrigger>
-              <TabsTrigger value="completed">Đã Hoàn Thành</TabsTrigger>
-              <TabsTrigger value="cancelled">Đã Hủy</TabsTrigger>
-            </TabsList>
-          </Tabs>
-          
+        <div className="flex justify-end gap-4 mb-6">
           <ToggleGroup type="single" value={sortOrder} onValueChange={(value) => value && setSortOrder(value)}>
             <ToggleGroupItem value="recent" aria-label="Sort by most recent">
               <ArrowUpDown className="h-4 w-4 mr-2" />
