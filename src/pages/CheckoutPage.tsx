@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
@@ -30,6 +31,7 @@ const CheckoutPage = () => {
     name: '',
     phone: '',
     address: '',
+    district: '',
     notes: ''
   });
   
@@ -48,6 +50,10 @@ const CheckoutPage = () => {
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setAddressForm(prev => ({ ...prev, [name]: value }));
+  };
+  
+  const handleDistrictChange = (value: string) => {
+    setAddressForm(prev => ({ ...prev, district: value }));
   };
   
   const handlePlaceOrder = () => {
@@ -178,13 +184,30 @@ const CheckoutPage = () => {
                             />
                           </div>
                           <div className="grid gap-2">
-                            <Label htmlFor="address">Địa chỉ</Label>
+                            <Label htmlFor="district">Quận</Label>
+                            <Select 
+                              onValueChange={handleDistrictChange} 
+                              value={addressForm.district}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Chọn quận" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="cau-giay">Cầu Giấy</SelectItem>
+                                <SelectItem value="dong-da">Đống Đa</SelectItem>
+                                <SelectItem value="ba-dinh">Ba Đình</SelectItem>
+                                <SelectItem value="thanh-xuan">Thanh Xuân</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="grid gap-2">
+                            <Label htmlFor="address">Địa chỉ chi tiết</Label>
                             <Textarea 
                               id="address" 
                               name="address" 
                               value={addressForm.address} 
                               onChange={handleAddressChange} 
-                              placeholder="Nhập địa chỉ đầy đủ của bạn"
+                              placeholder="Nhập số nhà, tên đường, phường..."
                               rows={2}
                             />
                           </div>
