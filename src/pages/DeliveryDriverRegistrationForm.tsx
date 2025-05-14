@@ -18,6 +18,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const formSchema = z.object({
   fullName: z.string().min(1, "Họ tên không được để trống"),
@@ -31,6 +32,7 @@ const DeliveryDriverRegistrationForm = () => {
   const [frontLicensePreview, setFrontLicensePreview] = useState<string | null>(null);
   const [backLicensePreview, setBackLicensePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isMobile = useIsMobile();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -143,40 +145,41 @@ const DeliveryDriverRegistrationForm = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <main className="flex-grow container mx-auto px-4 py-8">
-        <div className="max-w-2xl mx-auto">
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      <main className="flex-grow px-4 py-6">
+        <div className="max-w-md mx-auto">
           {/* Back button */}
           <Button
-            variant="outline"
+            variant="ghost"
             onClick={() => navigate(-1)}
-            className="flex items-center mb-8"
+            className="flex items-center mb-6 -ml-2 text-gray-600 hover:text-gray-900"
+            size="sm"
           >
-            <ArrowLeft size={16} className="mr-2" />
+            <ArrowLeft size={18} className="mr-1" />
             Quay lại
           </Button>
 
           {/* Page Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold mb-3">Đăng ký làm tài xế giao hàng</h1>
-            <p className="text-gray-600">
-              Vui lòng điền đầy đủ thông tin để đăng ký trở thành tài xế.
+          <div className="mb-6 space-y-1">
+            <h1 className="text-2xl font-bold text-gray-900">Đăng ký tài xế</h1>
+            <p className="text-sm text-gray-600">
+              Vui lòng điền thông tin để bắt đầu giao hàng.
             </p>
           </div>
 
           {/* Registration Form */}
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
                 {/* Full Name */}
                 <FormField
                   control={form.control}
                   name="fullName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Họ tên <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel className="text-gray-700">Họ tên <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
-                        <Input placeholder="Nguyễn Văn A" {...field} />
+                        <Input placeholder="Nguyễn Văn A" {...field} className="h-11" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -189,9 +192,9 @@ const DeliveryDriverRegistrationForm = () => {
                   name="phoneNumber"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Số điện thoại <span className="text-red-500">*</span></FormLabel>
+                      <FormLabel className="text-gray-700">Số điện thoại <span className="text-red-500">*</span></FormLabel>
                       <FormControl>
-                        <Input placeholder="0901234567" {...field} />
+                        <Input placeholder="0901234567" {...field} className="h-11" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -200,119 +203,123 @@ const DeliveryDriverRegistrationForm = () => {
 
                 {/* License Image Uploads */}
                 <div className="space-y-4">
-                  <Label className="text-base font-medium">
-                    Ảnh giấy phép lái xe (2 mặt) <span className="text-red-500">*</span>
+                  <Label className="text-sm font-medium text-gray-700">
+                    Giấy phép lái xe <span className="text-red-500">*</span>
                   </Label>
 
-                  {/* Front License Upload */}
-                  <div className="space-y-2">
-                    <Label htmlFor="frontLicense" className="text-sm text-gray-600">
-                      Mặt trước
-                    </Label>
-                    <div className="relative">
-                      {frontLicensePreview ? (
-                        <div className="mb-2">
-                          <img
-                            src={frontLicensePreview}
-                            alt="Front license preview"
-                            className="max-h-40 rounded-md border border-gray-200"
-                          />
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="mt-2 text-red-600 hover:text-red-800 hover:bg-red-50"
-                            onClick={() => setFrontLicensePreview(null)}
-                          >
-                            Xóa ảnh
-                          </Button>
-                        </div>
-                      ) : (
-                        <label
-                          htmlFor="frontLicense"
-                          className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
-                        >
-                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <Upload className="w-8 h-8 mb-2 text-gray-400" />
-                            <p className="text-sm text-gray-500">
-                              Nhấn để tải ảnh lên
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              JPG, PNG (tối đa 5MB)
-                            </p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {/* Front License Upload */}
+                    <div className="space-y-2">
+                      <Label htmlFor="frontLicense" className="text-xs text-gray-600">
+                        Mặt trước
+                      </Label>
+                      <div>
+                        {frontLicensePreview ? (
+                          <div>
+                            <div className="relative aspect-[3/2] mb-2 border border-gray-200 rounded-md overflow-hidden">
+                              <img
+                                src={frontLicensePreview}
+                                alt="Mặt trước GPLX"
+                                className="object-cover w-full h-full"
+                              />
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-600 hover:text-red-800 hover:bg-red-50 text-xs w-full py-1 h-auto"
+                              onClick={() => setFrontLicensePreview(null)}
+                            >
+                              Xóa ảnh
+                            </Button>
                           </div>
-                          <input
-                            id="frontLicense"
-                            type="file"
-                            className="hidden"
-                            accept="image/jpeg, image/png"
-                            onChange={handleFrontLicenseChange}
-                          />
-                        </label>
-                      )}
+                        ) : (
+                          <label
+                            htmlFor="frontLicense"
+                            className="flex flex-col items-center justify-center w-full aspect-[3/2] border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                          >
+                            <div className="flex flex-col items-center justify-center p-2">
+                              <Upload className="w-6 h-6 mb-1 text-gray-400" />
+                              <p className="text-xs text-gray-500">
+                                Tải lên
+                              </p>
+                            </div>
+                            <input
+                              id="frontLicense"
+                              type="file"
+                              className="hidden"
+                              accept="image/jpeg, image/png"
+                              onChange={handleFrontLicenseChange}
+                            />
+                          </label>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Back License Upload */}
+                    <div className="space-y-2">
+                      <Label htmlFor="backLicense" className="text-xs text-gray-600">
+                        Mặt sau
+                      </Label>
+                      <div>
+                        {backLicensePreview ? (
+                          <div>
+                            <div className="relative aspect-[3/2] mb-2 border border-gray-200 rounded-md overflow-hidden">
+                              <img
+                                src={backLicensePreview}
+                                alt="Mặt sau GPLX"
+                                className="object-cover w-full h-full"
+                              />
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-600 hover:text-red-800 hover:bg-red-50 text-xs w-full py-1 h-auto"
+                              onClick={() => setBackLicensePreview(null)}
+                            >
+                              Xóa ảnh
+                            </Button>
+                          </div>
+                        ) : (
+                          <label
+                            htmlFor="backLicense"
+                            className="flex flex-col items-center justify-center w-full aspect-[3/2] border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                          >
+                            <div className="flex flex-col items-center justify-center p-2">
+                              <Upload className="w-6 h-6 mb-1 text-gray-400" />
+                              <p className="text-xs text-gray-500">
+                                Tải lên
+                              </p>
+                            </div>
+                            <input
+                              id="backLicense"
+                              type="file"
+                              className="hidden"
+                              accept="image/jpeg, image/png"
+                              onChange={handleBackLicenseChange}
+                            />
+                          </label>
+                        )}
+                      </div>
                     </div>
                   </div>
 
-                  {/* Back License Upload */}
-                  <div className="space-y-2">
-                    <Label htmlFor="backLicense" className="text-sm text-gray-600">
-                      Mặt sau
-                    </Label>
-                    <div className="relative">
-                      {backLicensePreview ? (
-                        <div className="mb-2">
-                          <img
-                            src={backLicensePreview}
-                            alt="Back license preview"
-                            className="max-h-40 rounded-md border border-gray-200"
-                          />
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="mt-2 text-red-600 hover:text-red-800 hover:bg-red-50"
-                            onClick={() => setBackLicensePreview(null)}
-                          >
-                            Xóa ảnh
-                          </Button>
-                        </div>
-                      ) : (
-                        <label
-                          htmlFor="backLicense"
-                          className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
-                        >
-                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <Upload className="w-8 h-8 mb-2 text-gray-400" />
-                            <p className="text-sm text-gray-500">
-                              Nhấn để tải ảnh lên
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              JPG, PNG (tối đa 5MB)
-                            </p>
-                          </div>
-                          <input
-                            id="backLicense"
-                            type="file"
-                            className="hidden"
-                            accept="image/jpeg, image/png"
-                            onChange={handleBackLicenseChange}
-                          />
-                        </label>
-                      )}
-                    </div>
-                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    JPG, PNG (tối đa 5MB)
+                  </p>
                 </div>
 
                 {/* Submit Button */}
-                <div className="pt-4">
+                <div className="pt-3">
                   <Button 
                     type="submit" 
-                    className="w-full bg-foodsnap-teal hover:bg-foodsnap-teal/90 text-lg py-6"
+                    className="w-full bg-foodsnap-teal hover:bg-foodsnap-teal/90 py-2.5 h-auto"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? "Đang xử lý..." : "Gửi đăng ký"}
                   </Button>
-                  <p className="text-center text-gray-500 text-sm mt-4">
+                  <p className="text-center text-gray-500 text-xs mt-3">
                     Chúng tôi sẽ xác minh thông tin của bạn trong vòng 24 giờ.
                   </p>
                 </div>
