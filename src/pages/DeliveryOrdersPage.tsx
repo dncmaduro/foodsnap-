@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -107,6 +106,9 @@ export default function DeliveryOrdersPage() {
       title: "Đã nhận đơn hàng",
       description: `Bạn đã nhận đơn hàng ${orderId} thành công.`,
     });
+    
+    // Navigate to the order status update page
+    navigate(`/delivery-status/${orderId}`);
   };
 
   return (
