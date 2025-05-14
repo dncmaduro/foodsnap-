@@ -1,4 +1,3 @@
-
 import { Star } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
@@ -9,7 +8,7 @@ const restaurants = [
     id: 1,
     name: "Burger Heaven",
     image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-    cuisine: "Mỹ",
+    cuisine: "Burger",
     rating: 4.7,
     deliveryTime: "15-25",
     minOrder: 10,
@@ -19,7 +18,7 @@ const restaurants = [
     id: 2,
     name: "Pasta Palace",
     image: "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-    cuisine: "Ý",
+    cuisine: "Pasta",
     rating: 4.5,
     deliveryTime: "20-30",
     minOrder: 15,
@@ -29,7 +28,7 @@ const restaurants = [
     id: 3,
     name: "Sushi Express",
     image: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
-    cuisine: "Nhật",
+    cuisine: "Sushi",
     rating: 4.8,
     deliveryTime: "25-35",
     minOrder: 20,
@@ -39,7 +38,7 @@ const restaurants = [
     id: 4,
     name: "Taco Fiesta",
     image: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1080&q=80",
-    cuisine: "Mexico",
+    cuisine: "Taco",
     rating: 4.6,
     deliveryTime: "15-25",
     minOrder: 12,
@@ -49,7 +48,7 @@ const restaurants = [
     id: 5,
     name: "Curry House",
     image: "https://images.unsplash.com/photo-1585937421612-70a008356c36?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1136&q=80",
-    cuisine: "Ấn Độ",
+    cuisine: "Curry",
     rating: 4.4,
     deliveryTime: "30-40",
     minOrder: 18,
@@ -59,7 +58,7 @@ const restaurants = [
     id: 6,
     name: "Thai Delight",
     image: "https://images.unsplash.com/photo-1559847844-5315695dadae?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1158&q=80",
-    cuisine: "Thái",
+    cuisine: "Món Thái",
     rating: 4.3,
     deliveryTime: "25-35",
     minOrder: 15,
