@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { PenLine, Plus, Trash2, Check, ChevronDown } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -22,7 +22,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 type Address = {
   id: string;
@@ -44,6 +44,25 @@ const ProfilePage = () => {
   const [name, setName] = useState(user?.name || "");
   const [phone, setPhone] = useState(user?.phone || "");
   const [currentRole, setCurrentRole] = useState("user");
+  const [driverStatus, setDriverStatus] = useState<"not_applied" | "pending" | "approved">("not_applied");
+  
+  // Check driver registration status when the component mounts or when role changes
+  useEffect(() => {
+    if (currentRole === "driver") {
+      const hasApplied = localStorage.getItem("driverApplicationSubmitted");
+      
+      if (hasApplied) {
+        const isApproved = localStorage.getItem("driverApplicationApproved");
+        if (isApproved) {
+          setDriverStatus("approved");
+        } else {
+          setDriverStatus("pending");
+        }
+      } else {
+        setDriverStatus("not_applied");
+      }
+    }
+  }, [currentRole]);
   
   // Updated mock addresses to include district
   const [addresses, setAddresses] = useState<Address[]>([
@@ -113,10 +132,16 @@ const ProfilePage = () => {
 
   const handleRoleChange = (role: string) => {
     setCurrentRole(role);
-    toast({
-      title: "Role Changed",
-      description: `You are now viewing as a ${role === "restaurant" ? "Restaurant Owner" : role === "driver" ? "Delivery Driver" : "Customer"}`
-    });
+    
+    if (role === "driver") {
+      // Navigate to delivery registration page when switching to driver role
+      navigate('/delivery-registration');
+    } else {
+      toast({
+        title: "Role Changed",
+        description: `You are now viewing as a ${role === "restaurant" ? "Restaurant Owner" : "Customer"}`
+      });
+    }
   };
 
   const handleLogout = () => {
@@ -341,17 +366,6 @@ const ProfilePage = () => {
                     className="w-full"
                   >
                     Quản lý nhà hàng
-                  </Button>
-                </div>
-              )}
-              
-              {currentRole === "driver" && (
-                <div className="mt-4 space-y-2">
-                  <Button 
-                    onClick={() => navigate('/delivery-registration')} 
-                    className="w-full bg-foodsnap-teal hover:bg-foodsnap-teal/90"
-                  >
-                    Đăng ký làm tài xế giao hàng
                   </Button>
                 </div>
               )}

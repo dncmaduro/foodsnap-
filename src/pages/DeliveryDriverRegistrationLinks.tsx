@@ -17,15 +17,12 @@ const DeliveryDriverRegistrationLinks = () => {
   const [driverStatus, setDriverStatus] = useState<DriverStatus>("not_applied");
   const [isStartingDelivery, setIsStartingDelivery] = useState(false);
 
-  // Simulate fetching driver status from API
+  // Fetch driver status from localStorage when the component mounts
   useEffect(() => {
     // In a real app, this would be an API call to get the current driver status
-    // For demo purposes, we'll check localStorage for a registration timestamp
     const hasApplied = localStorage.getItem("driverApplicationSubmitted");
     
     if (hasApplied) {
-      // For demo, we'll randomly set some applications as approved
-      // In production, this would come from your backend
       const isApproved = localStorage.getItem("driverApplicationApproved");
       if (isApproved) {
         setDriverStatus("approved");
