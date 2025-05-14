@@ -1,92 +1,147 @@
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Eye, EyeOff, Mail, Phone, Check } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Checkbox } from '@/components/ui/checkbox'
+import Navigation from '@/components/Navigation'
+import Footer from '@/components/Footer'
+import { useToast } from '@/hooks/use-toast'
+import { useAuth } from '@/contexts/AuthContext'
+import { useApiMutation } from '@/hooks/useApi'
 
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Mail, Phone, Check } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
-import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/AuthContext";
+// Define the registration request and response types
+interface RegisterRequest {
+  fullname: string
+  phonenumber: string
+  email: string
+  password: string
+}
+
+interface RegisterResponse {
+  user: {
+    id: string
+    fullname: string
+    phonenumber: string
+    email: string
+  }
+  token: string
+}
 
 const SignUpPage = () => {
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [agreedToTerms, setAgreedToTerms] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [fullname, setFullname] = useState('')
+  const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [agreedToTerms, setAgreedToTerms] = useState(false)
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const { login } = useAuth();
+  const navigate = useNavigate()
+  const { toast } = useToast()
+  const { login } = useAuth()
+
+  // Set up the registration mutation
+  const registerMutation = useApiMutation<RegisterResponse, RegisterRequest>('/auth/register', {
+    onSuccess: (response) => {
+      if (response.data) {
+        toast({
+          title: 'Account created!',
+          description: 'Your account has been successfully created.',
+        })
+
+        // Auto-login the user
+        login(phone, password)
+
+        // Navigate to home page
+        navigate('/')
+      } else if (response.error) {
+        toast({
+          title: 'Registration failed',
+          description: response.error,
+          variant: 'destructive',
+        })
+      }
+    },
+    onError: (error) => {
+      toast({
+        title: 'Registration failed',
+        description: error.message || 'An unexpected error occurred',
+        variant: 'destructive',
+      })
+    },
+    onSettled: () => {
+      setIsSubmitting(false)
+    },
+  })
 
   const validateForm = () => {
-    const newErrors: Record<string, string> = {};
+    const newErrors: Record<string, string> = {}
+
+    // Validate fullname
+    if (!fullname.trim()) {
+      newErrors.fullname = 'Full name is required'
+    }
 
     // Validate phone
     if (!phone.trim()) {
-      newErrors.phone = "Phone number is required";
+      newErrors.phone = 'Phone number is required'
     } else if (!/^\d{10,}$/.test(phone.replace(/\D/g, ''))) {
-      newErrors.phone = "Please enter a valid phone number";
+      newErrors.phone = 'Please enter a valid phone number'
     }
 
     // Validate email
     if (!email.trim()) {
-      newErrors.email = "Email is required";
+      newErrors.email = 'Email is required'
     } else if (!/^\S+@\S+\.\S+$/.test(email)) {
-      newErrors.email = "Please enter a valid email address";
+      newErrors.email = 'Please enter a valid email address'
     }
 
     // Validate password
     if (!password) {
-      newErrors.password = "Password is required";
+      newErrors.password = 'Password is required'
     } else if (password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters long";
+      newErrors.password = 'Password must be at least 8 characters long'
     }
 
     // Validate confirm password
     if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Passwords don't match";
+      newErrors.confirmPassword = "Passwords don't match"
     }
 
     // Validate terms agreement
     if (!agreedToTerms) {
-      newErrors.terms = "You must agree to the Terms of Service and Privacy Policy";
+      newErrors.terms = 'You must agree to the Terms of Service and Privacy Policy'
     }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
+    e.preventDefault()
+
     if (validateForm()) {
-      // Here you would normally call an API to create the user
-      // For now, we'll just simulate success
-      
-      toast({
-        title: "Account created!",
-        description: "Your account has been successfully created.",
-      });
-      
-      // Auto-login the user
-      login(phone, password);
-      
-      // Navigate to home page
-      navigate('/');
+      setIsSubmitting(true)
+
+      // Make API call to register user
+      registerMutation.mutate({
+        fullname: fullname,
+        phonenumber: phone,
+        email: email,
+        password: password,
+      })
     }
-  };
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
       <Navigation />
-      
+
       <main className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
           <div className="text-center">
@@ -95,9 +150,27 @@ const SignUpPage = () => {
               Join FoodSnap to start ordering your favorite meals
             </p>
           </div>
-          
+
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-4">
+              {/* Full Name Input */}
+              <div>
+                <Label htmlFor="fullname" className="block text-sm font-medium text-gray-700">
+                  Full Name
+                </Label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <Input
+                    id="fullname"
+                    type="text"
+                    placeholder="John Doe"
+                    className={`${errors.fullname ? 'border-red-500' : ''}`}
+                    value={fullname}
+                    onChange={(e) => setFullname(e.target.value)}
+                  />
+                </div>
+                {errors.fullname && <p className="mt-1 text-sm text-red-600">{errors.fullname}</p>}
+              </div>
+
               {/* Phone Number Input */}
               <div>
                 <Label htmlFor="phone" className="block text-sm font-medium text-gray-700">
@@ -148,7 +221,7 @@ const SignUpPage = () => {
                 <div className="mt-1 relative rounded-md shadow-sm">
                   <Input
                     id="password"
-                    type={showPassword ? "text" : "password"}
+                    type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
                     className={`${errors.password ? 'border-red-500' : ''}`}
                     value={password}
@@ -171,13 +244,16 @@ const SignUpPage = () => {
 
               {/* Confirm Password Input */}
               <div>
-                <Label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="confirmPassword"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Confirm Password
                 </Label>
                 <div className="mt-1 relative rounded-md shadow-sm">
                   <Input
                     id="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
+                    type={showConfirmPassword ? 'text' : 'password'}
                     placeholder="••••••••"
                     className={`${errors.confirmPassword ? 'border-red-500' : ''}`}
                     value={confirmPassword}
@@ -195,9 +271,11 @@ const SignUpPage = () => {
                     )}
                   </button>
                 </div>
-                {errors.confirmPassword && <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>}
+                {errors.confirmPassword && (
+                  <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
+                )}
               </div>
-              
+
               {/* Terms Checkbox */}
               <div className="flex items-start">
                 <div className="flex items-center h-5">
@@ -210,11 +288,11 @@ const SignUpPage = () => {
                 </div>
                 <div className="ml-3 text-sm">
                   <Label htmlFor="terms" className="text-gray-700">
-                    I agree to the{" "}
+                    I agree to the{' '}
                     <Link to="/terms" className="text-foodsnap-orange hover:underline">
                       Terms of Service
-                    </Link>{" "}
-                    and{" "}
+                    </Link>{' '}
+                    and{' '}
                     <Link to="/privacy" className="text-foodsnap-orange hover:underline">
                       Privacy Policy
                     </Link>
@@ -228,21 +306,22 @@ const SignUpPage = () => {
               <Button
                 type="submit"
                 className="w-full bg-foodsnap-orange hover:bg-foodsnap-orange/90 text-white py-2 px-4 rounded-md"
+                disabled={isSubmitting}
               >
-                Sign Up
+                {isSubmitting ? 'Creating Account...' : 'Sign Up'}
               </Button>
             </div>
           </form>
-          
+
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Already have an account?{" "}
-              <button 
+              Already have an account?{' '}
+              <button
                 className="text-foodsnap-orange hover:underline font-medium"
                 onClick={() => {
-                  const loginDialog = document.getElementById('login-button');
+                  const loginDialog = document.getElementById('login-button')
                   if (loginDialog) {
-                    (loginDialog as HTMLButtonElement).click();
+                    ;(loginDialog as HTMLButtonElement).click()
                   }
                 }}
               >
@@ -255,7 +334,7 @@ const SignUpPage = () => {
 
       <Footer />
     </div>
-  );
-};
+  )
+}
 
-export default SignUpPage;
+export default SignUpPage
