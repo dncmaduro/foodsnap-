@@ -21,8 +21,7 @@ const MOCK_ORDERS = [
     customer: {
       address: "456 Nguyễn Huệ, Cầu Giấy, Hà Nội"
     },
-    totalPrice: "185,000đ",
-    distance: "1.5km"
+    totalPrice: "185,000đ"
   },
   {
     id: "ORD-2345",
@@ -34,8 +33,7 @@ const MOCK_ORDERS = [
     customer: {
       address: "78 Đồng Khởi, Thanh Xuân, Hà Nội"
     },
-    totalPrice: "320,000đ",
-    distance: "2.1km"
+    totalPrice: "320,000đ"
   },
   {
     id: "ORD-3456",
@@ -47,8 +45,7 @@ const MOCK_ORDERS = [
     customer: {
       address: "90 Nam Kỳ Khởi Nghĩa, Cầu Giấy, Hà Nội"
     },
-    totalPrice: "145,000đ",
-    distance: "3.2km"
+    totalPrice: "145,000đ"
   },
   {
     id: "ORD-4567",
@@ -60,8 +57,7 @@ const MOCK_ORDERS = [
     customer: {
       address: "45 Lê Duẩn, Ba Đình, Hà Nội"
     },
-    totalPrice: "250,000đ",
-    distance: "1.8km"
+    totalPrice: "250,000đ"
   },
   {
     id: "ORD-5678",
@@ -73,12 +69,11 @@ const MOCK_ORDERS = [
     customer: {
       address: "67 Pasteur, Đống Đa, Hà Nội"
     },
-    totalPrice: "85,000đ",
-    distance: "2.5km"
+    totalPrice: "85,000đ"
   }
 ];
 
-// List of available districts
+// List of available districts - now only includes the specified districts
 const DISTRICTS = [
   "Tất cả",
   "Cầu Giấy",
@@ -94,11 +89,9 @@ export default function DeliveryOrdersPage() {
   const isMobile = useIsMobile();
   const ordersPerPage = 10;
   
-  // Filter orders based on district
+  // Filter orders based on district of restaurant only
   const filteredOrders = MOCK_ORDERS.filter(order => {
-    return district === "Tất cả" || 
-      order.restaurant.address.includes(district) || 
-      order.customer.address.includes(district);
+    return district === "Tất cả" || order.restaurant.address.includes(district);
   });
   
   // Calculate pagination
@@ -114,9 +107,6 @@ export default function DeliveryOrdersPage() {
       title: "Đã nhận đơn hàng",
       description: `Bạn đã nhận đơn hàng ${orderId} thành công.`,
     });
-    
-    // Navigate to order tracking page where driver can update status
-    navigate(`/track-order/${orderId}`);
   };
 
   return (
@@ -179,9 +169,6 @@ export default function DeliveryOrdersPage() {
                       <MapPin className={`${isMobile ? "h-3 w-3" : "h-4 w-4"} mt-0.5`} />
                       <p className={`${isMobile ? "text-xs" : "text-sm"} text-muted-foreground`}>{order.customer.address}</p>
                     </div>
-                  </div>
-                  <div className={`${isMobile ? "text-xs" : "text-sm"} text-muted-foreground`}>
-                    Khoảng cách: {order.distance}
                   </div>
                 </div>
               </CardContent>
