@@ -1,7 +1,6 @@
-
 import { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
-import { Clock, Package, MapPin, Truck, Check, Phone, MessageCircle, HelpCircle, User } from 'lucide-react';
+import { Clock, Package, MapPin, Truck, Check, MessageCircle, HelpCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -272,10 +271,6 @@ const OrderTrackingPage = () => {
                     <span>Tổng thanh toán</span>
                     <span>{orderDetails?.total.toFixed(2)}đ</span>
                   </div>
-                  <div className="flex justify-between text-gray-600 text-sm">
-                    <span>Phương thức thanh toán</span>
-                    <span>{orderDetails?.paymentMethod}</span>
-                  </div>
                 </div>
                 
                 <Separator className="my-4" />
@@ -304,7 +299,7 @@ const OrderTrackingPage = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Phone className="h-5 w-5 text-foodsnap-orange" />
+                  <MessageCircle className="h-5 w-5 text-foodsnap-orange" />
                   Liên hệ
                 </CardTitle>
               </CardHeader>
@@ -318,47 +313,12 @@ const OrderTrackingPage = () => {
                     size="sm" 
                     className="mt-2 text-foodsnap-orange border-foodsnap-orange hover:bg-foodsnap-orange/10 gap-1"
                   >
-                    <Phone className="h-4 w-4" />
+                    <Clock className="h-4 w-4" />
                     Gọi nhà hàng
                   </Button>
                 </div>
                 
                 <Separator />
-                
-                {orderDetails?.driver && (
-                  <div>
-                    <h4 className="font-medium mb-2">Tài xế giao hàng</h4>
-                    <div className="flex items-center space-x-3 mb-3">
-                      {orderDetails?.driver.photo ? (
-                        <div className="h-12 w-12 rounded-full overflow-hidden">
-                          <img 
-                            src={orderDetails?.driver.photo} 
-                            alt={orderDetails?.driver.name} 
-                            className="h-full w-full object-cover"
-                          />
-                        </div>
-                      ) : (
-                        <div className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center">
-                          <User className="h-6 w-6 text-gray-500" />
-                        </div>
-                      )}
-                      <div>
-                        <p className="font-medium">{orderDetails?.driver.name}</p>
-                        <p className="text-sm text-gray-600">{orderDetails?.driver.phone}</p>
-                      </div>
-                    </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="w-full text-foodsnap-teal border-foodsnap-teal hover:bg-foodsnap-teal/10 gap-1"
-                    >
-                      <Phone className="h-4 w-4" />
-                      Gọi tài xế
-                    </Button>
-                  </div>
-                )}
-                
-                {orderDetails?.driver && <Separator />}
                 
                 <div>
                   <h4 className="font-medium mb-2">Cần trợ giúp?</h4>

@@ -3,16 +3,10 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   Package, 
   Calendar, 
-  CreditCard, 
   MapPin, 
-  Phone, 
-  MessageSquare, 
-  User, 
-  Clock, 
-  ChevronLeft, 
-  Star, 
   ExternalLink,
-  Truck,
+  Star, 
+  ChevronLeft, 
   Lock
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -242,7 +236,7 @@ const OrderDetailsPage = () => {
             <h1 className="text-3xl font-bold text-gray-900">Order Details</h1>
             <div className="flex items-center">
               <span className="mr-2">Status:</span>
-              {getStatusBadge(orderDetails.status)}
+              {orderDetails && getStatusBadge(orderDetails.status)}
             </div>
           </div>
         </div>
@@ -260,22 +254,22 @@ const OrderDetailsPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-gray-500">Order ID</p>
-                  <p className="font-medium">{orderDetails.orderId}</p>
+                  <p className="font-medium">{orderDetails?.orderId}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Order Date</p>
-                  <p className="font-medium">{formatDate(orderDetails.orderDate)}</p>
+                  <p className="font-medium">{orderDetails?.orderDate && formatDate(orderDetails.orderDate)}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Payment Method</p>
                   <p className="font-medium flex items-center">
                     <CreditCard className="h-4 w-4 mr-1 text-gray-400" />
-                    {orderDetails.paymentMethod}
+                    {orderDetails?.paymentMethod}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Total Amount</p>
-                  <p className="font-medium text-foodsnap-orange">${orderDetails.total.toFixed(2)}</p>
+                  <p className="font-medium text-foodsnap-orange">${orderDetails?.total.toFixed(2)}</p>
                 </div>
               </div>
             </CardContent>
@@ -288,13 +282,13 @@ const OrderDetailsPage = () => {
             </CardHeader>
             <CardContent className="space-y-3">
               <div>
-                <h3 className="font-medium text-lg">{orderDetails.restaurantName}</h3>
-                <p className="text-gray-600 text-sm">{orderDetails.restaurantAddress}</p>
+                <h3 className="font-medium text-lg">{orderDetails?.restaurantName}</h3>
+                <p className="text-gray-600 text-sm">{orderDetails?.restaurantAddress}</p>
               </div>
               <Button 
                 variant="outline" 
                 className="w-full justify-start text-foodsnap-teal border-foodsnap-teal hover:bg-foodsnap-teal/10"
-                onClick={() => navigate(`/restaurant/${orderDetails.restaurantId}`)}
+                onClick={() => navigate(`/restaurant/${orderDetails?.restaurantId}`)}
               >
                 <ExternalLink className="h-4 w-4 mr-2" />
                 View Restaurant Profile
@@ -313,7 +307,7 @@ const OrderDetailsPage = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {orderDetails.items.map((item) => (
+              {orderDetails?.items.map((item) => (
                 <div key={item.id} className="flex justify-between items-center pb-3 border-b border-gray-100 last:border-0 last:pb-0">
                   <div>
                     <p className="font-medium">{item.name}</p>
@@ -328,22 +322,22 @@ const OrderDetailsPage = () => {
               <div className="space-y-2">
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal</span>
-                  <span>${orderDetails.subtotal.toFixed(2)}</span>
+                  <span>${orderDetails?.subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Delivery Fee</span>
-                  <span>${orderDetails.deliveryFee.toFixed(2)}</span>
+                  <span>${orderDetails?.deliveryFee.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between font-bold text-lg pt-2">
                   <span>Total</span>
-                  <span>${orderDetails.total.toFixed(2)}</span>
+                  <span>${orderDetails?.total.toFixed(2)}</span>
                 </div>
               </div>
             </div>
           </CardContent>
         </Card>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mb-6">
           {/* Delivery Details */}
           <Card>
             <CardHeader>
@@ -354,64 +348,20 @@ const OrderDetailsPage = () => {
             </CardHeader>
             <CardContent className="space-y-3">
               <div>
-                <p className="font-medium">{orderDetails.deliveryAddress.name}</p>
-                <p className="text-gray-600 flex items-center">
-                  <Phone className="h-4 w-4 mr-1 text-gray-400" />
-                  {orderDetails.deliveryAddress.phone}
-                </p>
-                <p className="text-gray-600 mt-2">{orderDetails.deliveryAddress.address}</p>
+                <p className="font-medium">{orderDetails?.deliveryAddress.name}</p>
+                <p className="text-gray-600">{orderDetails?.deliveryAddress.phone}</p>
+                <p className="text-gray-600 mt-2">{orderDetails?.deliveryAddress.address}</p>
               </div>
               
-              {orderDetails.deliveryAddress.notes && (
+              {orderDetails?.deliveryAddress.notes && (
                 <div className="bg-gray-50 p-3 rounded-md mt-3">
-                  <p className="text-sm flex items-start">
-                    <MessageSquare className="h-4 w-4 mr-1 text-gray-400 mt-0.5" />
-                    <span><span className="font-medium">Delivery Instructions:</span> {orderDetails.deliveryAddress.notes}</span>
+                  <p className="text-sm">
+                    <span className="font-medium">Delivery Instructions:</span> {orderDetails?.deliveryAddress.notes}
                   </p>
                 </div>
               )}
             </CardContent>
           </Card>
-          
-          {/* Driver Information */}
-          {orderDetails.driver && orderDetails.status === 'delivered' && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Truck className="h-5 w-5 text-foodsnap-orange" />
-                  Delivery Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center space-x-3">
-                  {orderDetails.driver.photo ? (
-                    <div className="h-12 w-12 rounded-full overflow-hidden">
-                      <img 
-                        src={orderDetails.driver.photo} 
-                        alt={orderDetails.driver.name} 
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <div className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center">
-                      <User className="h-6 w-6 text-gray-500" />
-                    </div>
-                  )}
-                  <div>
-                    <p className="font-medium">{orderDetails.driver.name}</p>
-                    <p className="text-sm text-gray-600">{orderDetails.driver.phone}</p>
-                  </div>
-                </div>
-                
-                {orderDetails.driver.deliveryTime && (
-                  <div className="text-sm text-gray-600 flex items-center mt-2">
-                    <Clock className="h-4 w-4 mr-1 text-gray-400" />
-                    <span>Delivered at {formatDate(orderDetails.driver.deliveryTime)}</span>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
         </div>
         
         {/* Rating & Review Block */}
@@ -420,7 +370,7 @@ const OrderDetailsPage = () => {
             <CardTitle className="flex items-center gap-2">
               <Star className="h-5 w-5 text-foodsnap-orange" />
               Your Rating & Review
-              {orderDetails.userRating && (
+              {orderDetails?.userRating && (
                 <span className="text-sm text-gray-500 flex items-center ml-2">
                   <Lock className="h-4 w-4 mr-1" />
                   Submitted
@@ -429,7 +379,7 @@ const OrderDetailsPage = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {orderDetails.userRating ? (
+            {orderDetails?.userRating ? (
               <div className="space-y-3">
                 <div className="flex items-center space-x-2">
                   <RatingStars rating={orderDetails.userRating.rating} />
@@ -449,7 +399,7 @@ const OrderDetailsPage = () => {
                 <p className="text-gray-600 mb-4">You haven't rated this order yet.</p>
                 <Button 
                   className="bg-foodsnap-teal hover:bg-foodsnap-teal/90"
-                  onClick={() => navigate(`/rate-order/${orderDetails.orderId}`, { state: { orderDetails } })}
+                  onClick={() => navigate(`/rate-order/${orderDetails?.orderId}`, { state: { orderDetails } })}
                 >
                   <Star className="h-4 w-4 mr-1" />
                   Rate This Order
@@ -463,9 +413,9 @@ const OrderDetailsPage = () => {
         <div className="text-center mb-6">
           <Button 
             className="px-8 py-6 bg-foodsnap-orange hover:bg-foodsnap-orange/90"
-            onClick={() => navigate(`/restaurant/${orderDetails.restaurantId}`)}
+            onClick={() => navigate(`/restaurant/${orderDetails?.restaurantId}`)}
           >
-            Order Again from {orderDetails.restaurantName}
+            Order Again from {orderDetails?.restaurantName}
           </Button>
         </div>
       </main>

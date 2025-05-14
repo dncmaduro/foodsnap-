@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Check, MapPin, Wallet, MessageSquare } from 'lucide-react';
@@ -208,17 +207,6 @@ const CheckoutPage = () => {
                               value={addressForm.address} 
                               onChange={handleAddressChange} 
                               placeholder="Nhập số nhà, tên đường, phường..."
-                              rows={2}
-                            />
-                          </div>
-                          <div className="grid gap-2">
-                            <Label htmlFor="notes">Ghi chú giao hàng (Không bắt buộc)</Label>
-                            <Textarea 
-                              id="notes" 
-                              name="notes" 
-                              value={addressForm.notes} 
-                              onChange={handleAddressChange} 
-                              placeholder="Thêm hướng dẫn đặc biệt cho việc giao hàng"
                               rows={2}
                             />
                           </div>
