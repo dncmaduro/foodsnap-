@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -224,7 +225,7 @@ export default function DeliveryOrdersPage() {
       <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
         <Button 
           variant="outline" 
-          onClick={() => navigate("/order-history")}
+          onClick={() => navigate("/delivery-history")}
           className={isMobile ? "h-8 text-xs" : ""}
         >
           Lịch sử giao hàng
