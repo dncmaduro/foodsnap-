@@ -1,9 +1,8 @@
 
 import { useState } from 'react';
-import { Minus, Plus, Trash2, Tag, LogIn } from 'lucide-react';
+import { Minus, Plus, Trash2, LogIn } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -14,17 +13,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import EditNoteDialog from '@/components/EditNoteDialog';
 import LoginDialog from '@/components/LoginDialog';
 
-// Mock data for promotional codes
-const PROMO_CODES = {
-  'WELCOME10': { discount: 5.00, type: 'fixed' },
-  'FREESHIP': { discount: 2.99, type: 'shipping' }
-};
-
 const CartPage = () => {
   const { items: cartItems, updateQuantity, updateNotes, removeFromCart, clearCart } = useCart();
   const { isAuthenticated } = useAuth();
-  const [promoCode, setPromoCode] = useState('');
-  const [appliedPromo, setAppliedPromo] = useState<null | { code: string, discount: number }>(null);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -49,34 +40,8 @@ const CartPage = () => {
   // Fixed delivery fee for now
   const deliveryFee = cartItems.length > 0 ? 2.99 : 0;
   
-  // Calculate discount
-  const discount = appliedPromo ? appliedPromo.discount : 0;
-  
-  // Calculate total
-  const total = subtotal + deliveryFee - discount;
-
-  // Apply promo code
-  const applyPromoCode = () => {
-    const code = promoCode.toUpperCase();
-    if (PROMO_CODES[code as keyof typeof PROMO_CODES]) {
-      const promoDetails = PROMO_CODES[code as keyof typeof PROMO_CODES];
-      setAppliedPromo({ 
-        code, 
-        discount: promoDetails.type === 'shipping' ? deliveryFee : promoDetails.discount 
-      });
-      toast({
-        title: "Đã áp dụng mã khuyến mãi!",
-        description: `${code} đã được áp dụng cho đơn hàng của bạn.`,
-      });
-    } else {
-      toast({
-        title: "Mã khuyến mãi không hợp lệ",
-        description: "Vui lòng kiểm tra lại mã và thử lại.",
-        variant: "destructive"
-      });
-    }
-    setPromoCode('');
-  };
+  // Calculate total (removed discount calculation)
+  const total = subtotal + deliveryFee;
 
   // Proceed to checkout
   const proceedToCheckout = () => {
@@ -206,38 +171,7 @@ const CartPage = () => {
                 </Card>
               ))}
               
-              {/* Promotions Section */}
-              <Card className="mt-6">
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-medium mb-3">Khuyến mãi</h3>
-                  <div className="flex space-x-2">
-                    <Input 
-                      placeholder="Nhập mã khuyến mãi" 
-                      value={promoCode} 
-                      onChange={(e) => setPromoCode(e.target.value)}
-                      className="max-w-xs"
-                    />
-                    <Button onClick={applyPromoCode} className="flex items-center">
-                      <Tag size={16} className="mr-2" />
-                      Áp dụng
-                    </Button>
-                  </div>
-                  
-                  {appliedPromo && (
-                    <div className="mt-4 p-3 bg-green-50 text-green-700 rounded-md flex justify-between items-center">
-                      <div>
-                        <span className="font-medium">{appliedPromo.code}</span>
-                        <p className="text-sm">Đã áp dụng mã khuyến mãi</p>
-                      </div>
-                      <span className="font-medium">-{appliedPromo.discount.toFixed(2)}đ</span>
-                    </div>
-                  )}
-                  
-                  <div className="mt-4 text-sm text-gray-500">
-                    <p>Các mã hiện có: WELCOME10, FREESHIP</p>
-                  </div>
-                </CardContent>
-              </Card>
+              {/* Removed the Promotions Section */}
             </div>
             
             {/* Order Summary */}
@@ -255,13 +189,6 @@ const CartPage = () => {
                       <span className="text-gray-600">Phí giao hàng</span>
                       <span>{deliveryFee.toFixed(2)}đ</span>
                     </div>
-                    
-                    {appliedPromo && (
-                      <div className="flex justify-between text-green-600">
-                        <span>Giảm giá</span>
-                        <span>-{appliedPromo.discount.toFixed(2)}đ</span>
-                      </div>
-                    )}
                     
                     <Separator className="my-2" />
                     
