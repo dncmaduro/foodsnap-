@@ -108,7 +108,7 @@ const CartPage = () => {
 
   const flatItems = Object.values(itemsByRestaurant).flatMap((r) => r.items)
   const subtotal = flatItems.reduce((sum, item) => sum + item.quantity * item.price, 0)
-  const deliveryFee = flatItems.length > 0 ? 2.99 : 0
+  const deliveryFee = flatItems.length > 0 ? 20000 : 0
   const total = subtotal + deliveryFee
 
   return (
