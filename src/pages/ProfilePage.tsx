@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { PenLine, Plus, Trash2, Check, ChevronDown } from 'lucide-react'
+import { PenLine, Plus, Trash2, Check } from 'lucide-react'
 import { useAuthStore } from '@/store/authStore'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
@@ -17,16 +17,17 @@ import {
 } from '@/components/ui/select'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { useToast } from '@/hooks/use-toast'
+import { useApiQuery, useApiMutation } from '@/hooks/useApi'
+import { AddressItem } from '@/components/AddressItem'
 
 type Address = {
-  id: string
+  address_id: number
   label: string
   district: string
   address: string
-  isDefault: boolean
+  is_default: boolean
 }
 
-// Available districts
 const DISTRICTS = ['Cầu Giấy', 'Đống Đa', 'Ba Đình', 'Thanh Xuân']
 
 const ProfilePage = () => {
@@ -38,49 +39,28 @@ const ProfilePage = () => {
   const [name, setName] = useState(user?.fullname || '')
   const [phone, setPhone] = useState(user?.phonenumber || '')
   const [currentRole, setCurrentRole] = useState('user')
-  const [driverStatus, setDriverStatus] = useState<'not_applied' | 'pending' | 'approved'>(
-    'not_applied',
-  )
-
-  // Check driver registration status when the component mounts or when role changes
-  useEffect(() => {
-    if (currentRole === 'driver') {
-      const hasApplied = localStorage.getItem('driverApplicationSubmitted')
-
-      if (hasApplied) {
-        const isApproved = localStorage.getItem('driverApplicationApproved')
-        if (isApproved) {
-          setDriverStatus('approved')
-        } else {
-          setDriverStatus('pending')
-        }
-      } else {
-        setDriverStatus('not_applied')
-      }
-    }
-  }, [currentRole])
-
-  // Updated mock addresses to include district
-  const [addresses, setAddresses] = useState<Address[]>([
-    {
-      id: '1',
-      label: 'Home',
-      district: 'Cầu Giấy',
-      address: '123 Main St, Anytown',
-      isDefault: true,
-    },
-    {
-      id: '2',
-      label: 'Work',
-      district: 'Đống Đa',
-      address: '456 Office Ave, Business City',
-      isDefault: false,
-    },
-  ])
 
   const [newAddressLabel, setNewAddressLabel] = useState('')
   const [newAddressDistrict, setNewAddressDistrict] = useState('')
   const [newAddress, setNewAddress] = useState('')
+
+  const { data: addresses, isLoading, refetch } = useApiQuery<Address[]>(['address'], '/address')
+
+  const { mutate: createAddress } = useApiMutation<
+    unknown,
+    { label: string; district: string; address: string }
+  >('/address', {
+    onSuccess: () => {
+      toast({ title: 'Đã thêm địa chỉ' })
+      refetch()
+      setNewAddress('')
+      setNewAddressLabel('')
+      setNewAddressDistrict('')
+    },
+    onError: () => {
+      toast({ title: 'Thêm thất bại', variant: 'destructive' })
+    },
+  })
 
   if (!isAuthenticated) {
     navigate('/')
@@ -88,85 +68,24 @@ const ProfilePage = () => {
   }
 
   const handleSaveChanges = () => {
-    // In a real app, this would update the user profile in your backend
-    toast({
-      title: 'Profile Updated',
-      description: 'Your profile information has been updated successfully.',
-    })
+    toast({ title: 'Profile Updated', description: 'Thông tin đã được cập nhật.' })
     setIsEditing(false)
   }
 
   const handleAddAddress = () => {
-    if (
-      newAddressLabel.trim() !== '' &&
-      newAddressDistrict.trim() !== '' &&
-      newAddress.trim() !== ''
-    ) {
-      const newAddressObj: Address = {
-        id: Date.now().toString(),
-        label: newAddressLabel,
-        district: newAddressDistrict,
-        address: newAddress,
-        isDefault: addresses.length === 0,
-      }
+    if (!newAddressLabel.trim() || !newAddressDistrict.trim() || !newAddress.trim()) return
 
-      setAddresses([...addresses, newAddressObj])
-      setNewAddressLabel('')
-      setNewAddressDistrict('')
-      setNewAddress('')
-
-      toast({
-        title: 'Address Added',
-        description: 'Your new address has been added successfully.',
-      })
-    }
-  }
-
-  const handleDeleteAddress = (id: string) => {
-    setAddresses(addresses.filter((address) => address.id !== id))
-    toast({
-      title: 'Address Deleted',
-      description: 'Address has been removed from your profile.',
+    createAddress({
+      label: newAddressLabel,
+      district: newAddressDistrict,
+      address: newAddress,
     })
-  }
-
-  const handleSetDefaultAddress = (id: string) => {
-    setAddresses(
-      addresses.map((address) => ({
-        ...address,
-        isDefault: address.id === id,
-      })),
-    )
-
-    toast({
-      title: 'Default Address Updated',
-      description: 'Your default address has been updated.',
-    })
-  }
-
-  const handleRoleChange = (role: string) => {
-    setCurrentRole(role)
-
-    if (role === 'driver') {
-      // Navigate to delivery registration page when switching to driver role
-      navigate('/delivery-registration')
-    } else {
-      toast({
-        title: 'Role Changed',
-        description: `You are now viewing as a ${
-          role === 'restaurant' ? 'Restaurant Owner' : 'Customer'
-        }`,
-      })
-    }
   }
 
   const handleLogout = () => {
     logout()
     navigate('/')
-    toast({
-      title: 'Logged Out',
-      description: 'You have been successfully logged out.',
-    })
+    toast({ title: 'Đăng xuất thành công' })
   }
 
   return (
@@ -176,24 +95,19 @@ const ProfilePage = () => {
       <main className="flex-grow container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">My Profile</h1>
 
-        {/* User Information Section */}
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex justify-between items-center">
-              <span>Personal Information</span>
+              <span>Thông tin cá nhân</span>
               {!isEditing ? (
-                <Button
-                  variant="outline"
-                  onClick={() => setIsEditing(true)}
-                  className="flex items-center"
-                >
+                <Button variant="outline" onClick={() => setIsEditing(true)}>
                   <PenLine size={16} className="mr-2" />
-                  Edit
+                  Chỉnh sửa
                 </Button>
               ) : (
-                <Button onClick={handleSaveChanges} className="flex items-center">
+                <Button onClick={handleSaveChanges}>
                   <Check size={16} className="mr-2" />
-                  Save Changes
+                  Lưu thay đổi
                 </Button>
               )}
             </CardTitle>
@@ -201,96 +115,78 @@ const ProfilePage = () => {
           <CardContent>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="name">Full Name</Label>
+                <Label>Họ tên</Label>
                 {isEditing ? (
-                  <Input
-                    id="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="mt-1"
-                  />
+                  <Input value={name} onChange={(e) => setName(e.target.value)} />
                 ) : (
-                  <div className="text-lg mt-1">{name || 'Not set'}</div>
+                  <div className="text-lg mt-1">{name || 'Chưa có tên'}</div>
                 )}
               </div>
-
               <div>
-                <Label htmlFor="phone">Phone Number</Label>
+                <Label>Số điện thoại</Label>
                 {isEditing ? (
-                  <Input
-                    id="phone"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="mt-1"
-                  />
+                  <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
                 ) : (
-                  <div className="text-lg mt-1">{phone || 'Not set'}</div>
+                  <div className="text-lg mt-1">{phone || 'Chưa có số'}</div>
                 )}
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Saved Addresses Section */}
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex justify-between items-center">
-              <span>Saved Addresses</span>
+              <span>Địa chỉ đã lưu</span>
               <Sheet>
                 <SheetTrigger asChild>
-                  <Button className="flex items-center">
+                  <Button>
                     <Plus size={16} className="mr-2" />
-                    Add New Address
+                    Thêm địa chỉ
                   </Button>
                 </SheetTrigger>
                 <SheetContent>
                   <SheetHeader>
-                    <SheetTitle>Add New Address</SheetTitle>
+                    <SheetTitle>Thêm địa chỉ mới</SheetTitle>
                   </SheetHeader>
                   <div className="space-y-4 mt-6">
                     <div>
-                      <Label htmlFor="addressLabel">Address Label</Label>
+                      <Label>Tên địa chỉ</Label>
                       <Input
-                        id="addressLabel"
-                        placeholder="Home, Work, etc."
+                        placeholder="Nhà riêng, công ty..."
                         value={newAddressLabel}
                         onChange={(e) => setNewAddressLabel(e.target.value)}
-                        className="mt-1"
                       />
                     </div>
                     <div>
-                      <Label htmlFor="addressDistrict">Quận</Label>
+                      <Label>Quận</Label>
                       <Select value={newAddressDistrict} onValueChange={setNewAddressDistrict}>
-                        <SelectTrigger className="mt-1">
+                        <SelectTrigger>
                           <SelectValue placeholder="Chọn quận" />
                         </SelectTrigger>
                         <SelectContent>
-                          {DISTRICTS.map((district) => (
-                            <SelectItem key={district} value={district}>
-                              {district}
+                          {DISTRICTS.map((d) => (
+                            <SelectItem key={d} value={d}>
+                              {d}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </div>
                     <div>
-                      <Label htmlFor="address">Địa chỉ đầy đủ</Label>
+                      <Label>Địa chỉ chi tiết</Label>
                       <Input
-                        id="address"
-                        placeholder="số nhà, tên đường"
+                        placeholder="Số nhà, tên đường..."
                         value={newAddress}
                         onChange={(e) => setNewAddress(e.target.value)}
-                        className="mt-1"
                       />
                     </div>
                     <Button
                       onClick={handleAddAddress}
                       className="w-full mt-4"
-                      disabled={
-                        !newAddressLabel.trim() || !newAddressDistrict || !newAddress.trim()
-                      }
+                      disabled={!newAddressLabel || !newAddressDistrict || !newAddress}
                     >
-                      Save Address
+                      Lưu địa chỉ
                     </Button>
                   </div>
                 </SheetContent>
@@ -298,110 +194,22 @@ const ProfilePage = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {addresses.length > 0 ? (
+            {isLoading ? (
+              <div>Đang tải địa chỉ...</div>
+            ) : addresses.data.length > 0 ? (
               <div className="space-y-4">
-                {addresses.map((address) => (
-                  <div
-                    key={address.id}
-                    className={`p-4 border rounded-md ${
-                      address.isDefault ? 'border-foodsnap-teal bg-teal-50' : 'border-gray-200'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <div className="font-medium flex items-center">
-                          {address.label}
-                          {address.isDefault && (
-                            <span className="ml-2 text-xs bg-foodsnap-teal text-white px-2 py-0.5 rounded-full">
-                              Default
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-gray-600 mt-1">
-                          <div>{address.district}</div>
-                          <div>{address.address}</div>
-                        </div>
-                      </div>
-                      <div className="flex space-x-2">
-                        {!address.isDefault && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleSetDefaultAddress(address.id)}
-                          >
-                            Set as Default
-                          </Button>
-                        )}
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDeleteAddress(address.id)}
-                        >
-                          <Trash2 size={16} />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
+                {addresses.data.map((address) => (
+                  <AddressItem key={address.address_id} address={address} refetch={refetch} />
                 ))}
               </div>
             ) : (
-              <div className="text-center py-4 text-gray-500">No addresses saved yet</div>
+              <div className="text-gray-500">Chưa có địa chỉ nào</div>
             )}
           </CardContent>
         </Card>
 
-        {/* Role Switcher Section */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Account Type</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="role">
-                  Current Role:{' '}
-                  {currentRole === 'user'
-                    ? 'Customer'
-                    : currentRole === 'restaurant'
-                    ? 'Restaurant Owner'
-                    : 'Delivery Driver'}
-                </Label>
-                <Select value={currentRole} onValueChange={handleRoleChange}>
-                  <SelectTrigger className="w-full mt-1">
-                    <SelectValue placeholder="Select your account role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="user">Customer</SelectItem>
-                    <SelectItem value="restaurant">Restaurant Owner</SelectItem>
-                    <SelectItem value="driver">Delivery Driver</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {currentRole === 'restaurant' && (
-                <div className="mt-4">
-                  <Button onClick={() => navigate('/restaurant-management')} className="w-full">
-                    Quản lý nhà hàng
-                  </Button>
-                </div>
-              )}
-
-              {currentRole !== 'user' && (
-                <div className="bg-amber-50 border border-amber-200 p-4 rounded-md text-amber-700 mt-2">
-                  <p>
-                    Note: Switching to{' '}
-                    {currentRole === 'restaurant' ? 'Restaurant Owner' : 'Delivery Driver'} mode is
-                    a preview. Additional verification may be required.
-                  </p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Logout Button */}
         <Button onClick={handleLogout} variant="destructive" className="w-full mb-8">
-          Logout
+          Đăng xuất
         </Button>
       </main>
 
