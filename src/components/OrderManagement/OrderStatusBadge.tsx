@@ -1,53 +1,41 @@
+import { Badge } from '@/components/ui/badge'
 
-import { Badge } from "@/components/ui/badge";
-
-type OrderStatus = 
-  | "new" 
-  | "processing" 
-  | "in_delivery" 
-  | "completed" 
-  | "canceled";
+export type OrderStatus =
+  | 'Pending'
+  | 'Assigned'
+  | 'In Transit'
+  | 'Delivered'
+  | 'Canceled By Shipper'
 
 interface OrderStatusBadgeProps {
-  status: OrderStatus;
+  status: OrderStatus
 }
 
-const statusConfig = {
-  new: {
-    label: "Mới",
-    variant: "default" as const,
-    className: "bg-blue-500 hover:bg-blue-600"
+const statusConfig: Record<OrderStatus, { label: string; className: string }> = {
+  Pending: {
+    label: 'Chờ nhận',
+    className: 'bg-gray-400 text-white',
   },
-  processing: {
-    label: "Đang xử lý",
-    variant: "default" as const,
-    className: "bg-yellow-500 hover:bg-yellow-600"
+  Assigned: {
+    label: 'Đã nhận',
+    className: 'bg-yellow-500 text-white',
   },
-  in_delivery: {
-    label: "Đang giao",
-    variant: "default" as const,
-    className: "bg-purple-500 hover:bg-purple-600"
+  'In Transit': {
+    label: 'Đang giao',
+    className: 'bg-blue-500 text-white',
   },
-  completed: {
-    label: "Hoàn thành",
-    variant: "default" as const,
-    className: "bg-green-500 hover:bg-green-600"
+  Delivered: {
+    label: 'Hoàn thành',
+    className: 'bg-green-500 text-white',
   },
-  canceled: {
-    label: "Đã hủy",
-    variant: "default" as const,
-    className: "bg-red-500 hover:bg-red-600"
-  }
-};
+  'Canceled By Shipper': {
+    label: 'Shipper hủy',
+    className: 'bg-red-500 text-white',
+  },
+}
 
 export const OrderStatusBadge = ({ status }: OrderStatusBadgeProps) => {
-  const config = statusConfig[status];
-  
-  return (
-    <Badge variant={config.variant} className={config.className}>
-      {config.label}
-    </Badge>
-  );
-};
+  const config = statusConfig[status]
 
-export type { OrderStatus };
+  return <Badge className={config.className}>{config.label}</Badge>
+}
