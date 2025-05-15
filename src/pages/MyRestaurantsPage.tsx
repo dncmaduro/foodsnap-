@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Calendar, MapPin, Store } from 'lucide-react'
 import Footer from '@/components/Footer'
@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/pagination'
 import { useApiQuery } from '@/hooks/useApi'
 import { RestaurantApplication } from '@/types/types'
+import { toast } from '@/hooks/use-toast'
 
 const MyRestaurantsPage = () => {
   const navigate = useNavigate()
@@ -108,7 +109,38 @@ const MyRestaurantsPage = () => {
   )
 }
 
-const RestaurantCard = ({ restaurant }: { restaurant: RestaurantApplication }) => {
+interface RestaurantCardProps {
+  restaurant: RestaurantApplication
+}
+
+const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant }) => {
+  const navigate = useNavigate()
+  // Chỉ query khi được yêu cầu, tránh gọi thừa
+  const [shouldFetch, setShouldFetch] = React.useState(false)
+
+  // Query lấy restaurant theo application id
+  const {
+    data: restaurantDetailRes,
+    isLoading: isFetching,
+    isError,
+    error,
+  } = useApiQuery<any>(
+    ['restaurant-by-app', String(restaurant.restaurantapp_id)],
+    `/restaurant/app/${restaurant.restaurantapp_id}`,
+    undefined,
+    {
+      // keepPreviousData: true,
+    },
+  )
+
+  const handleViewDetail = useCallback(() => {
+    if (restaurantDetailRes?.data?.restaurant_id) {
+      navigate(`/restaurant-details/${restaurantDetailRes.data.restaurant_id}`)
+    } else {
+      setShouldFetch(true)
+    }
+  }, [navigate, restaurantDetailRes?.data?.restaurant_id, restaurant.restaurantapp_id])
+
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-6">
@@ -124,12 +156,10 @@ const RestaurantCard = ({ restaurant }: { restaurant: RestaurantApplication }) =
                 {restaurant.status === 'approved' ? 'Đã phê duyệt' : 'Đang chờ phê duyệt'}
               </Badge>
             </div>
-
             <div className="flex items-start gap-2 text-gray-600 mb-1">
               <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
               <span className="text-sm">{restaurant.address}</span>
             </div>
-
             <div className="flex items-center gap-2 text-gray-600">
               <Calendar className="h-4 w-4" />
               <span className="text-sm">
@@ -137,10 +167,14 @@ const RestaurantCard = ({ restaurant }: { restaurant: RestaurantApplication }) =
               </span>
             </div>
           </div>
-
           {restaurant.status === 'approved' && (
-            <Button variant="outline" className="mt-4 md:mt-0 w-full md:w-auto" asChild>
-              <Link to={`/restaurant-details/${restaurant.restaurantapp_id}`}>Xem chi tiết</Link>
+            <Button
+              variant="outline"
+              className="mt-4 md:mt-0 w-full md:w-auto"
+              disabled={isFetching}
+              onClick={handleViewDetail}
+            >
+              {isFetching ? 'Đang kiểm tra...' : 'Xem chi tiết'}
             </Button>
           )}
         </div>
