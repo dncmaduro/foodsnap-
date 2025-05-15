@@ -13,6 +13,7 @@ import EditNoteDialog from '@/components/EditNoteDialog'
 import LoginDialog from '@/components/LoginDialog'
 import { useApiDeleteMutation, useApiQuery } from '@/hooks/useApi'
 import CartItem from '@/components/CartItem'
+import { useCheckoutStore } from '@/store/checkoutStore'
 
 interface ServerCartItem {
   cart_item_id: number
@@ -36,6 +37,24 @@ const CartPage = () => {
   const [loginDialogOpen, setLoginDialogOpen] = useState(false)
   const navigate = useNavigate()
   const { toast } = useToast()
+
+  const { setCheckoutInfo } = useCheckoutStore()
+
+  const proceedToCheckout = () => {
+    if (isAuthenticated) {
+      const restaurantId = Number(Object.keys(itemsByRestaurant)[0]) // lấy restaurant đầu tiên
+      const items = Object.values(itemsByRestaurant)[0].items.map((item) => ({
+        menuitem_id: Number(item.id),
+        quantity: item.quantity,
+        price: item.price,
+        note: item.notes,
+      }))
+      setCheckoutInfo(restaurantId, items)
+      navigate('/checkout')
+    } else {
+      setLoginDialogOpen(true)
+    }
+  }
 
   const { data: cartData, isLoading, refetch } = useApiQuery<ServerCartItem[]>(['cart'], '/cart')
   const { mutate: clearCart, isPending } = useApiDeleteMutation('/cart', {
@@ -91,14 +110,6 @@ const CartPage = () => {
   const subtotal = flatItems.reduce((sum, item) => sum + item.quantity * item.price, 0)
   const deliveryFee = flatItems.length > 0 ? 2.99 : 0
   const total = subtotal + deliveryFee
-
-  const proceedToCheckout = () => {
-    if (isAuthenticated) {
-      navigate('/checkout')
-    } else {
-      setLoginDialogOpen(true)
-    }
-  }
 
   return (
     <div className="flex flex-col min-h-screen">

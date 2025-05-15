@@ -86,3 +86,53 @@ export interface ServerCartItem {
     }
   }
 }
+
+export interface OrderItem {
+  note: string
+  price: number
+  quantity: number
+  menuitem: {
+    name: string
+    price: number
+    active: boolean
+    image_url: string
+    created_at: string
+    description: string
+    menuitem_id: number
+    restaurant_id: number
+    restaurant: {
+      name: string
+      phone: string
+      rating: number
+      address: string
+      user_id: number
+      district: string
+      image_url: string
+      open_time: string
+      close_time: string
+      approved_at: string
+      description: string
+      restaurant_id: number
+      restaurantapp_id: number
+    }
+  }
+  order_id: number
+  menuitem_id: number
+  order_item_id: number
+}
+
+export interface OrderDetailResponse {
+  order_id: number
+  user_id: number
+  address_id: number
+  restaurant_id: number
+  shipper_id: number | null
+  delivery_note: string
+  order_at: string
+  delivered_at: string | null
+  subtotal: number
+  shipping_fee: number
+  total_price: number
+  shipping_status: 'Pending' | 'Preparing' | 'Delivering' | 'Delivered' | 'Canceled'
+  order_item: OrderItem[]
+}
