@@ -25,8 +25,8 @@ export default function DeliveryOrdersPage() {
     onError: () => toast({ title: 'Lỗi khi đánh giá', variant: 'destructive' }),
   })
 
-  const order = data?.data
-  const review = reviewsData?.data?.[0]
+  const order = data
+  const review = reviewsData?.[0]
   const [form, setForm] = useState<{ rating: number; comment: string }>({ rating: 0, comment: '' })
 
   const handleAcceptOrder = (orderId: number) => {

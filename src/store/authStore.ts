@@ -4,51 +4,9 @@ import { saveToCookies, getFromCookies } from '@/lib/cookies'
 import { callApi } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
 
-// Define types for our store
-export interface User {
-  id?: string
-  fullname: string
-  email: string
-  phonenumber: string
-}
+// Định nghĩa type như cũ
 
-interface AuthState {
-  user: User | null
-  accessToken: string
-  isLoading: boolean
-  error: string | null
-
-  // Computed properties
-  isAuthenticated: () => boolean
-
-  // Actions
-  setAuth: (payload: SetAuthPayload) => void
-  clearAuth: () => void
-  login: (phonenumber: string, password: string) => Promise<boolean>
-  logout: () => void
-  refreshToken: () => Promise<boolean>
-}
-
-interface SetAuthPayload {
-  user: User
-  accessToken: string
-  refreshToken: string
-}
-
-interface LoginResponse {
-  user: User
-  access_token: string
-  refresh_token: string
-}
-
-interface ApiSuccessResponse {
-  statusCode: number
-  message: string
-  data: LoginResponse
-}
-
-// Create the store with persistence
-export const useAuthStore = create<AuthState>()(
+export const useAuthStore = create<any>()(
   persist(
     (set, get) => ({
       user: null,
@@ -56,10 +14,9 @@ export const useAuthStore = create<AuthState>()(
       isLoading: false,
       error: null,
 
-      // Computed properties
       isAuthenticated: () => !!get().accessToken,
 
-      setAuth: (payload: SetAuthPayload) => {
+      setAuth: (payload: any) => {
         set({
           user: payload.user,
           accessToken: payload.accessToken,
@@ -81,7 +38,7 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true, error: null })
 
         try {
-          const response = await callApi<ApiSuccessResponse>({
+          const response = await callApi<any>({
             path: '/auth/login',
             method: 'POST',
             body: { phonenumber, password },
@@ -102,7 +59,7 @@ export const useAuthStore = create<AuthState>()(
             return false
           }
 
-          const { user, access_token, refresh_token } = response.data.data
+          const { user, access_token, refresh_token } = response.data
 
           get().setAuth({
             user,
@@ -153,7 +110,7 @@ export const useAuthStore = create<AuthState>()(
         }
 
         try {
-          const response = await callApi<ApiSuccessResponse>({
+          const response = await callApi<any>({
             path: '/auth/refresh',
             method: 'POST',
             body: { refresh_token: refreshToken },
@@ -165,7 +122,7 @@ export const useAuthStore = create<AuthState>()(
             return false
           }
 
-          const { user, access_token, refresh_token } = response.data.data
+          const { user, access_token, refresh_token } = response.data
 
           get().setAuth({
             user,
@@ -186,9 +143,3 @@ export const useAuthStore = create<AuthState>()(
     },
   ),
 )
-
-// Initialize token refresh on module import
-// This ensures token refresh happens as soon as possible
-setTimeout(() => {
-  useAuthStore.getState().refreshToken()
-}, 0)

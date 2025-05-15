@@ -47,30 +47,20 @@ const SignUpPage = () => {
 
   // Set up the registration mutation
   const registerMutation = useApiMutation<RegisterResponse, RegisterRequest>('/auth/register', {
-    onSuccess: (response) => {
-      if (response.data) {
-        toast({
-          title: 'Account created!',
-          description: 'Your account has been successfully created.',
-        })
+    onSuccess: () => {
+      toast({
+        title: 'Tạo tài khoản thành công!',
+        description: 'Tài khoản của bạn đã được tạo.',
+      })
 
-        // Auto-login the user
-        login(phone, password)
-
-        // Navigate to home page
-        navigate('/')
-      } else if (response.error) {
-        toast({
-          title: 'Registration failed',
-          description: response.error,
-          variant: 'destructive',
-        })
-      }
+      // Auto-login the user
+      login(phone, password)
+      navigate('/')
     },
     onError: (error) => {
       toast({
-        title: 'Registration failed',
-        description: error.message || 'An unexpected error occurred',
+        title: 'Đăng ký thất bại',
+        description: error.message || 'Có lỗi xảy ra',
         variant: 'destructive',
       })
     },
@@ -82,40 +72,34 @@ const SignUpPage = () => {
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
 
-    // Validate fullname
     if (!fullname.trim()) {
-      newErrors.fullname = 'Full name is required'
+      newErrors.fullname = 'Họ tên là bắt buộc'
     }
 
-    // Validate phone
     if (!phone.trim()) {
-      newErrors.phone = 'Phone number is required'
+      newErrors.phone = 'Số điện thoại là bắt buộc'
     } else if (!/^\d{10,}$/.test(phone.replace(/\D/g, ''))) {
-      newErrors.phone = 'Please enter a valid phone number'
+      newErrors.phone = 'Số điện thoại không hợp lệ'
     }
 
-    // Validate email
     if (!email.trim()) {
-      newErrors.email = 'Email is required'
+      newErrors.email = 'Email là bắt buộc'
     } else if (!/^\S+@\S+\.\S+$/.test(email)) {
-      newErrors.email = 'Please enter a valid email address'
+      newErrors.email = 'Email không hợp lệ'
     }
 
-    // Validate password
     if (!password) {
-      newErrors.password = 'Password is required'
+      newErrors.password = 'Mật khẩu là bắt buộc'
     } else if (password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters long'
+      newErrors.password = 'Mật khẩu ít nhất 8 ký tự'
     }
 
-    // Validate confirm password
     if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Passwords don't match"
+      newErrors.confirmPassword = 'Mật khẩu nhập lại không khớp'
     }
 
-    // Validate terms agreement
     if (!agreedToTerms) {
-      newErrors.terms = 'You must agree to the Terms of Service and Privacy Policy'
+      newErrors.terms = 'Bạn cần đồng ý với Điều khoản & Chính sách'
     }
 
     setErrors(newErrors)
@@ -124,16 +108,13 @@ const SignUpPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-
     if (validateForm()) {
       setIsSubmitting(true)
-
-      // Make API call to register user
       registerMutation.mutate({
-        fullname: fullname,
+        fullname,
         phonenumber: phone,
-        email: email,
-        password: password,
+        email,
+        password,
       })
     }
   }
@@ -145,24 +126,20 @@ const SignUpPage = () => {
       <main className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900">Create Your Account</h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Join FoodSnap to start ordering your favorite meals
-            </p>
+            <h2 className="text-3xl font-bold text-gray-900">Tạo tài khoản</h2>
+            <p className="mt-2 text-sm text-gray-600">Tham gia FoodSnap để đặt món ăn yêu thích</p>
           </div>
 
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-4">
               {/* Full Name Input */}
               <div>
-                <Label htmlFor="fullname" className="block text-sm font-medium text-gray-700">
-                  Full Name
-                </Label>
+                <Label htmlFor="fullname">Họ tên</Label>
                 <div className="mt-1 relative rounded-md shadow-sm">
                   <Input
                     id="fullname"
                     type="text"
-                    placeholder="John Doe"
+                    placeholder="Nguyễn Văn A"
                     className={`${errors.fullname ? 'border-red-500' : ''}`}
                     value={fullname}
                     onChange={(e) => setFullname(e.target.value)}
@@ -173,9 +150,7 @@ const SignUpPage = () => {
 
               {/* Phone Number Input */}
               <div>
-                <Label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                  Phone Number
-                </Label>
+                <Label htmlFor="phone">Số điện thoại</Label>
                 <div className="mt-1 relative rounded-md shadow-sm">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Phone className="h-5 w-5 text-gray-400" />
@@ -183,7 +158,7 @@ const SignUpPage = () => {
                   <Input
                     id="phone"
                     type="tel"
-                    placeholder="(123) 456-7890"
+                    placeholder="0912345678"
                     className={`pl-10 ${errors.phone ? 'border-red-500' : ''}`}
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
@@ -194,9 +169,7 @@ const SignUpPage = () => {
 
               {/* Email Input */}
               <div>
-                <Label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                  Email Address
-                </Label>
+                <Label htmlFor="email">Email</Label>
                 <div className="mt-1 relative rounded-md shadow-sm">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Mail className="h-5 w-5 text-gray-400" />
@@ -204,7 +177,7 @@ const SignUpPage = () => {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="you@example.com"
+                    placeholder="ban@example.com"
                     className={`pl-10 ${errors.email ? 'border-red-500' : ''}`}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -215,9 +188,7 @@ const SignUpPage = () => {
 
               {/* Password Input */}
               <div>
-                <Label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                  Password
-                </Label>
+                <Label htmlFor="password">Mật khẩu</Label>
                 <div className="mt-1 relative rounded-md shadow-sm">
                   <Input
                     id="password"
@@ -244,12 +215,7 @@ const SignUpPage = () => {
 
               {/* Confirm Password Input */}
               <div>
-                <Label
-                  htmlFor="confirmPassword"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Confirm Password
-                </Label>
+                <Label htmlFor="confirmPassword">Nhập lại mật khẩu</Label>
                 <div className="mt-1 relative rounded-md shadow-sm">
                   <Input
                     id="confirmPassword"
@@ -288,13 +254,13 @@ const SignUpPage = () => {
                 </div>
                 <div className="ml-3 text-sm">
                   <Label htmlFor="terms" className="text-gray-700">
-                    I agree to the{' '}
+                    Tôi đồng ý với{' '}
                     <Link to="/terms" className="text-foodsnap-orange hover:underline">
-                      Terms of Service
+                      Điều khoản dịch vụ
                     </Link>{' '}
-                    and{' '}
+                    và{' '}
                     <Link to="/privacy" className="text-foodsnap-orange hover:underline">
-                      Privacy Policy
+                      Chính sách bảo mật
                     </Link>
                   </Label>
                   {errors.terms && <p className="mt-1 text-sm text-red-600">{errors.terms}</p>}
@@ -308,14 +274,14 @@ const SignUpPage = () => {
                 className="w-full bg-foodsnap-orange hover:bg-foodsnap-orange/90 text-white py-2 px-4 rounded-md"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Creating Account...' : 'Sign Up'}
+                {isSubmitting ? 'Đang tạo tài khoản...' : 'Đăng ký'}
               </Button>
             </div>
           </form>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Already have an account?{' '}
+              Đã có tài khoản?{' '}
               <button
                 className="text-foodsnap-orange hover:underline font-medium"
                 onClick={() => {
@@ -325,7 +291,7 @@ const SignUpPage = () => {
                   }
                 }}
               >
-                Log in
+                Đăng nhập
               </button>
             </p>
           </div>

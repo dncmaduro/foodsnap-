@@ -17,7 +17,7 @@ const OrderHistoryPage = () => {
 
   const { data, isLoading } = useApiQuery<any[]>(['orders'], '/order')
 
-  const orders = data?.data || []
+  const orders = data || []
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)

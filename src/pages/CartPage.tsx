@@ -67,7 +67,7 @@ const CartPage = () => {
     },
   })
 
-  const itemsByRestaurant = (cartData?.data ?? []).reduce(
+  const itemsByRestaurant = (cartData ?? []).reduce(
     (acc, item) => {
       const r = item.menuitem.restaurant
       const key = r.restaurant_id

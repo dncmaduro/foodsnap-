@@ -10,12 +10,12 @@ export function useRestaurantData(id?: string) {
   )
 
   return {
-    restaurant: data?.data,
-    menu: data?.data?.menuItems?.length
+    restaurant: data,
+    menu: data?.menuItems?.length
       ? [
           {
             category: 'Tất cả món',
-            items: data.data.menuItems.map((m) => ({
+            items: data.menuItems.map((m) => ({
               id: m.menuitem_id.toString(),
               name: m.name,
               description: m.description,
@@ -26,7 +26,7 @@ export function useRestaurantData(id?: string) {
         ]
       : [],
     reviews:
-      data?.data?.reviews?.map((r) => ({
+      data?.reviews?.map((r) => ({
         id: r.review_id.toString(),
         userName: `Người dùng #${r.user_id}`,
         rating: r.rating,
@@ -34,7 +34,7 @@ export function useRestaurantData(id?: string) {
         date: r.created_at,
       })) || [],
     loading: isLoading,
-    reviewCount: data?.data?.reviews?.length ?? 0,
+    reviewCount: data?.reviews?.length ?? 0,
     isFavorite: false, // nếu có logic favorite sau này
     toggleFavorite: () => {}, // placeholder
   }

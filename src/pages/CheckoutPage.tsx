@@ -88,7 +88,7 @@ const CheckoutPage = () => {
     onSuccess: (response) => {
       toast({ title: 'Đặt hàng thành công!' })
       clearCheckoutInfo()
-      navigate(`/order-confirmation/${response.data.order_id}`)
+      navigate(`/order-confirmation/${response.order_id}`)
     },
     onError: () => {
       toast({ title: 'Lỗi khi đặt hàng', variant: 'destructive' })
@@ -180,7 +180,7 @@ const CheckoutPage = () => {
                   onValueChange={setDeliveryAddress}
                   className="gap-4"
                 >
-                  {addressData?.data.map((addr) => (
+                  {addressData.map((addr) => (
                     <div key={addr.address_id} className="flex items-start gap-2">
                       <RadioGroupItem
                         value={`address-${addr.address_id}`}

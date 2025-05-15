@@ -28,7 +28,7 @@ const MyRestaurantsPage = () => {
     '/restaurant-application/mine',
   )
 
-  const allApplications = res?.data || []
+  const allApplications = res || []
   const approvedRestaurants = allApplications.filter((r) => r.status === 'approved')
   const pendingRestaurants = allApplications.filter((r) => r.status === 'pending')
 

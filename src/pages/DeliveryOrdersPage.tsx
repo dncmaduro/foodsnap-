@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/button'
 import { ChevronLeft } from 'lucide-react'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useApiQuery, useApiPatchMutation } from '@/hooks/useApi'
-import { ApiResponse } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { MapPin } from 'lucide-react'
@@ -44,7 +43,7 @@ export default function DeliveryOrdersPage() {
     district === 'Tất cả' ? undefined : { district },
   )
 
-  const orders = data?.data ?? []
+  const orders = data ?? []
 
   return (
     <div className="container mx-auto px-2 py-4 max-w-6xl">
@@ -114,7 +113,7 @@ function OrderCard({
 }) {
   const navigate = useNavigate()
 
-  const { mutate: assignOrder, isPending } = useApiPatchMutation<ApiResponse<unknown>, void>(
+  const { mutate: assignOrder, isPending } = useApiPatchMutation<unknown, void>(
     `/order/${order.order_id}/assign`,
     {
       onSuccess: () => {
