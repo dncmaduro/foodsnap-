@@ -37,13 +37,24 @@ export default function DeliveryOrdersPage() {
   const [district, setDistrict] = useState<string>('Tất cả')
   const isMobile = useIsMobile()
 
+  // Query đơn đang pending
   const { data, isLoading, refetch } = useApiQuery<PendingOrder[]>(
     ['orders', 'pending', district],
     '/order/pending/list',
     district === 'Tất cả' ? undefined : { district },
   )
 
+  // Query đơn hiện tại đang giao của shipper
+  const {
+    data: currentOrder,
+    isLoading: loadingCurrentOrder,
+    refetch: refetchCurrentOrder,
+  } = useApiQuery<PendingOrder | null>(['order', 'shipper', 'current'], '/order/shipper/current')
+
   const orders = data ?? []
+
+  // Nếu đang có đơn thì disable nhận đơn mới
+  const isAssigned = !!currentOrder
 
   return (
     <div className="container mx-auto px-2 py-4 max-w-6xl">
@@ -80,6 +91,41 @@ export default function DeliveryOrdersPage() {
         </Select>
       </div>
 
+      {/* Hiển thị đơn đang giao nếu có */}
+      {loadingCurrentOrder ? (
+        <div className="text-muted-foreground text-center py-4">Đang kiểm tra đơn đang giao...</div>
+      ) : currentOrder ? (
+        <div className="mb-6">
+          <Card className="border-foodsnap-orange border-2 shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-lg text-foodsnap-orange">
+                Bạn đang giao đơn #{currentOrder.order_id}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="font-semibold mb-1">
+                Nhà hàng:{' '}
+                <span>{currentOrder.order_item?.[0]?.menuitem?.restaurant?.name || ''}</span>
+              </div>
+              <div className="mb-2">
+                <span className="text-xs text-gray-700">
+                  Tổng tiền: <b>{currentOrder.total_price.toLocaleString()}đ</b>
+                </span>
+                <span className="ml-3 text-xs text-gray-700">
+                  Đặt lúc: {new Date(currentOrder.order_at).toLocaleString()}
+                </span>
+              </div>
+              <Button
+                className="mt-2"
+                onClick={() => navigate(`/delivery-status/${currentOrder.order_id}`)}
+              >
+                Xem chi tiết & cập nhật trạng thái
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      ) : null}
+
       <div className="space-y-4">
         {isLoading ? (
           <p className="text-muted-foreground text-center py-4">Đang tải đơn hàng...</p>
@@ -93,7 +139,11 @@ export default function DeliveryOrdersPage() {
               key={order.order_id}
               order={order}
               isMobile={isMobile}
-              onAccepted={refetch}
+              onAccepted={() => {
+                refetch()
+                refetchCurrentOrder()
+              }}
+              disableAssign={isAssigned}
             />
           ))
         )}
@@ -106,10 +156,12 @@ function OrderCard({
   order,
   isMobile,
   onAccepted,
+  disableAssign = false,
 }: {
   order: PendingOrder
   isMobile: boolean
   onAccepted: () => void
+  disableAssign?: boolean
 }) {
   const navigate = useNavigate()
 
@@ -220,7 +272,7 @@ function OrderCard({
 
       <CardFooter className={`flex justify-end ${isMobile ? 'p-3 pt-0' : 'p-4 pt-0'}`}>
         <Button
-          disabled={isPending}
+          disabled={isPending || disableAssign}
           onClick={() => assignOrder()}
           className={isMobile ? 'h-8 text-xs px-2 py-1' : ''}
         >
