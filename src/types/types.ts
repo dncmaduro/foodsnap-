@@ -149,3 +149,17 @@ export interface ReviewResponse {
     image_url: string
   }
 }
+
+export interface RestaurantApplication {
+  restaurantapp_id: number
+  user_id: number
+  name: string
+  district: string
+  address: string
+  phone: string
+  cccd: string
+  id_card_front_url: string
+  id_card_back_url: string
+  created_at: string
+  status: 'pending' | 'approved' | 'rejected'
+}
