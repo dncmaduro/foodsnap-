@@ -1,7 +1,5 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import {
   Select,
   SelectContent,
@@ -9,118 +7,47 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination'
-import { toast } from '@/hooks/use-toast'
-import { MapPin, ChevronLeft } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { ChevronLeft } from 'lucide-react'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { useApiQuery, useApiPatchMutation } from '@/hooks/useApi'
+import { ApiResponse } from '@/lib/api'
+import { toast } from '@/hooks/use-toast'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { MapPin } from 'lucide-react'
 
-// Mock data for available orders
-const MOCK_ORDERS = [
-  {
-    id: 'ORD-1234',
-    time: '14:30 - 14/05/2025',
-    restaurant: {
-      name: 'Nhà hàng Phở Hà Nội',
-      address: '123 Lê Lợi, Đống Đa, Hà Nội',
-    },
-    customer: {
-      address: '456 Nguyễn Huệ, Cầu Giấy, Hà Nội',
-    },
-    totalPrice: '185,000đ',
-  },
-  {
-    id: 'ORD-2345',
-    time: '14:45 - 14/05/2025',
-    restaurant: {
-      name: 'Sushi Tokyo',
-      address: '56 Lê Thánh Tôn, Ba Đình, Hà Nội',
-    },
-    customer: {
-      address: '78 Đồng Khởi, Thanh Xuân, Hà Nội',
-    },
-    totalPrice: '320,000đ',
-  },
-  {
-    id: 'ORD-3456',
-    time: '15:00 - 14/05/2025',
-    restaurant: {
-      name: 'Bún Chả Hà Nội',
-      address: '34 Lý Tự Trọng, Thanh Xuân, Hà Nội',
-    },
-    customer: {
-      address: '90 Nam Kỳ Khởi Nghĩa, Cầu Giấy, Hà Nội',
-    },
-    totalPrice: '145,000đ',
-  },
-  {
-    id: 'ORD-4567',
-    time: '15:15 - 14/05/2025',
-    restaurant: {
-      name: 'Pizza Express',
-      address: '22 Hai Bà Trưng, Đống Đa, Hà Nội',
-    },
-    customer: {
-      address: '45 Lê Duẩn, Ba Đình, Hà Nội',
-    },
-    totalPrice: '250,000đ',
-  },
-  {
-    id: 'ORD-5678',
-    time: '15:30 - 14/05/2025',
-    restaurant: {
-      name: 'Bánh Mì Saigon',
-      address: '12 Nguyễn Du, Cầu Giấy, Hà Nội',
-    },
-    customer: {
-      address: '67 Pasteur, Đống Đa, Hà Nội',
-    },
-    totalPrice: '85,000đ',
-  },
-]
+interface PendingOrder {
+  order_id: number
+  restaurant_id: number
+  shipper_id?: number
+  user_id: number
+  delivery_note: string
+  order_at: string
+  delivered_at?: string
+  subtotal: number
+  shipping_fee: number
+  total_price: number
+  shipping_status: string
+  order_item: any[]
+}
 
-// List of available districts - now only includes the specified districts
 const DISTRICTS = ['Tất cả', 'Cầu Giấy', 'Đống Đa', 'Ba Đình', 'Thanh Xuân']
 
 export default function DeliveryOrdersPage() {
   const navigate = useNavigate()
   const [district, setDistrict] = useState<string>('Tất cả')
-  const [currentPage, setCurrentPage] = useState<number>(1)
   const isMobile = useIsMobile()
-  const ordersPerPage = 10
 
-  // Filter orders based on district of restaurant only
-  const filteredOrders = MOCK_ORDERS.filter((order) => {
-    return district === 'Tất cả' || order.restaurant.address.includes(district)
-  })
+  const { data, isLoading, refetch } = useApiQuery<PendingOrder[]>(
+    ['orders', 'pending', district],
+    '/order/pending/list',
+    district === 'Tất cả' ? undefined : { district },
+  )
 
-  // Calculate pagination
-  const indexOfLastOrder = currentPage * ordersPerPage
-  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage
-  const currentOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder)
-  const totalPages = Math.ceil(filteredOrders.length / ordersPerPage)
-
-  // Handle order acceptance
-  const handleAcceptOrder = (orderId: string) => {
-    // In a real app, this would make an API call to claim the order
-    toast({
-      title: 'Đã nhận đơn hàng',
-      description: `Bạn đã nhận đơn hàng ${orderId} thành công.`,
-    })
-
-    // Navigate to the order status update page
-    navigate(`/delivery-status/${orderId}`)
-  }
+  const orders = data?.data ?? []
 
   return (
     <div className="container mx-auto px-2 py-4 max-w-6xl">
-      {/* Back Button */}
       <Button
         variant="ghost"
         size="sm"
@@ -130,7 +57,6 @@ export default function DeliveryOrdersPage() {
         <ChevronLeft className="h-4 w-4" /> Quay lại
       </Button>
 
-      {/* Page Header */}
       <div className="mb-4">
         <h1 className={`${isMobile ? 'text-xl' : 'text-3xl'} font-bold`}>
           Danh sách đơn hàng có thể nhận
@@ -140,138 +66,134 @@ export default function DeliveryOrdersPage() {
         </p>
       </div>
 
-      {/* Filter Section */}
       <div className="mb-4">
         <Select value={district} onValueChange={setDistrict}>
           <SelectTrigger className={`${isMobile ? 'h-8 text-xs' : ''}`}>
             <SelectValue placeholder="Chọn quận" />
           </SelectTrigger>
           <SelectContent>
-            {DISTRICTS.map((district) => (
-              <SelectItem key={district} value={district} className={isMobile ? 'text-xs' : ''}>
-                {district}
+            {DISTRICTS.map((d) => (
+              <SelectItem key={d} value={d} className={isMobile ? 'text-xs' : ''}>
+                {d}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
 
-      {/* Order List Section */}
-      <div className="space-y-3 mb-4">
-        {currentOrders.length === 0 ? (
+      <div className="space-y-4">
+        {isLoading ? (
+          <p className="text-muted-foreground text-center py-4">Đang tải đơn hàng...</p>
+        ) : orders.length === 0 ? (
           <div className="text-center py-8 bg-muted rounded-lg">
             <p className="text-muted-foreground">Không tìm thấy đơn hàng nào phù hợp.</p>
           </div>
         ) : (
-          currentOrders.map((order) => (
-            <Card key={order.id} className="hover:shadow-md transition-shadow">
-              <CardHeader className={`${isMobile ? 'p-3' : 'p-4'}`}>
-                <div className="flex justify-between items-start">
-                  <CardTitle className={`${isMobile ? 'text-sm' : 'text-lg'}`}>
-                    {order.id}
-                  </CardTitle>
-                  <div className="text-right">
-                    <div className={`font-bold ${isMobile ? 'text-sm' : ''}`}>
-                      {order.totalPrice}
-                    </div>
-                    <div className={`${isMobile ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
-                      {order.time}
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className={`${isMobile ? 'p-3 pt-0 text-xs' : 'p-4 pt-0 text-sm'}`}>
-                <div className="space-y-2">
-                  <div>
-                    <h3 className="font-semibold">Nhà hàng:</h3>
-                    <div className="flex items-start gap-1">
-                      <MapPin className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'} mt-0.5`} />
-                      <div>
-                        <p className={isMobile ? 'text-xs' : ''}>{order.restaurant.name}</p>
-                        <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
-                          {order.restaurant.address}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold">Địa chỉ giao hàng:</h3>
-                    <div className="flex items-start gap-1">
-                      <MapPin className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'} mt-0.5`} />
-                      <p className={`${isMobile ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
-                        {order.customer.address}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className={`flex justify-end ${isMobile ? 'p-3 pt-0' : 'p-4 pt-0'}`}>
-                <Button
-                  onClick={() => handleAcceptOrder(order.id)}
-                  className={isMobile ? 'h-8 text-xs px-2 py-1' : ''}
-                >
-                  Nhận đơn
-                </Button>
-              </CardFooter>
-            </Card>
+          orders.map((order) => (
+            <OrderCard
+              key={order.order_id}
+              order={order}
+              isMobile={isMobile}
+              onAccepted={refetch}
+            />
           ))
         )}
       </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <Pagination className="my-2">
-          <PaginationContent className={isMobile ? 'gap-0.5' : 'gap-1'}>
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                className={`${
-                  currentPage === 1 ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-                } ${isMobile ? 'h-8 text-xs' : ''}`}
-              />
-            </PaginationItem>
-
-            {Array.from({ length: totalPages }).map((_, index) => (
-              <PaginationItem key={index} className={isMobile ? 'hidden md:block' : ''}>
-                <PaginationLink
-                  isActive={currentPage === index + 1}
-                  onClick={() => setCurrentPage(index + 1)}
-                  className={isMobile ? 'h-8 w-8 p-0 text-xs' : ''}
-                >
-                  {index + 1}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
-
-            <PaginationItem>
-              <PaginationNext
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                className={`${
-                  currentPage === totalPages ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-                } ${isMobile ? 'h-8 text-xs' : ''}`}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      )}
-
-      {/* Navigation Links */}
-      <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-        <Button
-          variant="outline"
-          onClick={() => navigate('/delivery-history')}
-          className={isMobile ? 'h-8 text-xs' : ''}
-        >
-          Lịch sử giao hàng
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => navigate('/driver-profile')}
-          className={isMobile ? 'h-8 text-xs' : ''}
-        >
-          Hồ sơ tài xế
-        </Button>
-      </div>
     </div>
+  )
+}
+
+function OrderCard({
+  order,
+  isMobile,
+  onAccepted,
+}: {
+  order: PendingOrder
+  isMobile: boolean
+  onAccepted: () => void
+}) {
+  const navigate = useNavigate()
+
+  const { mutate: assignOrder, isPending } = useApiPatchMutation<ApiResponse<unknown>, void>(
+    `/order/${order.order_id}/assign`,
+    {
+      onSuccess: () => {
+        toast({ title: 'Đã nhận đơn hàng' })
+        navigate(`/delivery-status/${order.order_id}`)
+        onAccepted()
+      },
+      onError: (err) => {
+        toast({ title: 'Lỗi khi nhận đơn', description: err.message, variant: 'destructive' })
+      },
+    },
+  )
+
+  return (
+    <Card className="hover:shadow-md transition-shadow">
+      <CardHeader className={`${isMobile ? 'p-3' : 'p-4'}`}>
+        <div className="flex justify-between items-start">
+          <CardTitle className={`${isMobile ? 'text-sm' : 'text-lg'}`}>
+            Đơn #{order.order_id}
+          </CardTitle>
+          <div className="text-right">
+            <div className={`font-bold ${isMobile ? 'text-sm' : ''}`}>
+              {order.total_price.toLocaleString()}đ
+            </div>
+            <div className={`${isMobile ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
+              {new Date(order.order_at).toLocaleString()}
+            </div>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className={`${isMobile ? 'p-3 pt-0 text-xs' : 'p-4 pt-0 text-sm'}`}>
+        <div className="space-y-4">
+          {/* Món ăn */}
+          <div>
+            <h3 className="font-semibold mb-2">Danh sách món ăn:</h3>
+            <div className="space-y-2">
+              {order.order_item.map((item) => (
+                <div
+                  key={item.order_item_id}
+                  className="flex gap-3 items-start border rounded-md p-2"
+                >
+                  <img
+                    src={item.menuitem.image_url}
+                    alt={item.menuitem.name}
+                    className="w-16 h-16 object-cover rounded-md flex-shrink-0"
+                  />
+                  <div className="flex-1 space-y-1">
+                    <p className="font-medium">{item.menuitem.name}</p>
+                    <p className="text-muted-foreground text-sm">{item.menuitem.description}</p>
+                    <p className="text-xs">
+                      <strong>Số lượng:</strong> {item.quantity} | <strong>Giá:</strong>{' '}
+                      {item.price.toLocaleString()}đ
+                    </p>
+                    {item.note && (
+                      <p className="text-xs text-muted-foreground italic">Ghi chú: {item.note}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Ghi chú giao hàng */}
+          <div>
+            <h3 className="font-semibold">Ghi chú giao hàng:</h3>
+            <p className="text-muted-foreground">{order.delivery_note || '(Không có)'}</p>
+          </div>
+        </div>
+      </CardContent>
+
+      <CardFooter className={`flex justify-end ${isMobile ? 'p-3 pt-0' : 'p-4 pt-0'}`}>
+        <Button
+          disabled={isPending}
+          onClick={() => assignOrder()}
+          className={isMobile ? 'h-8 text-xs px-2 py-1' : ''}
+        >
+          Nhận đơn
+        </Button>
+      </CardFooter>
+    </Card>
   )
 }
