@@ -58,7 +58,7 @@ const FeaturedRestaurants = () => {
           {restaurants.map((restaurant) => (
             <Link
               key={restaurant.restaurant_id}
-              to={`/restaurant-details/${restaurant.restaurant_id}`}
+              to={`/restaurant/${restaurant.restaurant_id}`}
               className="bg-white rounded-lg overflow-hidden shadow-md hover-scale card-shadow"
             >
               <div className="relative h-48 overflow-hidden">
