@@ -19,9 +19,9 @@ import { useToast } from '@/hooks/use-toast'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import { useAuthStore } from '@/store/authStore'
-import { useCart } from '@/contexts/CartContext'
 import LoginDialog from '@/components/LoginDialog'
 import { useApiQuery, useApiMutation } from '@/hooks/useApi'
+import { useCheckoutStore } from '@/store/checkoutStore'
 
 interface Address {
   address_id: number
@@ -33,13 +33,13 @@ interface Address {
 
 const CheckoutPage = () => {
   const navigate = useNavigate()
-  const { items: cartItems, clearCart } = useCart()
   const { toast } = useToast()
   const { isAuthenticated } = useAuthStore()
   const [loginDialogOpen, setLoginDialogOpen] = useState(!isAuthenticated)
 
+  const { restaurant_id, items, clearCheckoutInfo } = useCheckoutStore()
+
   const [deliveryAddress, setDeliveryAddress] = useState('saved')
-  const [paymentMethod, setPaymentMethod] = useState('cash')
   const [driverNote, setDriverNote] = useState('')
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null)
 
@@ -54,13 +54,9 @@ const CheckoutPage = () => {
     '/address',
   )
 
-  const { mutate: createAddress, isPending: creating } = useApiMutation<
+  const { mutate: createAddress } = useApiMutation<
     unknown,
-    {
-      label: string
-      district: string
-      address: string
-    }
+    { label: string; district: string; address: string }
   >('/address', {
     onSuccess: () => {
       toast({ title: 'Đã thêm địa chỉ' })
@@ -69,6 +65,33 @@ const CheckoutPage = () => {
     },
     onError: () => {
       toast({ title: 'Lỗi', description: 'Không thể thêm địa chỉ', variant: 'destructive' })
+    },
+  })
+
+  const { mutate: createOrder } = useApiMutation<
+    { order_id: number },
+    {
+      address_id: number
+      restaurant_id: number
+      delivery_note: string
+      subtotal: number
+      shipping_fee: number
+      total_price: number
+      items: {
+        menuitem_id: number
+        quantity: number
+        price: number
+        note: string
+      }[]
+    }
+  >('/order', {
+    onSuccess: (response) => {
+      toast({ title: 'Đặt hàng thành công!' })
+      clearCheckoutInfo()
+      navigate(`/order-confirmation/${response.data.order_id}`)
+    },
+    onError: () => {
+      toast({ title: 'Lỗi khi đặt hàng', variant: 'destructive' })
     },
   })
 
@@ -86,30 +109,35 @@ const CheckoutPage = () => {
       toast({ title: 'Vui lòng điền đầy đủ thông tin', variant: 'destructive' })
       return
     }
-
     createAddress(addressForm)
   }
 
-  const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
-  const deliveryFee = cartItems.length > 0 ? 2.99 : 0
-  const discount = 0
-  const total = subtotal + deliveryFee - discount
+  const subtotal = items.reduce((total, item) => total + item.price * item.quantity, 0)
+  const deliveryFee = items.length > 0 ? 2.99 : 0
+  const total = subtotal + deliveryFee
 
   const handlePlaceOrder = () => {
-    toast({
-      title: 'Đặt hàng thành công!',
-      description: 'Đơn hàng của bạn đã được tiếp nhận và đang được xử lý.',
-    })
+    if (!selectedAddressId || !restaurant_id || items.length === 0) {
+      toast({ title: 'Thiếu thông tin đặt hàng', variant: 'destructive' })
+      return
+    }
 
-    clearCart()
-    navigate('/order-confirmation')
+    createOrder({
+      address_id: selectedAddressId,
+      restaurant_id,
+      delivery_note: driverNote,
+      subtotal,
+      shipping_fee: deliveryFee,
+      total_price: total,
+      items,
+    })
   }
 
   const handleLoginSuccess = () => {
     setLoginDialogOpen(false)
   }
 
-  if (cartItems.length === 0) {
+  if (items.length === 0) {
     return (
       <div className="flex flex-col min-h-screen">
         <Navigation />
@@ -132,7 +160,6 @@ const CheckoutPage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Navigation />
-
       <main className="flex-grow container mx-auto px-4 py-6 max-w-4xl">
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Thanh toán</h1>
@@ -233,12 +260,12 @@ const CheckoutPage = () => {
                 <CardTitle>Tóm tắt đơn hàng</CardTitle>
               </CardHeader>
               <CardContent>
-                {cartItems.map((item) => (
-                  <div key={item.id} className="flex justify-between text-sm">
+                {items.map((item, idx) => (
+                  <div key={idx} className="flex justify-between text-sm">
                     <span>
-                      {item.quantity} × {item.name}
+                      {item.quantity} × Món #{item.menuitem_id}
                     </span>
-                    <span>{(item.price * item.quantity).toFixed(2)}đ</span>
+                    <span>{(item.price * item.quantity).toFixed(0)}đ</span>
                   </div>
                 ))}
 
@@ -246,12 +273,12 @@ const CheckoutPage = () => {
 
                 <div className="flex justify-between text-sm">
                   <span>Phí giao hàng</span>
-                  <span>{deliveryFee.toFixed(2)}đ</span>
+                  <span>{deliveryFee.toFixed(0)}đ</span>
                 </div>
 
                 <div className="flex justify-between text-lg font-bold mt-2">
                   <span>Tổng cộng</span>
-                  <span>{total.toFixed(2)}đ</span>
+                  <span>{total.toFixed(0)}đ</span>
                 </div>
 
                 <Button

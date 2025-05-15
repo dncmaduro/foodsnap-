@@ -1,423 +1,109 @@
+import { useNavigate, useParams } from 'react-router-dom'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { toast } from '@/hooks/use-toast'
+import { MapPin, ChevronLeft } from 'lucide-react'
+import { useIsMobile } from '@/hooks/use-mobile'
+import { useApiQuery } from '@/hooks/useApi'
+import { OrderDetailResponse } from '@/types/types'
 
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { 
-  Package, 
-  Calendar, 
-  MapPin, 
-  ExternalLink,
-  Star, 
-  ChevronLeft, 
-  Lock,
-  CreditCard
-} from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import { format } from 'date-fns';
+export default function DeliveryOrdersPage() {
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const isMobile = useIsMobile()
 
-// Types for the order details
-type OrderItem = {
-  id: string;
-  name: string;
-  quantity: number;
-  price: number;
-};
+  const { data, isLoading } = useApiQuery<OrderDetailResponse>(['orders', 'detail'], `/order/${id}`)
 
-type OrderStatus = 'preparing' | 'out_for_delivery' | 'delivered' | 'cancelled';
-
-type OrderDetails = {
-  orderId: string;
-  restaurantId: string;
-  restaurantName: string;
-  restaurantAddress: string;
-  orderDate: string;
-  status: OrderStatus;
-  items: OrderItem[];
-  subtotal: number;
-  deliveryFee: number;
-  total: number;
-  paymentMethod: string;
-  deliveryAddress: {
-    name: string;
-    phone: string;
-    address: string;
-    notes?: string;
-  };
-  driver?: {
-    name: string;
-    photo?: string;
-    phone: string;
-    deliveryTime?: string;
-  };
-  userRating?: {
-    rating: number;
-    comment?: string;
-    date: string;
-  };
-};
-
-const OrderDetailsPage = () => {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // In a real app, this would be an API call to fetch order details
-    // For now, we're using mock data
-    setLoading(true);
-    
-    setTimeout(() => {
-      // Check if this is our test order
-      if (id === 'ORD-TEST') {
-        // This is our unrated test order
-        const testOrder: OrderDetails = {
-          orderId: 'ORD-TEST',
-          restaurantId: 'rest-test',
-          restaurantName: 'Test Restaurant',
-          restaurantAddress: '789 Test St, Testville, USA',
-          orderDate: new Date().toISOString(),
-          status: 'delivered',
-          items: [
-            { id: 't1', name: 'Test Burger', quantity: 1, price: 12.99 },
-            { id: 't2', name: 'Test Fries', quantity: 1, price: 4.99 },
-            { id: 't3', name: 'Test Soda', quantity: 1, price: 2.99 },
-          ],
-          subtotal: 20.97,
-          deliveryFee: 2.99,
-          total: 23.96,
-          paymentMethod: 'Credit Card (•••• 1234)',
-          deliveryAddress: {
-            name: 'Test User',
-            phone: '(555) 987-6543',
-            address: '321 Test Ave, Testville, USA',
-            notes: 'Test delivery notes.',
-          },
-          driver: {
-            name: 'Test Driver',
-            photo: 'https://randomuser.me/api/portraits/men/22.jpg',
-            phone: '(555) 123-4567',
-            deliveryTime: new Date().toISOString(),
-          },
-          // No userRating field, so it can be rated
-        };
-        setOrderDetails(testOrder);
-      } else {
-        // Use the original mock data for other orders
-        const mockOrder: OrderDetails = {
-          orderId: id || 'ORD-1234',
-          restaurantId: 'rest-1',
-          restaurantName: 'Burger Palace',
-          restaurantAddress: '123 Main St, Anytown, USA',
-          orderDate: '2025-04-14T18:30:00',
-          status: 'delivered',
-          items: [
-            { id: '1', name: 'Cheeseburger', quantity: 2, price: 9.99 },
-            { id: '2', name: 'French Fries', quantity: 1, price: 4.99 },
-            { id: '3', name: 'Chocolate Shake', quantity: 1, price: 5.99 },
-          ],
-          subtotal: 30.96,
-          deliveryFee: 3.99,
-          total: 34.95,
-          paymentMethod: 'Credit Card (•••• 4242)',
-          deliveryAddress: {
-            name: 'John Doe',
-            phone: '(555) 123-4567',
-            address: '456 Oak Lane, Apt 3B, Anytown, USA',
-            notes: 'Please leave at the door.',
-          },
-          driver: {
-            name: 'Michael Rodriguez',
-            photo: 'https://randomuser.me/api/portraits/men/75.jpg',
-            phone: '(555) 987-6543',
-            deliveryTime: '2025-04-14T19:15:00',
-          },
-          userRating: {
-            rating: 4,
-            comment: 'Food was delicious and arrived hot. Driver was very friendly.',
-            date: '2025-04-14T20:00:00',
-          },
-        };
-        
-        setOrderDetails(mockOrder);
-      }
-      
-      setLoading(false);
-    }, 500);
-  }, [id]);
-
-  const getStatusBadge = (status: OrderStatus) => {
-    switch (status) {
-      case 'preparing':
-        return <Badge className="bg-blue-500">Đang chuẩn bị</Badge>;
-      case 'out_for_delivery':
-        return <Badge className="bg-amber-500">Đang giao hàng</Badge>;
-      case 'delivered':
-        return <Badge className="bg-green-500">Đã giao hàng</Badge>;
-      case 'cancelled':
-        return <Badge className="bg-red-500">Đã hủy</Badge>;
-      default:
-        return <Badge>Không xác định</Badge>;
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    return format(new Date(dateString), 'PPP p');
-  };
-
-  if (loading) {
-    return (
-      <div className="flex flex-col min-h-screen">
-        <Navigation />
-        <main className="flex-grow container mx-auto px-4 py-12 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin h-12 w-12 border-4 border-foodsnap-orange border-t-transparent rounded-full mx-auto mb-4"></div>
-            <h2 className="text-xl font-medium">Đang tải thông tin đơn hàng...</h2>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
+  const handleAcceptOrder = (orderId: number) => {
+    toast({
+      title: 'Đã nhận đơn hàng',
+      description: `Bạn đã nhận đơn hàng ${orderId} thành công.`,
+    })
+    navigate(`/delivery-status/${orderId}`)
   }
 
-  if (!orderDetails) {
+  const order = data?.data
+
+  if (isLoading) {
     return (
-      <div className="flex flex-col min-h-screen">
-        <Navigation />
-        <main className="flex-grow container mx-auto px-4 py-12 flex items-center justify-center">
-          <div className="text-center">
-            <h2 className="text-xl font-medium">Không tìm thấy đơn hàng</h2>
-            <Button 
-              className="mt-4 bg-foodsnap-orange hover:bg-foodsnap-orange/90"
-              onClick={() => navigate('/order-history')}
-            >
-              Quay lại Lịch sử đơn hàng
-            </Button>
-          </div>
-        </main>
-        <Footer />
+      <div className="container mx-auto px-2 py-4 max-w-3xl">
+        <p className="text-muted-foreground text-center py-8">Đang tải đơn hàng...</p>
       </div>
-    );
+    )
   }
 
-  const RatingStars = ({ rating }: { rating: number }) => {
+  if (!order) {
     return (
-      <div className="flex">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <Star
-            key={star}
-            className={`h-5 w-5 ${
-              star <= rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
-            }`}
-          />
-        ))}
+      <div className="container mx-auto px-2 py-4 max-w-3xl">
+        <p className="text-muted-foreground text-center py-8">Không tìm thấy đơn hàng.</p>
       </div>
-    );
-  };
+    )
+  }
+
+  const restaurant = order.order_item[0].menuitem.restaurant
+  const deliveryAddress = order.delivery_note || 'Không có ghi chú'
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      <Navigation />
-      
-      <main className="flex-grow container mx-auto px-4 py-6 max-w-4xl">
-        <div className="mb-6">
-          <Button 
-            variant="ghost" 
-            className="mb-4 px-0 text-gray-600 hover:text-foodsnap-orange hover:bg-transparent"
-            onClick={() => navigate('/order-history')}
-          >
-            <ChevronLeft className="h-4 w-4 mr-1" />
-            Quay lại Lịch sử đơn hàng
-          </Button>
-          
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <h1 className="text-3xl font-bold text-gray-900">Chi tiết đơn hàng</h1>
-            <div className="flex items-center">
-              <span className="mr-2">Trạng thái:</span>
-              {orderDetails && getStatusBadge(orderDetails.status)}
+    <div className="container mx-auto px-2 py-4 max-w-3xl">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => navigate('/delivery-registration')}
+        className="mb-4 -ml-2 gap-1"
+      >
+        <ChevronLeft className="h-4 w-4" /> Quay lại
+      </Button>
+
+      <h1 className={`${isMobile ? 'text-xl' : 'text-3xl'} font-bold mb-6`}>Chi tiết đơn hàng</h1>
+
+      <Card className="hover:shadow-md transition-shadow">
+        <CardHeader className="p-4">
+          <div className="flex justify-between items-start">
+            <CardTitle className="text-lg font-semibold">Đơn #{order.order_id}</CardTitle>
+            <div className="text-right">
+              <div className="font-bold">{Number(order.total_price).toLocaleString()}đ</div>
+              <div className="text-sm text-muted-foreground">
+                {new Date(order.order_at).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}{' '}
+                - {new Date(order.order_at).toLocaleDateString()}
+              </div>
             </div>
           </div>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          {/* Order Summary Card */}
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Package className="h-5 w-5 text-foodsnap-orange" />
-                Tổng quan đơn hàng
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-gray-500">Mã đơn hàng</p>
-                  <p className="font-medium">{orderDetails?.orderId}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Ngày đặt</p>
-                  <p className="font-medium">{orderDetails?.orderDate && formatDate(orderDetails.orderDate)}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Tổng tiền</p>
-                  <p className="font-medium text-foodsnap-orange">${orderDetails?.total.toFixed(2)}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          {/* Restaurant Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Nhà hàng</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
+        </CardHeader>
+        <CardContent className="p-4 pt-0 text-sm space-y-2">
+          <div>
+            <h3 className="font-semibold">Nhà hàng:</h3>
+            <div className="flex items-start gap-1">
+              <MapPin className="h-4 w-4 mt-0.5" />
               <div>
-                <h3 className="font-medium text-lg">{orderDetails?.restaurantName}</h3>
-                <p className="text-gray-600 text-sm">{orderDetails?.restaurantAddress}</p>
-              </div>
-              <Button 
-                variant="outline" 
-                className="w-full justify-start text-foodsnap-teal border-foodsnap-teal hover:bg-foodsnap-teal/10"
-                onClick={() => navigate(`/restaurant/${orderDetails?.restaurantId}`)}
-              >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Xem trang nhà hàng
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-        
-        {/* Items Ordered Section */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Package className="h-5 w-5 text-foodsnap-orange" />
-              Các món đã đặt
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {orderDetails?.items.map((item) => (
-                <div key={item.id} className="flex justify-between items-center pb-3 border-b border-gray-100 last:border-0 last:pb-0">
-                  <div>
-                    <p className="font-medium">{item.name}</p>
-                    <p className="text-sm text-gray-500">Số lượng: {item.quantity}</p>
-                  </div>
-                  <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
-                </div>
-              ))}
-              
-              <Separator className="my-4" />
-              
-              <div className="space-y-2">
-                <div className="flex justify-between text-gray-600">
-                  <span>Tạm tính</span>
-                  <span>${orderDetails?.subtotal.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-gray-600">
-                  <span>Phí giao hàng</span>
-                  <span>${orderDetails?.deliveryFee.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between font-bold text-lg pt-2">
-                  <span>Tổng cộng</span>
-                  <span>${orderDetails?.total.toFixed(2)}</span>
-                </div>
+                <p>{restaurant.name}</p>
+                <p className="text-muted-foreground text-sm">{restaurant.address}</p>
               </div>
             </div>
-          </CardContent>
-        </Card>
-        
-        <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mb-6">
-          {/* Delivery Details */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MapPin className="h-5 w-5 text-foodsnap-orange" />
-                Chi tiết giao hàng
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div>
-                <p className="font-medium">{orderDetails?.deliveryAddress.name}</p>
-                <p className="text-gray-600">{orderDetails?.deliveryAddress.phone}</p>
-                <p className="text-gray-600 mt-2">{orderDetails?.deliveryAddress.address}</p>
-              </div>
-              
-              {orderDetails?.deliveryAddress.notes && (
-                <div className="bg-gray-50 p-3 rounded-md mt-3">
-                  <p className="text-sm">
-                    <span className="font-medium">Hướng dẫn giao hàng:</span> {orderDetails?.deliveryAddress.notes}
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-        
-        {/* Rating & Review Block */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Star className="h-5 w-5 text-foodsnap-orange" />
-              Đánh giá của bạn
-              {orderDetails?.userRating && (
-                <span className="text-sm text-gray-500 flex items-center ml-2">
-                  <Lock className="h-4 w-4 mr-1" />
-                  Đã gửi
-                </span>
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {orderDetails?.userRating ? (
-              <div className="space-y-3">
-                <div className="flex items-center space-x-2">
-                  <RatingStars rating={orderDetails.userRating.rating} />
-                  <span className="text-sm text-gray-500">
-                    Đã gửi ngày {formatDate(orderDetails.userRating.date)}
-                  </span>
-                </div>
-                
-                {orderDetails.userRating.comment && (
-                  <div className="bg-gray-50 p-4 rounded-md mt-3">
-                    <p className="italic text-gray-700">{orderDetails.userRating.comment}</p>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="text-center py-6">
-                <p className="text-gray-600 mb-4">Bạn chưa đánh giá đơn hàng này.</p>
-                <Button 
-                  className="bg-foodsnap-teal hover:bg-foodsnap-teal/90"
-                  onClick={() => navigate(`/rate-order/${orderDetails?.orderId}`, { state: { orderDetails } })}
-                >
-                  <Star className="h-4 w-4 mr-1" />
-                  Đánh giá đơn hàng
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-        
-        {/* Reorder Section */}
-        <div className="text-center mb-6">
-          <Button 
-            className="px-8 py-6 bg-foodsnap-orange hover:bg-foodsnap-orange/90"
-            onClick={() => navigate(`/restaurant/${orderDetails?.restaurantId}`)}
-          >
-            Đặt lại từ {orderDetails?.restaurantName}
-          </Button>
-        </div>
-      </main>
-      
-      <Footer />
-    </div>
-  );
-};
+          </div>
+          <div>
+            <h3 className="font-semibold">Giao tới:</h3>
+            <div className="flex items-start gap-1">
+              <MapPin className="h-4 w-4 mt-0.5" />
+              <p className="text-muted-foreground text-sm">{deliveryAddress}</p>
+            </div>
+          </div>
+        </CardContent>
+        <CardFooter className="flex justify-end p-4 pt-0">
+          <Button onClick={() => handleAcceptOrder(order.order_id)}>Nhận đơn</Button>
+        </CardFooter>
+      </Card>
 
-export default OrderDetailsPage;
+      <div className="mt-10 flex justify-center gap-4">
+        <Button variant="outline" onClick={() => navigate('/delivery-history')}>
+          Lịch sử giao hàng
+        </Button>
+        <Button variant="outline" onClick={() => navigate('/driver-profile')}>
+          Hồ sơ tài xế
+        </Button>
+      </div>
+    </div>
+  )
+}
