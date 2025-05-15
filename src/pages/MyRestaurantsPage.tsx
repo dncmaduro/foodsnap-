@@ -130,16 +130,18 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant }) => {
     undefined,
     {
       // keepPreviousData: true,
+      enabled: restaurant.status === 'approved',
     },
   )
 
   const handleViewDetail = useCallback(() => {
-    if (restaurantDetailRes?.data?.restaurant_id) {
-      navigate(`/restaurant-details/${restaurantDetailRes.data.restaurant_id}`)
+    console.log(restaurantDetailRes)
+    if (restaurantDetailRes?.restaurant_id) {
+      navigate(`/restaurant-details/${restaurantDetailRes.restaurant_id}`)
     } else {
       setShouldFetch(true)
     }
-  }, [navigate, restaurantDetailRes?.data?.restaurant_id, restaurant.restaurantapp_id])
+  }, [navigate, restaurantDetailRes?.restaurant_id, restaurant.restaurantapp_id])
 
   return (
     <Card className="overflow-hidden">
@@ -171,7 +173,7 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant }) => {
             <Button
               variant="outline"
               className="mt-4 md:mt-0 w-full md:w-auto"
-              disabled={isFetching}
+              disabled={isFetching || !restaurantDetailRes}
               onClick={handleViewDetail}
             >
               {isFetching ? 'Đang kiểm tra...' : 'Xem chi tiết'}
