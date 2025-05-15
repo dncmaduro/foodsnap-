@@ -43,7 +43,8 @@ const RestaurantHeader = ({ restaurant, isFavorite, onToggleFavorite }: Restaura
               </div>
 
               <div className="flex items-center mt-3 text-sm text-yellow-500">
-                ⭐ {restaurant.rating.toFixed(1)} ({restaurant.reviewCount} đánh giá)
+                ⭐ {restaurant.rating ? restaurant.rating.toFixed(1) : 0} (
+                {restaurant.reviewCount || 0} đánh giá)
               </div>
             </div>
 

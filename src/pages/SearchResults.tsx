@@ -44,8 +44,8 @@ const SearchResults = () => {
     },
   )
 
-  const restaurants = data.restaurants || []
-  const dishes = data.menuItems || []
+  const restaurants = data ? data.restaurants : []
+  const dishes = data ? data.menuItems : []
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
