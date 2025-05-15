@@ -136,3 +136,16 @@ export interface OrderDetailResponse {
   shipping_status: 'Pending' | 'Preparing' | 'Delivering' | 'Delivered' | 'Canceled'
   order_item: OrderItem[]
 }
+
+export interface ReviewResponse {
+  review_id: number
+  rating: number
+  comment: string
+  created_at: string
+  restaurant_id: number
+  restaurant: {
+    name: string
+    address: string
+    image_url: string
+  }
+}
