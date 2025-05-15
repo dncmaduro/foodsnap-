@@ -25,13 +25,8 @@ export async function callApi<T>({
   headers = {},
 }: ApiOptions): Promise<ApiResponse<T>> {
   try {
-    // Đảm bảo path bắt đầu với dấu /
     const apiPath = path.startsWith('/') ? path : `/${path}`
-
-    // Use environment variable for backend URL
     const baseUrl = import.meta.env.VITE_BACKEND_URL
-
-    // Construct URL with query parameters
     const url = new URL(`${baseUrl}${apiPath}`)
 
     if (params) {
@@ -42,35 +37,31 @@ export async function callApi<T>({
       })
     }
 
-    // Add authentication headers if available
     const authHeaders = getAuthHeaders()
+    const isFormData = typeof FormData !== 'undefined' && body instanceof FormData
 
-    // Prepare request options
     const options: RequestInit = {
       method,
       headers: {
-        'Content-Type': 'application/json',
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
         ...authHeaders,
         ...headers,
       },
-      credentials: 'include', // Include cookies for authentication
+      credentials: 'include',
     }
 
-    // Add body for non-GET requests
     if (body && method !== 'GET') {
-      options.body = JSON.stringify(body)
+      options.body = isFormData ? body : JSON.stringify(body)
     }
 
     console.log(`Making ${method} request to ${url.toString()}`)
 
-    // Make the request
     const response = await fetch(url.toString(), options)
     const isJson = response.headers.get('content-type')?.includes('application/json')
     const responseData = isJson ? await response.json() : null
 
     console.log('Response:', response.status, responseData)
 
-    // Handle successful responses
     if (response.ok) {
       return {
         data: responseData,
@@ -79,7 +70,6 @@ export async function callApi<T>({
       }
     }
 
-    // Handle error responses
     const errorMessage = responseData?.message || response.statusText || 'Unknown error'
     return {
       data: null,
@@ -87,7 +77,6 @@ export async function callApi<T>({
       status: response.status,
     }
   } catch (error) {
-    // Handle network errors
     console.error('API call error:', error)
     const errorMessage = error instanceof Error ? error.message : 'Network error'
     toast({
