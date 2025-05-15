@@ -19,7 +19,7 @@ const FeaturedRestaurants = () => {
     const fetchRestaurants = async () => {
       setLoading(true)
       try {
-        const res = await fetch('http://localhost:3000/api/v1/restaurant/greet/random', {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/restaurant/greet/random`, {
           headers: {
             accept: '*/*',
             // Nếu cần Auth, set lại Bearer token ở đây
