@@ -146,6 +146,40 @@ function OrderCard({
         </div>
       </CardHeader>
       <CardContent className={`${isMobile ? 'p-3 pt-0 text-xs' : 'p-4 pt-0 text-sm'}`}>
+        {/* THÔNG TIN NHÀ HÀNG */}
+        {order.order_item?.[0]?.menuitem?.restaurant && (
+          <div className="mb-4 flex gap-3 items-center border rounded-md p-2 bg-gray-50">
+            <img
+              src={order.order_item[0].menuitem.restaurant.image_url}
+              alt={order.order_item[0].menuitem.restaurant.name}
+              className="w-14 h-14 object-cover rounded-md flex-shrink-0"
+            />
+            <div className="flex-1 space-y-1">
+              <div className="font-semibold text-base">
+                {order.order_item[0].menuitem.restaurant.name}
+              </div>
+              <div className="flex items-center gap-2 text-xs text-gray-600">
+                <MapPin size={14} className="inline" />
+                <span>
+                  {order.order_item[0].menuitem.restaurant.address} -{' '}
+                  {order.order_item[0].menuitem.restaurant.district}
+                </span>
+              </div>
+              <div className="text-xs text-gray-600">
+                <span>Điện thoại: {order.order_item[0].menuitem.restaurant.phone}</span>
+                {order.order_item[0].menuitem.restaurant.rating && (
+                  <span className="ml-3">⭐ {order.order_item[0].menuitem.restaurant.rating}</span>
+                )}
+              </div>
+              <div className="text-xs text-gray-500">
+                <span>
+                  Giờ mở cửa: {order.order_item[0].menuitem.restaurant.open_time} -{' '}
+                  {order.order_item[0].menuitem.restaurant.close_time}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="space-y-4">
           {/* Món ăn */}
           <div>
