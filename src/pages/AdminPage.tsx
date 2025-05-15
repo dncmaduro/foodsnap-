@@ -68,7 +68,7 @@ export default function AdminPage() {
     refetch()
   }, [type, status, searchText])
 
-  const parsed: ParsedApplication[] = (data?.data || []).map((app: any): ParsedApplication => {
+  const parsed: ParsedApplication[] = (data || []).map((app: any): ParsedApplication => {
     if (type === 'restaurant') {
       return {
         id: app.restaurantapp_id,

@@ -36,7 +36,7 @@ const RestaurantDetailsPage = () => {
   )
 
   // Lưu ý: mọi chỗ truy cập phải là data?.data.[field]
-  const restaurant = data?.data
+  const restaurant = data
 
   useEffect(() => {
     if (!isLoading && restaurant && !restaurant.approved_at) {

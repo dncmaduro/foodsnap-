@@ -29,7 +29,7 @@ export default function DeliveryHistoryPage() {
     '/order/history/delivered',
   )
 
-  const deliveries = response?.data ?? []
+  const deliveries = response ?? []
 
   // Sort by delivered_at desc
   const sortedDeliveries = [...deliveries].sort(

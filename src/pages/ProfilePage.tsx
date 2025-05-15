@@ -40,7 +40,7 @@ const ProfilePage = () => {
     isLoading: isLoadingProfile,
     refetch: refetchProfile,
   } = useApiQuery<Profile>(['profile'], '/user/profile')
-  const profile = profileRes?.data
+  const profile = profileRes
 
   // Lấy địa chỉ đã lưu
   const {
@@ -48,7 +48,7 @@ const ProfilePage = () => {
     isLoading: isLoadingAddresses,
     refetch: refetchAddresses,
   } = useApiQuery<Address[]>(['address'], '/address')
-  const addresses = addressesRes?.data || []
+  const addresses = addressesRes || []
 
   // State cho form edit profile
   const [isEditing, setIsEditing] = useState(false)

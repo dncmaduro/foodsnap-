@@ -54,8 +54,8 @@ export default function DriverProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
 
   useEffect(() => {
-    if (data?.data) {
-      const { fullname, phonenumber, bankName, accountNumber, accountHolder } = data.data
+    if (data) {
+      const { fullname, phonenumber, bankName, accountNumber, accountHolder } = data
       setFormData({
         fullname,
         phonenumber,
@@ -174,9 +174,9 @@ export default function DriverProfilePage() {
                     variant="outline"
                     onClick={() => {
                       setIsEditing(false)
-                      if (data?.data) {
+                      if (data) {
                         const { fullname, phonenumber, bankName, accountNumber, accountHolder } =
-                          data.data
+                          data
                         setFormData({
                           fullname,
                           phonenumber,

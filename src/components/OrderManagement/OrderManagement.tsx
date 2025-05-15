@@ -36,7 +36,7 @@ const OrderManagement = ({ restaurantId }: OrderManagementProps) => {
   )
 
   // PHẢI truy cập data?.data
-  const orders = data?.data ?? []
+  const orders = data ?? []
   const totalPages = Math.ceil(orders.length / itemsPerPage)
   const currentOrders = orders.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
