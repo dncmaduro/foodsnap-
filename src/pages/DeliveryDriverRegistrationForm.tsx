@@ -20,6 +20,7 @@ import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 
 const formSchema = z.object({
+  fullname: z.string().min(2, 'Họ tên phải có ít nhất 2 ký tự'),
   phone: z
     .string()
     .min(1, 'Số điện thoại không được để trống')
@@ -40,6 +41,7 @@ export default function DeliveryDriverRegistrationForm() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      fullname: '',
       phone: '',
     },
   })
@@ -88,6 +90,7 @@ export default function DeliveryDriverRegistrationForm() {
     }
 
     const formData = new FormData()
+    formData.append('fullname', values.fullname)
     formData.append('phone', values.phone)
     formData.append('files', frontFile)
     formData.append('files', backFile)
@@ -116,6 +119,19 @@ export default function DeliveryDriverRegistrationForm() {
               onSubmit={form.handleSubmit(onSubmit)}
               className="space-y-6 bg-white p-4 rounded-lg border shadow-sm"
             >
+              <FormField
+                control={form.control}
+                name="fullname"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Họ tên</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Nguyễn Văn A" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="phone"
