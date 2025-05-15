@@ -163,3 +163,18 @@ export interface RestaurantApplication {
   created_at: string
   status: 'pending' | 'approved' | 'rejected'
 }
+
+export interface Profile {
+  user_id: number
+  email: string
+  fullname: string
+  phonenumber: string
+}
+
+export interface Address {
+  address_id: number
+  label: string
+  district: string
+  address: string
+  is_default: boolean
+}

@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { PenLine, Plus, Trash2, Check } from 'lucide-react'
-import { useAuthStore } from '@/store/authStore'
+import { PenLine, Plus, Check, Lock } from 'lucide-react'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import { Button } from '@/components/ui/button'
@@ -17,8 +16,9 @@ import {
 } from '@/components/ui/select'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { useToast } from '@/hooks/use-toast'
-import { useApiQuery, useApiMutation } from '@/hooks/useApi'
+import { useApiQuery, useApiPatchMutation, useApiMutation } from '@/hooks/useApi'
 import { AddressItem } from '@/components/AddressItem'
+import { Profile } from '@/types/types'
 
 type Address = {
   address_id: number
@@ -31,28 +31,91 @@ type Address = {
 const DISTRICTS = ['Cầu Giấy', 'Đống Đa', 'Ba Đình', 'Thanh Xuân']
 
 const ProfilePage = () => {
-  const { user, isAuthenticated, logout } = useAuthStore()
   const navigate = useNavigate()
   const { toast } = useToast()
 
-  const [isEditing, setIsEditing] = useState(false)
-  const [name, setName] = useState(user?.fullname || '')
-  const [phone, setPhone] = useState(user?.phonenumber || '')
-  const [currentRole, setCurrentRole] = useState('user')
+  // Lấy profile từ API
+  const {
+    data: profileRes,
+    isLoading: isLoadingProfile,
+    refetch: refetchProfile,
+  } = useApiQuery<Profile>(['profile'], '/user/profile')
+  const profile = profileRes?.data
 
+  // Lấy địa chỉ đã lưu
+  const {
+    data: addressesRes,
+    isLoading: isLoadingAddresses,
+    refetch: refetchAddresses,
+  } = useApiQuery<Address[]>(['address'], '/address')
+  const addresses = addressesRes?.data || []
+
+  // State cho form edit profile
+  const [isEditing, setIsEditing] = useState(false)
+  const [editFullname, setEditFullname] = useState('')
+  const [editPhone, setEditPhone] = useState('')
+  const [editEmail, setEditEmail] = useState('')
+
+  // State cho sheet thêm địa chỉ
   const [newAddressLabel, setNewAddressLabel] = useState('')
   const [newAddressDistrict, setNewAddressDistrict] = useState('')
   const [newAddress, setNewAddress] = useState('')
 
-  const { data: addresses, isLoading, refetch } = useApiQuery<Address[]>(['address'], '/address')
+  // State cho đổi mật khẩu
+  const [showChangePassword, setShowChangePassword] = useState(false)
+  const [oldPassword, setOldPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [isChangingPassword, setIsChangingPassword] = useState(false)
 
+  // PATCH update profile
+  const updateProfileMutation = useApiPatchMutation<
+    { fullname: string; phonenumber: string; email: string },
+    any
+  >('/user/profile', {
+    onSuccess: (res) => {
+      toast({ title: 'Cập nhật thành công', description: 'Thông tin cá nhân đã được lưu.' })
+      setIsEditing(false)
+      refetchProfile()
+    },
+    onError: (err: any) => {
+      toast({
+        title: 'Lỗi',
+        description: err.message || 'Không cập nhật được thông tin.',
+        variant: 'destructive',
+      })
+    },
+  })
+
+  // PATCH đổi mật khẩu
+  const changePasswordMutation = useApiPatchMutation<
+    { oldPassword: string; newPassword: string },
+    any
+  >('/user/change-password', {
+    onSuccess: () => {
+      toast({ title: 'Đổi mật khẩu thành công', description: 'Bạn đã đổi mật khẩu mới.' })
+      setShowChangePassword(false)
+      setOldPassword('')
+      setNewPassword('')
+      setConfirmPassword('')
+    },
+    onError: (err: any) => {
+      toast({
+        title: 'Lỗi',
+        description: err.message || 'Không đổi được mật khẩu.',
+        variant: 'destructive',
+      })
+    },
+  })
+
+  // Thêm địa chỉ
   const { mutate: createAddress } = useApiMutation<
-    unknown,
+    any,
     { label: string; district: string; address: string }
   >('/address', {
     onSuccess: () => {
       toast({ title: 'Đã thêm địa chỉ' })
-      refetch()
+      refetchAddresses()
       setNewAddress('')
       setNewAddressLabel('')
       setNewAddressDistrict('')
@@ -62,19 +125,51 @@ const ProfilePage = () => {
     },
   })
 
-  if (!isAuthenticated) {
-    navigate('/')
-    return null
+  // Handle lưu thay đổi profile
+  const handleSaveProfile = () => {
+    updateProfileMutation.mutate({
+      fullname: editFullname,
+      phonenumber: editPhone,
+      email: editEmail,
+    })
   }
 
-  const handleSaveChanges = () => {
-    toast({ title: 'Profile Updated', description: 'Thông tin đã được cập nhật.' })
-    setIsEditing(false)
+  // Khi ấn chỉnh sửa, fill lại form
+  const handleEditClick = () => {
+    setEditFullname(profile?.fullname || '')
+    setEditPhone(profile?.phonenumber || '')
+    setEditEmail(profile?.email || '')
+    setIsEditing(true)
   }
 
+  // Handle mở form đổi mật khẩu
+  const openChangePassword = () => {
+    setShowChangePassword(true)
+    setOldPassword('')
+    setNewPassword('')
+    setConfirmPassword('')
+  }
+
+  // Handle đổi mật khẩu
+  const handleChangePassword = () => {
+    if (!oldPassword || !newPassword) {
+      toast({ title: 'Lỗi', description: 'Vui lòng nhập đầy đủ thông tin', variant: 'destructive' })
+      return
+    }
+    if (newPassword !== confirmPassword) {
+      toast({ title: 'Lỗi', description: 'Mật khẩu mới không khớp', variant: 'destructive' })
+      return
+    }
+    setIsChangingPassword(true)
+    changePasswordMutation.mutate(
+      { oldPassword, newPassword },
+      { onSettled: () => setIsChangingPassword(false) },
+    )
+  }
+
+  // Thêm địa chỉ
   const handleAddAddress = () => {
     if (!newAddressLabel.trim() || !newAddressDistrict.trim() || !newAddress.trim()) return
-
     createAddress({
       label: newAddressLabel,
       district: newAddressDistrict,
@@ -82,10 +177,11 @@ const ProfilePage = () => {
     })
   }
 
-  const handleLogout = () => {
-    logout()
+  // Nếu chưa login hoặc chưa fetch xong thì chặn vào trang
+  if (isLoadingProfile && !profile) return <div>Đang tải thông tin...</div>
+  if (!profile) {
     navigate('/')
-    toast({ title: 'Đăng xuất thành công' })
+    return null
   }
 
   return (
@@ -93,21 +189,22 @@ const ProfilePage = () => {
       <Navigation />
 
       <main className="flex-grow container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">My Profile</h1>
+        <h1 className="text-3xl font-bold mb-8">Tài khoản của tôi</h1>
 
+        {/* Profile info */}
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex justify-between items-center">
               <span>Thông tin cá nhân</span>
               {!isEditing ? (
-                <Button variant="outline" onClick={() => setIsEditing(true)}>
+                <Button variant="outline" onClick={handleEditClick}>
                   <PenLine size={16} className="mr-2" />
                   Chỉnh sửa
                 </Button>
               ) : (
-                <Button onClick={handleSaveChanges}>
+                <Button onClick={handleSaveProfile} disabled={updateProfileMutation.isPending}>
                   <Check size={16} className="mr-2" />
-                  Lưu thay đổi
+                  {updateProfileMutation.isPending ? 'Đang lưu...' : 'Lưu thay đổi'}
                 </Button>
               )}
             </CardTitle>
@@ -117,23 +214,89 @@ const ProfilePage = () => {
               <div>
                 <Label>Họ tên</Label>
                 {isEditing ? (
-                  <Input value={name} onChange={(e) => setName(e.target.value)} />
+                  <Input value={editFullname} onChange={(e) => setEditFullname(e.target.value)} />
                 ) : (
-                  <div className="text-lg mt-1">{name || 'Chưa có tên'}</div>
+                  <div className="text-lg mt-1">{profile?.fullname || 'Chưa có tên'}</div>
                 )}
               </div>
               <div>
                 <Label>Số điện thoại</Label>
                 {isEditing ? (
-                  <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
+                  <Input value={editPhone} onChange={(e) => setEditPhone(e.target.value)} />
                 ) : (
-                  <div className="text-lg mt-1">{phone || 'Chưa có số'}</div>
+                  <div className="text-lg mt-1">{profile?.phonenumber || 'Chưa có số'}</div>
+                )}
+              </div>
+              <div>
+                <Label>Email</Label>
+                {isEditing ? (
+                  <Input value={editEmail} onChange={(e) => setEditEmail(e.target.value)} />
+                ) : (
+                  <div className="text-lg mt-1">{profile?.email || 'Chưa có email'}</div>
                 )}
               </div>
             </div>
           </CardContent>
         </Card>
 
+        {/* Đổi mật khẩu */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex justify-between items-center">
+              <span>Đổi mật khẩu</span>
+              {!showChangePassword ? (
+                <Button variant="outline" onClick={openChangePassword}>
+                  <Lock size={16} className="mr-2" />
+                  Đổi mật khẩu
+                </Button>
+              ) : null}
+            </CardTitle>
+          </CardHeader>
+          {showChangePassword && (
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <Label>Mật khẩu cũ</Label>
+                  <Input
+                    type="password"
+                    value={oldPassword}
+                    onChange={(e) => setOldPassword(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Mật khẩu mới</Label>
+                  <Input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Nhập lại mật khẩu mới</Label>
+                  <Input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleChangePassword}
+                    disabled={isChangingPassword}
+                    className="bg-foodsnap-teal hover:bg-foodsnap-teal/90"
+                  >
+                    {isChangingPassword ? 'Đang đổi...' : 'Lưu mật khẩu'}
+                  </Button>
+                  <Button variant="outline" onClick={() => setShowChangePassword(false)}>
+                    Hủy
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          )}
+        </Card>
+
+        {/* Danh sách địa chỉ */}
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex justify-between items-center">
@@ -194,12 +357,16 @@ const ProfilePage = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
+            {isLoadingAddresses ? (
               <div>Đang tải địa chỉ...</div>
-            ) : addresses.data.length > 0 ? (
+            ) : addresses.length > 0 ? (
               <div className="space-y-4">
-                {addresses.data.map((address) => (
-                  <AddressItem key={address.address_id} address={address} refetch={refetch} />
+                {addresses.map((address) => (
+                  <AddressItem
+                    key={address.address_id}
+                    address={address}
+                    refetch={refetchAddresses}
+                  />
                 ))}
               </div>
             ) : (
@@ -207,12 +374,7 @@ const ProfilePage = () => {
             )}
           </CardContent>
         </Card>
-
-        <Button onClick={handleLogout} variant="destructive" className="w-full mb-8">
-          Đăng xuất
-        </Button>
       </main>
-
       <Footer />
     </div>
   )
