@@ -35,7 +35,6 @@ const RestaurantDetailsPage = () => {
     { enabled: !!id },
   )
 
-  // Lưu ý: mọi chỗ truy cập phải là data?.data.[field]
   const restaurant = data
 
   useEffect(() => {

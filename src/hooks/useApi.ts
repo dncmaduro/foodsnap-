@@ -27,6 +27,8 @@ export function useApiQuery<T>(
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       }),
     ...options,
+    retry: 0,
+    refetchOnWindowFocus: false,
     select: options?.select, // preserve select nếu có custom
   })
 }
