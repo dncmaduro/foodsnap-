@@ -113,7 +113,7 @@ const CheckoutPage = () => {
   }
 
   const subtotal = items.reduce((total, item) => total + item.price * item.quantity, 0)
-  const deliveryFee = items.length > 0 ? 2.99 : 0
+  const deliveryFee = items.length > 0 ? 20000 : 0
   const total = subtotal + deliveryFee
 
   const handlePlaceOrder = () => {
