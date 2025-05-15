@@ -27,6 +27,7 @@ import DeliveryStatusUpdatePage from './pages/DeliveryStatusUpdatePage'
 import DeliveryHistoryPage from './pages/DeliveryHistoryPage'
 import DriverProfilePage from './pages/DriverProfilePage'
 import NotFound from './pages/NotFound'
+import AdminPage from './pages/AdminPage'
 
 // Create a new QueryClient instance
 const queryClient = new QueryClient()
@@ -65,6 +66,7 @@ function App() {
               <Route path="/restaurant-registration" element={<RestaurantRegistrationPage />} />
               <Route path="/my-restaurants" element={<MyRestaurantsPage />} />
               <Route path="/restaurant-details/:id" element={<RestaurantDetailsPage />} />
+              <Route path="/admin" element={<AdminPage />}></Route>
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
